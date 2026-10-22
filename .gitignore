@@ -19,3 +19,7 @@ Thumbs.db
 .env.*
 *.log
 *.rs.bk
+
+# Frontend
+web/node_modules/
+.storypole/index.sqlite*

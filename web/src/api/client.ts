@@ -1,0 +1,106 @@
+// Typed REST fetch client for /api/v1/* endpoints
+
+import type {
+  DagView,
+  DadoPattern,
+  HoleCompileResponse,
+  ModelHubStatus,
+  SharedTypeContract,
+  SpecBundle,
+  TaskContextBriefing,
+  WorkspaceCapabilities,
+} from '../types';
+
+async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(url, init);
+  if (!res.ok) {
+    const errorBody = await res.json().catch(() => ({ error: res.statusText }));
+    throw new Error(errorBody.error || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+export const api = {
+  getCapabilities: () => fetchJson<WorkspaceCapabilities>('/api/v1/capabilities'),
+
+  getSnapshot: () => fetchJson<any>('/api/v1/snapshot'),
+
+  getSpec: () => fetchJson<SpecBundle>('/api/v1/spec'),
+
+  resolveDecision: (data: {
+    task_id?: string;
+    decision_id: string;
+    chosen_option: string;
+    rationale: string;
+    spawn_followup: boolean;
+  }) =>
+    fetchJson<any>('/api/v1/spec/decide', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    }),
+
+  previewContract: (contract: SharedTypeContract) =>
+    fetchJson<{ rust_code: string; typescript_code: string; zod_code: string }>(
+      '/api/v1/spec/contract-preview',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contract }),
+      }
+    ),
+
+  getDag: (params?: {
+    repo?: string;
+    crate_name?: string;
+    status?: string;
+    kind?: string;
+    needs_decision?: boolean;
+  }) => {
+    const searchParams = new URLSearchParams();
+    if (params?.repo) searchParams.set('repo', params.repo);
+    if (params?.crate_name) searchParams.set('crate_name', params.crate_name);
+    if (params?.status) searchParams.set('status', params.status);
+    if (params?.kind) searchParams.set('kind', params.kind);
+    if (params?.needs_decision !== undefined)
+      searchParams.set('needs_decision', String(params.needs_decision));
+    const qs = searchParams.toString();
+    return fetchJson<DagView>(`/api/v1/dag${qs ? `?${qs}` : ''}`);
+  },
+
+  getTaskBriefing: (taskId: string) =>
+    fetchJson<TaskContextBriefing>(`/api/v1/dag/${taskId}/briefing`),
+
+  getPatterns: () => fetchJson<DadoPattern[]>('/api/v1/xray/patterns'),
+
+  compileHole: (data: { pattern_id: string; hole_id: string; format: string }) =>
+    fetchJson<HoleCompileResponse>('/api/v1/xray/compile-hole', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    }),
+
+  triggerSynthesis: (data: { task_id?: string; force_in_process: boolean }) =>
+    fetchJson<{ status: string }>('/api/v1/synthesis/run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    }),
+
+  getHubStatus: () => fetchJson<ModelHubStatus>('/api/v1/hub/models'),
+
+  deleteSpoolTrace: (traceId: string) =>
+    fetchJson<{ deleted: boolean }>(`/api/v1/hub/spool/${traceId}`, {
+      method: 'DELETE',
+    }),
+
+  pingModel: (role: string, prompt: string) =>
+    fetchJson<{ role: string; text: string; latency_ms: number; model_used: string }>(
+      '/api/v1/hub/ping',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role, prompt }),
+      }
+    ),
+};
