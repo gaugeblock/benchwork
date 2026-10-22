@@ -1,0 +1,13 @@
+[package]
+name = "benchwork-cli"
+version = "0.0.1-alpha.1"
+edition = "2024"
+authors = ["Colin Wolff"]
+description = "Command-line interface and MCP server for benchwork:Modular visual workbench UI and local daemon for neurosymbolic code synthesis and DAG inspection."
+license = "Apache-2.0"
+repository = "https://github.com/gaugeblock/benchwork"
+readme = "../../README.md"
+
+[[bin]]
+name = "benchwork"
+path = "src/main.rs"
