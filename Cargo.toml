@@ -1,11 +1,41 @@
-[package]
-name = "benchwork"
-version = "0.0.1-alpha.1"
+[workspace]
+resolver = "3"
+members = [
+    ".",
+    "crates/*",
+]
+
+[workspace.package]
+version = "0.1.0-beta.1"
 edition = "2024"
-authors = ["Colin Wolff"]
-description = "Modular visual workbench UI and local daemon for neurosymbolic code synthesis and DAG inspection."
+authors = ["Colin Wolff <1562545+colinwolff@users.noreply.github.com>"]
 license = "Apache-2.0"
 repository = "https://github.com/gaugeblock/benchwork"
+homepage = "https://gaugeblock.dev"
 readme = "README.md"
 keywords = ["ast", "neurosymbolic", "codegen", "llm", "compiler"]
 categories = ["development-tools", "compilers", "command-line-utilities"]
+
+[workspace.lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"
+
+[workspace.lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"
+
+[package]
+name = "benchwork"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+readme = "README.md"
+description = "Modular visual workbench UI and local daemon for neurosymbolic code synthesis and DAG inspection"
+
+[dependencies]
+benchwork-core = { path = "crates/benchwork-core", version = "0.1.0-beta.1" }
+
+[lints]
+workspace = true

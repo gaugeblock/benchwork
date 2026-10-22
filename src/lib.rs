@@ -1,4 +1,3 @@
-//! # benchwork
-//!
-//! Modular visual workbench UI and local daemon for neurosymbolic code synthesis and DAG inspection.
-pub const VERSION: &str = env!("CARGO_PKG_VERSION");
+//! `benchwork` — Modular visual workbench UI and local aggregator daemon for the `gaugeblock` suite.
+
+pub use benchwork_core::*;
