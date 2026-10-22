@@ -1,0 +1,23 @@
+[package]
+name = "benchwork-mcp"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Model Context Protocol stdio server for benchwork"
+
+[lints]
+workspace = true
+
+[dependencies]
+benchwork-core = { path = "../benchwork-core", version = "0.1.0-beta.1" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "2.0"
+tokio = { version = "1.40", features = ["full"] }
+tracing = "0.1"
+
+[dev-dependencies]
+tempfile = "3.10"
+
