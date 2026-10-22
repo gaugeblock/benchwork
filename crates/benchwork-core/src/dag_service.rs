@@ -16,8 +16,16 @@ use crate::model::{DagQuery, DagStats, DagView};
 
 /// Queries tasks according to `DagQuery` and computes topological order and summary stats.
 pub fn get_dag_view(root_path: &Path, query: &DagQuery) -> Result<DagView> {
-    let store =
-        StorypoleStore::open(root_path).map_err(|e| BenchworkError::Storypole(e.to_string()))?;
+    let store = match StorypoleStore::open(root_path) {
+        Ok(s) => s,
+        Err(_) => {
+            return Ok(DagView {
+                nodes: Vec::new(),
+                topological_order: Vec::new(),
+                stats: DagStats::default(),
+            });
+        }
+    };
 
     let all_tasks =
         get_all_tasks(store.conn()).map_err(|e| BenchworkError::Storypole(e.to_string()))?;

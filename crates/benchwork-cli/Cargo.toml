@@ -1,13 +1,38 @@
 [package]
 name = "benchwork-cli"
-version = "0.0.1-alpha.1"
-edition = "2024"
-authors = ["Colin Wolff"]
-description = "Command-line interface and MCP server for benchwork:Modular visual workbench UI and local daemon for neurosymbolic code synthesis and DAG inspection."
-license = "Apache-2.0"
-repository = "https://github.com/gaugeblock/benchwork"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
 readme = "../../README.md"
+description = "Command-line interface and local daemon for benchwork"
 
 [[bin]]
 name = "benchwork"
 path = "src/main.rs"
+
+[lints]
+workspace = true
+
+[dependencies]
+benchwork-core = { path = "../benchwork-core", version = "0.1.0-beta.1" }
+benchwork-mcp = { path = "../benchwork-mcp", version = "0.1.0-beta.1" }
+axum = { version = "0.8", features = ["ws"] }
+clap = { version = "4.5", features = ["derive"] }
+futures = "0.3"
+mime_guess = "2.0"
+reqwest = { version = "0.12", default-features = false }
+rust-embed = { version = "8.5", features = ["interpolate-folder-path"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "2.0"
+tokio = { version = "1.40", features = ["full"] }
+tokio-stream = { version = "0.1", features = ["sync"] }
+tower = { version = "0.5", features = ["util"] }
+tower-http = { version = "0.6", features = ["cors"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+[dev-dependencies]
+tempfile = "3.10"
