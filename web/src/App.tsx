@@ -53,7 +53,7 @@ export const App: React.FC = () => {
               benchwork
             </span>
             <span className="text-[10px] px-1.5 py-0.5 rounded bg-cad-bg border border-cad-border text-cad-cyan font-mono">
-              v0.1.0-beta.1
+              v0.1.0-beta.2
             </span>
           </div>
 

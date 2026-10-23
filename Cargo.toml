@@ -6,7 +6,7 @@ members = [
 ]
 
 [workspace.package]
-version = "0.1.0-beta.1"
+version = "0.1.0-beta.2"
 edition = "2024"
 authors = ["Colin Wolff <1562545+colinwolff@users.noreply.github.com>"]
 license = "Apache-2.0"
@@ -35,7 +35,7 @@ readme = "README.md"
 description = "Modular visual workbench UI and local daemon for neurosymbolic code synthesis and DAG inspection"
 
 [dependencies]
-benchwork-core = { path = "crates/benchwork-core", version = "0.1.0-beta.1" }
+benchwork-core = { path = "crates/benchwork-core", version = "0.1.0-beta.2" }
 
 [lints]
 workspace = true
