@@ -3,6 +3,7 @@ import type { TaskContextBriefing } from '../../types';
 import { api } from '../../api/client';
 import { InspectorHeader } from './inspector/InspectorHeader';
 import { InspectorScope } from './inspector/InspectorScope';
+import { InspectorPlan } from './inspector/InspectorPlan';
 import { InspectorDecisions } from './inspector/InspectorDecisions';
 import { InspectorHandoffAndGate } from './inspector/InspectorHandoffAndGate';
 import { CheckSquare, GitFork } from 'lucide-react';
@@ -100,6 +101,14 @@ export const TaskBriefingDrawer: React.FC<TaskBriefingDrawerProps> = ({
                   ))}
                 </div>
               </div>
+            )}
+
+            {/* Execution Plan & Blueprint */}
+            {briefing.task.plan && (
+              <InspectorPlan
+                plan={briefing.task.plan}
+                ticketKey={briefing.task.ticket_key}
+              />
             )}
 
             {/* Dependency Edges & Related Tasks */}
