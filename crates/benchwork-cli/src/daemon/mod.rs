@@ -69,6 +69,14 @@ pub async fn start_daemon(
             "/api/v1/dag/{id}/briefing",
             get(routes_state::get_task_briefing_handler),
         )
+        .route(
+            "/api/v1/dag/{id}/claim",
+            post(routes_state::post_claim_task_handler),
+        )
+        .route(
+            "/api/v1/dag/{id}/handoff",
+            post(routes_state::post_record_handoff_handler),
+        )
         .route("/api/v1/xray/patterns", get(routes_synth::get_patterns))
         .route(
             "/api/v1/xray/compile-hole",

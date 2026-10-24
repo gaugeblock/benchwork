@@ -1,12 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { TaskNode } from '../../../types';
-import { X, Loader2, Sparkles } from 'lucide-react';
+import { X, Loader2, Sparkles, ShieldCheck, Clock } from 'lucide-react';
+import { InspectorClaimModal } from './InspectorClaimModal';
+import { InspectorHandoffModal } from './InspectorHandoffModal';
 
 interface InspectorHeaderProps {
   task: TaskNode;
   onClose: () => void;
   onSynthesize?: (taskId: string) => void;
   synthesizing?: boolean;
+  onClaim?: (agentId: string, branch: string) => Promise<void>;
+  onHandoff?: (data: {
+    recorded_by_agent: string;
+    completed_items: string[];
+    remaining_items: string[];
+    last_error_or_blocker?: string;
+    status: string;
+  }) => Promise<void>;
 }
 
 export const InspectorHeader: React.FC<InspectorHeaderProps> = ({
@@ -14,7 +24,12 @@ export const InspectorHeader: React.FC<InspectorHeaderProps> = ({
   onClose,
   onSynthesize,
   synthesizing,
+  onClaim,
+  onHandoff,
 }) => {
+  const [showClaimModal, setShowClaimModal] = useState(false);
+  const [showHandoffModal, setShowHandoffModal] = useState(false);
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'ready':
@@ -35,6 +50,7 @@ export const InspectorHeader: React.FC<InspectorHeaderProps> = ({
   };
 
   const isReady = task.status === 'ready';
+  const isInProgress = task.status === 'in_progress';
 
   return (
     <div className="flex flex-col border-b border-cad-border bg-cad-subsurface/80 p-4 gap-2.5">
@@ -62,8 +78,19 @@ export const InspectorHeader: React.FC<InspectorHeaderProps> = ({
 
       <h2 className="text-sm font-semibold text-cad-text leading-snug">{task.title}</h2>
 
-      {isReady && onSynthesize && (
-        <div className="pt-1 flex items-center gap-2">
+      {/* Action Row */}
+      <div className="pt-1 flex flex-wrap items-center gap-2">
+        {isReady && onClaim && (
+          <button
+            onClick={() => setShowClaimModal(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-purple-600 text-white font-bold text-xs hover:bg-purple-500 transition-all shadow-sm"
+          >
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>Claim Task</span>
+          </button>
+        )}
+
+        {isReady && onSynthesize && (
           <button
             onClick={() => onSynthesize(task.id)}
             disabled={synthesizing}
@@ -81,8 +108,36 @@ export const InspectorHeader: React.FC<InspectorHeaderProps> = ({
               </>
             )}
           </button>
-          <span className="text-[10px] text-cad-muted">Task ready for code generation</span>
-        </div>
+        )}
+
+        {isInProgress && onHandoff && (
+          <button
+            onClick={() => setShowHandoffModal(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/40 font-bold text-xs hover:bg-blue-500/30 transition-all"
+          >
+            <Clock className="w-3.5 h-3.5" />
+            <span>Record Handoff</span>
+          </button>
+        )}
+      </div>
+
+      {onClaim && (
+        <InspectorClaimModal
+          isOpen={showClaimModal}
+          ticketKey={task.ticket_key}
+          slug={task.slug}
+          onClose={() => setShowClaimModal(false)}
+          onClaim={onClaim}
+        />
+      )}
+
+      {onHandoff && (
+        <InspectorHandoffModal
+          isOpen={showHandoffModal}
+          agentId={task.active_claim?.agent_id || 'antigravity'}
+          onClose={() => setShowHandoffModal(false)}
+          onSubmit={onHandoff}
+        />
       )}
     </div>
   );

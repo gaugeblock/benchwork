@@ -71,6 +71,30 @@ export const api = {
   getTaskBriefing: (taskId: string) =>
     fetchJson<TaskContextBriefing>(`/api/v1/dag/${taskId}/briefing`),
 
+  claimTask: (taskId: string, data: { agent_id: string; branch?: string }) =>
+    fetchJson<TaskContextBriefing>(`/api/v1/dag/${taskId}/claim`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    }),
+
+  recordHandoff: (
+    taskId: string,
+    data: {
+      recorded_by_agent: string;
+      completed_items: string[];
+      remaining_items: string[];
+      last_error_or_blocker?: string;
+      dirty_files?: string[];
+      status?: string;
+    }
+  ) =>
+    fetchJson<{ success: boolean }>(`/api/v1/dag/${taskId}/handoff`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    }),
+
   getPatterns: () => fetchJson<DadoPattern[]>('/api/v1/xray/patterns'),
 
   compileHole: (data: { pattern_id: string; hole_id: string; format: string }) =>

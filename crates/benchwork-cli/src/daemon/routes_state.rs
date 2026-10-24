@@ -105,3 +105,75 @@ pub async fn get_task_briefing_handler(
         ),
     }
 }
+
+/// Request payload for claiming an agent lease on a task.
+#[derive(Debug, serde::Deserialize)]
+pub struct ClaimTaskPayload {
+    pub agent_id: String,
+    pub branch: Option<String>,
+}
+
+/// POST /api/v1/dag/:id/claim
+pub async fn post_claim_task_handler(
+    State(ctx): State<Arc<DaemonContext>>,
+    AxumPath(task_id): AxumPath<String>,
+    Json(payload): Json<ClaimTaskPayload>,
+) -> impl IntoResponse {
+    match claim_task_lease(
+        &ctx.state.root_path,
+        &task_id,
+        &payload.agent_id,
+        payload.branch.as_deref(),
+    ) {
+        Ok(briefing) => (StatusCode::OK, Json(json!(briefing))),
+        Err(e) => (
+            StatusCode::BAD_REQUEST,
+            Json(json!({ "error": e.to_string() })),
+        ),
+    }
+}
+
+/// Request payload for recording an agent handoff packet.
+#[derive(Debug, serde::Deserialize)]
+pub struct HandoffTaskPayload {
+    pub recorded_by_agent: String,
+    pub completed_items: Vec<String>,
+    pub remaining_items: Vec<String>,
+    pub last_error_or_blocker: Option<String>,
+    pub dirty_files: Option<Vec<String>>,
+    pub status: Option<String>,
+}
+
+/// POST /api/v1/dag/:id/handoff
+pub async fn post_record_handoff_handler(
+    State(ctx): State<Arc<DaemonContext>>,
+    AxumPath(task_id): AxumPath<String>,
+    Json(payload): Json<HandoffTaskPayload>,
+) -> impl IntoResponse {
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_millis() as u64)
+        .unwrap_or(0);
+    let handoff = HandoffPacket {
+        recorded_by_agent: payload.recorded_by_agent,
+        timestamp_ms: now,
+        completed_items: payload.completed_items,
+        remaining_items: payload.remaining_items,
+        last_error_or_blocker: payload.last_error_or_blocker,
+        git_ref: None,
+        dirty_files: payload.dirty_files.unwrap_or_default(),
+    };
+    let new_status = match payload.status.as_deref() {
+        Some("ready") => TaskStatus::Ready,
+        Some("blocked") => TaskStatus::Blocked,
+        Some("deferred") => TaskStatus::Deferred,
+        _ => TaskStatus::Ready,
+    };
+    match record_task_handoff(&ctx.state.root_path, &task_id, handoff, new_status) {
+        Ok(()) => (StatusCode::OK, Json(json!({ "success": true }))),
+        Err(e) => (
+            StatusCode::BAD_REQUEST,
+            Json(json!({ "error": e.to_string() })),
+        ),
+    }
+}
