@@ -142,3 +142,14 @@ pub async fn post_test_inference(Json(req): Json<TestInferenceRequest>) -> impl 
         ),
     }
 }
+
+/// POST /api/v1/hub/models/discover
+pub async fn post_discover_models(Json(req): Json<DiscoverModelsRequest>) -> impl IntoResponse {
+    match discover_remote_models(&req).await {
+        Ok(res) => (StatusCode::OK, Json(json!(res))),
+        Err(e) => (
+            StatusCode::BAD_REQUEST,
+            Json(json!({ "success": false, "models": [], "message": e.to_string() })),
+        ),
+    }
+}

@@ -64,8 +64,7 @@ pub async fn start_daemon(
         .route("/api/v1/spec", get(routes_state::get_spec))
         .route("/api/v1/spec/decide", post(routes_state::post_decide))
         .route(
-            "/api/v1/spec/contract-preview",
-            post(routes_state::post_contract_preview),
+            "/api/v1/spec/contract-preview", post(routes_state::post_contract_preview),
         )
         .route("/api/v1/dag", get(routes_dag::get_dag))
         .route(
@@ -123,6 +122,10 @@ pub async fn start_daemon(
         .route(
             "/api/v1/hub/test-inference",
             post(routes_synth::post_test_inference),
+        )
+        .route(
+            "/api/v1/hub/models/discover",
+            post(routes_synth::post_discover_models),
         )
         .route("/api/v1/docs/audit", get(routes_docs::get_docs_audit))
         .route(
