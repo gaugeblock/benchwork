@@ -5,16 +5,17 @@ use benchwork_core::{
 };
 
 #[test]
-fn test_default_config_reading() {
-    let dir = tempdir().expect("tempdir");
-    let cfg = read_sawhorse_config(dir.path()).expect("read default");
+fn test_default_config_reading() -> Result<(), Box<dyn std::error::Error>> {
+    let dir = tempdir()?;
+    let cfg = read_sawhorse_config(dir.path())?;
     assert!(cfg.use_universal_fallback);
     assert_eq!(cfg.mode, "openai_compatible");
+    Ok(())
 }
 
 #[test]
-fn test_config_write_and_read_roundtrip() {
-    let dir = tempdir().expect("tempdir");
+fn test_config_write_and_read_roundtrip() -> Result<(), Box<dyn std::error::Error>> {
+    let dir = tempdir()?;
     let mut overrides = BTreeMap::new();
     overrides.insert(
         "planner".to_string(),
@@ -38,9 +39,10 @@ fn test_config_write_and_read_roundtrip() {
         role_overrides: overrides,
     };
 
-    write_sawhorse_config(dir.path(), &config).expect("write config");
+    write_sawhorse_config(dir.path(), &config)?;
     assert!(dir.path().join("sawhorse.toml").is_file());
 
-    let reloaded = read_sawhorse_config(dir.path()).expect("read reloaded");
+    let reloaded = read_sawhorse_config(dir.path())?;
     assert_eq!(reloaded.mode, "openai_compatible");
+    Ok(())
 }
