@@ -7,6 +7,7 @@ pub mod capabilities;
 pub mod config_service;
 pub mod config_types;
 pub mod dag_service;
+pub mod docs_service;
 pub mod error;
 pub mod hub_service;
 pub mod model;
@@ -21,6 +22,10 @@ pub use config_types::{
 pub use dag_service::{
     archive_task_service, claim_task_lease, get_dag_view, get_task_briefing, link_tasks_service,
     record_task_handoff, split_task_service, unarchive_task_service, update_task_details,
+};
+pub use docs_service::{
+    CoreDocsConfig as DocsConfig, DocAuditItem, DocAuditReport, DocStatus, audit_docs,
+    get_docs_config, migrate_docs, save_docs_config, scaffold_docs,
 };
 pub use error::{BenchworkError, Result};
 pub use hub_service::{delete_spool_trace, get_model_hub_status, ping_inference};

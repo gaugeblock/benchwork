@@ -181,6 +181,12 @@ export const EngineerChat: React.FC<EngineerChatProps> = ({
           >
             <span>Architecture Review</span>
           </button>
+          <button
+            onClick={() => handleSend('/audit-docs Audit the 9-Document Architecture against code AST and git history')}
+            className="px-2 py-0.5 rounded-full border border-cad-emerald/40 bg-cad-emerald/10 text-cad-emerald text-[10px] font-semibold hover:bg-cad-emerald/20 transition-all"
+          >
+            <span>/audit-docs</span>
+          </button>
         </div>
 
         <form onSubmit={(e) => { e.preventDefault(); handleSend(); }} className="flex items-center gap-2">
@@ -205,3 +211,4 @@ export const EngineerChat: React.FC<EngineerChatProps> = ({
     </div>
   );
 };
+

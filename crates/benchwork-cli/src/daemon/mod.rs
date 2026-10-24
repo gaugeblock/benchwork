@@ -1,6 +1,7 @@
 //! Axum daemon server, router configuration, and embedded UI asset serving.
 
 pub mod routes_dag;
+pub mod routes_docs;
 pub mod routes_state;
 pub mod routes_synth;
 pub mod streams;
@@ -121,6 +122,20 @@ pub async fn start_daemon(
         .route(
             "/api/v1/hub/test-inference",
             post(routes_synth::post_test_inference),
+        )
+        .route("/api/v1/docs/audit", get(routes_docs::get_docs_audit))
+        .route(
+            "/api/v1/docs/config",
+            get(routes_docs::get_docs_config_handler)
+                .post(routes_docs::post_docs_config_handler),
+        )
+        .route(
+            "/api/v1/docs/scaffold",
+            post(routes_docs::post_docs_scaffold_handler),
+        )
+        .route(
+            "/api/v1/docs/migrate",
+            post(routes_docs::post_docs_migrate_handler),
         )
         .route("/api/v1/ws", get(streams::ws_handler))
         .route("/api/v1/events", get(streams::sse_handler))
