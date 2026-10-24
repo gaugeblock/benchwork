@@ -137,6 +137,7 @@ export const TaskBriefingDrawer: React.FC<TaskBriefingDrawerProps> = ({
             <InspectorHandoffAndGate
               verificationCommand={briefing.verification_command}
               verificationReceipt={briefing.task.verification_receipt}
+              activeClaim={briefing.task.active_claim}
               latestHandoff={briefing.task.latest_handoff}
               deferredIssues={briefing.known_deferred_issues_in_scope}
             />

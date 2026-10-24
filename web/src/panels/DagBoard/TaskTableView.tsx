@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import type { TaskNode } from '../../types';
-import { ArrowUpDown, Search, Sparkles, HelpCircle, ArrowUp, ArrowDown } from 'lucide-react';
+import { ArrowUpDown, Search, Sparkles, HelpCircle, ArrowUp, ArrowDown, GitBranch } from 'lucide-react';
 
 interface TaskTableViewProps {
   tasks: TaskNode[];
@@ -128,6 +128,12 @@ export const TaskTableView: React.FC<TaskTableViewProps> = ({
                       {hasPendingDecision && (
                         <span title="Needs Decision">
                           <HelpCircle className="w-3.5 h-3.5 text-cad-amber shrink-0" />
+                        </span>
+                      )}
+                      {(task.active_claim?.git_branch || task.verification_receipt?.git_branch) && (
+                        <span className="flex items-center gap-0.5 px-1 py-0.2 rounded bg-purple-500/10 border border-purple-500/30 font-mono text-[9px] text-purple-400 shrink-0">
+                          <GitBranch className="w-2.5 h-2.5" />
+                          {task.active_claim?.git_branch || task.verification_receipt?.git_branch}
                         </span>
                       )}
                     </div>

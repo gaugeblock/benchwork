@@ -1,6 +1,6 @@
 import React from 'react';
 import type { TaskNode, TaskStatus } from '../../types';
-import { Sparkles, Layers, Tag } from 'lucide-react';
+import { Sparkles, Layers, Tag, GitBranch, GitCommit } from 'lucide-react';
 
 interface KanbanBoardViewProps {
   tasks: TaskNode[];
@@ -101,6 +101,18 @@ export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
 
                     {/* Metadata / Tags */}
                     <div className="flex flex-wrap items-center gap-1 text-[9px] text-cad-muted">
+                      {(task.active_claim?.git_branch || task.verification_receipt?.git_branch) && (
+                        <span className="flex items-center gap-0.5 px-1 rounded bg-purple-500/10 border border-purple-500/30 font-mono text-purple-400">
+                          <GitBranch className="w-2.5 h-2.5" />
+                          {task.active_claim?.git_branch || task.verification_receipt?.git_branch}
+                        </span>
+                      )}
+                      {task.verification_receipt?.commit_shas && task.verification_receipt.commit_shas.length > 0 && (
+                        <span className="flex items-center gap-0.5 px-1 rounded bg-cad-bg border border-cad-emerald/40 font-mono text-cad-emerald">
+                          <GitCommit className="w-2.5 h-2.5" />
+                          {task.verification_receipt.commit_shas.length}c
+                        </span>
+                      )}
                       {task.scope.crate_name && (
                         <span className="flex items-center gap-0.5 px-1 rounded bg-cad-bg border border-cad-border font-mono text-cad-cyan">
                           <Layers className="w-2.5 h-2.5" />
