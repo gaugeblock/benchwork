@@ -3,7 +3,8 @@ import type { SpecBundle, TaskNode } from '../../types';
 import { api } from '../../api/client';
 import { DecisionCard } from './DecisionCard';
 import { ContractPreview } from './ContractPreview';
-import { FileText, CheckCircle2, ShieldAlert, MessageSquare } from 'lucide-react';
+import { EngineerChat } from './EngineerChat';
+import { FileText, CheckCircle2, ShieldAlert, MessageSquare, Bot } from 'lucide-react';
 
 interface GrillStudioPanelProps {
   initialChatTask?: TaskNode | null;
@@ -13,6 +14,13 @@ export const GrillStudioPanel: React.FC<GrillStudioPanelProps> = ({ initialChatT
   const [bundle, setBundle] = useState<SpecBundle | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeDoc, setActiveDoc] = useState<string>('SPEC.md');
+  const [leftMode, setLeftMode] = useState<'chat' | 'docs'>(initialChatTask ? 'chat' : 'chat');
+
+  useEffect(() => {
+    if (initialChatTask) {
+      setLeftMode('chat');
+    }
+  }, [initialChatTask]);
 
   const loadData = useCallback(async () => {
     try {
@@ -45,36 +53,61 @@ export const GrillStudioPanel: React.FC<GrillStudioPanelProps> = ({ initialChatT
 
   return (
     <div className="flex-1 flex flex-col md:flex-row overflow-hidden bg-cad-bg">
-      {/* Left: Spec Document Viewport */}
+      {/* Left: Conversational Engineer Chat OR Spec Document Viewport */}
       <div className="flex-1 flex flex-col border-r border-cad-border overflow-hidden">
-        <div className="flex items-center justify-between px-4 py-2 border-b border-cad-border bg-cad-surface">
-          <div className="flex items-center gap-2">
-            <FileText className="w-4 h-4 text-cad-cyan" />
-            <span className="text-xs font-bold text-cad-text uppercase tracking-wider">
-              Technical Documentation
-            </span>
+        {/* Left Sub-Header Switcher */}
+        <div className="flex items-center justify-between px-4 py-2 border-b border-cad-border bg-cad-surface shrink-0">
+          <div className="flex items-center gap-1.5 bg-cad-bg border border-cad-border p-0.5 rounded">
+            <button
+              onClick={() => setLeftMode('chat')}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold transition-all ${
+                leftMode === 'chat'
+                  ? 'bg-cad-cyan/20 text-cad-cyan border border-cad-cyan/40 shadow-sm'
+                  : 'text-cad-muted hover:text-cad-text border border-transparent'
+              }`}
+            >
+              <Bot className="w-3.5 h-3.5" />
+              <span>Engineer Chat & /grill-me</span>
+            </button>
+            <button
+              onClick={() => setLeftMode('docs')}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold transition-all ${
+                leftMode === 'docs'
+                  ? 'bg-cad-cyan/20 text-cad-cyan border border-cad-cyan/40 shadow-sm'
+                  : 'text-cad-muted hover:text-cad-text border border-transparent'
+              }`}
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>Technical Specs</span>
+            </button>
           </div>
 
-          <div className="flex items-center gap-1">
-            {docTabs.map((doc) => (
-              <button
-                key={doc}
-                onClick={() => setActiveDoc(doc)}
-                className={`text-[11px] px-2.5 py-1 rounded transition-colors ${
-                  activeDoc === doc
-                    ? 'bg-cad-cyan/20 text-cad-cyan font-bold border border-cad-cyan/40'
-                    : 'text-cad-muted hover:text-cad-text border border-transparent'
-                }`}
-              >
-                {doc}
-              </button>
-            ))}
-          </div>
+          {leftMode === 'docs' && (
+            <div className="flex items-center gap-1 overflow-x-auto">
+              {docTabs.map((doc) => (
+                <button
+                  key={doc}
+                  onClick={() => setActiveDoc(doc)}
+                  className={`text-[11px] px-2.5 py-1 rounded transition-colors ${
+                    activeDoc === doc
+                      ? 'bg-cad-cyan/20 text-cad-cyan font-bold border border-cad-cyan/40'
+                      : 'text-cad-muted hover:text-cad-text border border-transparent'
+                  }`}
+                >
+                  {doc}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
-        <div className="flex-1 p-4 overflow-y-auto font-mono text-xs text-cad-text leading-relaxed bg-cad-bg whitespace-pre-wrap">
-          {activeContent}
-        </div>
+        {leftMode === 'chat' ? (
+          <EngineerChat initialChatTask={initialChatTask} />
+        ) : (
+          <div className="flex-1 p-4 overflow-y-auto font-mono text-xs text-cad-text leading-relaxed bg-cad-bg whitespace-pre-wrap select-text">
+            {activeContent}
+          </div>
+        )}
       </div>
 
       {/* Right: Decision Holes & Shared Type Contracts */}
