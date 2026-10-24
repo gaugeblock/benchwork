@@ -45,6 +45,8 @@ pub struct DagStats {
     pub verified: usize,
     /// Blocked tasks.
     pub blocked: usize,
+    /// Deferred tasks.
+    pub deferred: usize,
     /// Archived tasks.
     pub archived: usize,
 }

@@ -68,6 +68,7 @@ export const DagBoardPanel: React.FC<DagBoardPanelProps> = ({ onDiscussInChat })
               <option value="in_progress">In Progress</option>
               <option value="verified">Verified</option>
               <option value="blocked">Blocked</option>
+              <option value="deferred">Deferred</option>
               <option value="archived">Archived</option>
             </select>
           </div>
@@ -124,6 +125,9 @@ export const DagBoardPanel: React.FC<DagBoardPanelProps> = ({ onDiscussInChat })
             <span className="text-cad-cyan">Ready: <b>{dag?.stats.ready || 0}</b></span>
             <span className="text-cad-amber">Blocked: <b>{dag?.stats.blocked || 0}</b></span>
             <span className="text-cad-emerald">Verified: <b>{dag?.stats.verified || 0}</b></span>
+            {dag?.stats.deferred !== undefined && dag.stats.deferred > 0 && (
+              <span className="text-purple-400">Deferred: <b>{dag.stats.deferred}</b></span>
+            )}
             {dag?.stats.archived !== undefined && dag.stats.archived > 0 && (
               <span className="text-zinc-500">Archived: <b>{dag.stats.archived}</b></span>
             )}

@@ -70,6 +70,7 @@ pub fn get_dag_view(root_path: &Path, query: &DagQuery) -> Result<DagView> {
                 }
                 TaskStatus::Verified => stats.verified += 1,
                 TaskStatus::Blocked => stats.blocked += 1,
+                TaskStatus::Deferred => stats.deferred += 1,
                 TaskStatus::Archived => stats.archived += 1,
                 _ => {}
             }

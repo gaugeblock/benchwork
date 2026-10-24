@@ -165,6 +165,7 @@ export interface DagStats {
   in_progress: number;
   verified: number;
   blocked: number;
+  deferred?: number;
   archived?: number;
 }
 

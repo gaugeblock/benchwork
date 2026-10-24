@@ -50,10 +50,17 @@ export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
       color: 'text-cad-emerald',
       borderAccent: 'border-t-2 border-t-cad-emerald',
     },
+    {
+      key: 'deferred',
+      label: 'Deferred',
+      statuses: ['deferred'],
+      color: 'text-purple-400',
+      borderAccent: 'border-t-2 border-t-purple-400',
+    },
   ];
 
   return (
-    <div className="flex-1 grid grid-cols-4 gap-3 p-4 overflow-x-auto bg-cad-bg">
+    <div className="flex-1 grid grid-cols-5 gap-3 p-4 overflow-x-auto bg-cad-bg min-w-[1000px]">
       {kanbanColumns.map((col) => {
         const colTasks = tasks.filter((t) => col.statuses.includes(t.status));
         return (

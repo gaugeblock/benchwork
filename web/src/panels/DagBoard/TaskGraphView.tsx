@@ -18,7 +18,8 @@ const STATUS_COLORS: Record<string, { stroke: string; fill: string; text: string
   blocked: { stroke: '#f59e0b', fill: '#f59e0b20', text: '#f59e0b' },
   failed: { stroke: '#ef4444', fill: '#ef444425', text: '#ef4444' },
   triage: { stroke: '#6b7280', fill: '#6b728020', text: '#9ca3af' },
-  deferred: { stroke: '#4b5563', fill: '#37415120', text: '#6b7280' },
+  deferred: { stroke: '#c084fc', fill: '#c084fc20', text: '#c084fc' },
+  archived: { stroke: '#52525b', fill: '#27272a20', text: '#71717a' },
 };
 
 export const TaskGraphView: React.FC<TaskGraphViewProps> = ({
