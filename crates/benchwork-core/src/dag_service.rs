@@ -107,6 +107,7 @@ pub fn claim_task_lease(
     root_path: &Path,
     task_id_or_key: &str,
     agent_id: &str,
+    branch: Option<&str>,
 ) -> Result<TaskContextBriefing> {
     let mut store =
         StorypoleStore::open(root_path).map_err(|e| BenchworkError::Storypole(e.to_string()))?;
@@ -114,7 +115,8 @@ pub fn claim_task_lease(
     let task_id = resolve_task_id(store.conn(), task_id_or_key)
         .map_err(|e| BenchworkError::TaskNotFound(e.to_string()))?;
 
-    claim_task(&mut store, task_id, agent_id).map_err(|e| BenchworkError::Storypole(e.to_string()))
+    claim_task(&mut store, task_id, agent_id, branch)
+        .map_err(|e| BenchworkError::Storypole(e.to_string()))
 }
 
 /// Records an agent handoff packet when pausing or yielding a task.

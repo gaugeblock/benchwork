@@ -40,6 +40,30 @@ export interface TaskDecision {
   updated_at_epoch_ms: number;
 }
 
+export interface AgentClaim {
+  agent_id: string;
+  claimed_at_epoch_ms: number;
+  lease_expires_at_epoch_ms: number;
+  git_branch?: string;
+  base_commit_sha?: string;
+}
+
+export interface PlanStep {
+  step_id: string;
+  title: string;
+  target_files: string[];
+  verification_gate?: string;
+  completed: boolean;
+}
+
+export interface TaskPlan {
+  summary: string;
+  design_markdown: string;
+  steps: PlanStep[];
+  plan_file_path?: string;
+  updated_at_epoch_ms: number;
+}
+
 export interface VerificationReceipt {
   verifier: string;
   command: string;
@@ -47,6 +71,10 @@ export interface VerificationReceipt {
   diagnostic_count?: number;
   summary: string;
   verified_at_epoch_ms: number;
+  git_branch?: string;
+  base_commit_sha?: string;
+  head_commit_sha?: string;
+  commit_shas?: string[];
 }
 
 export interface HandoffPacket {
@@ -72,6 +100,8 @@ export interface TaskNode {
   edges: TaskEdge[];
   decisions: TaskDecision[];
   acceptance_criteria: string[];
+  plan?: TaskPlan;
+  active_claim?: AgentClaim;
   latest_handoff?: HandoffPacket;
   verification_receipt?: VerificationReceipt;
   created_at_epoch_ms: number;

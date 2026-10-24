@@ -100,6 +100,7 @@ async fn test_spec_studio_and_decision_resolution() {
             updated_at_epoch_ms: 0,
         }],
         acceptance_criteria: vec![],
+        plan: None,
         active_claim: None,
         latest_handoff: None,
         verification_receipt: None,
