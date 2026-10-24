@@ -72,7 +72,12 @@ pub fn discover_migration(workspace_root: &Path) -> Result<MigrationPlan> {
     }
 
     let has_legacy_items = !items.is_empty();
-    let consolidated_config_preview = if has_legacy_items || workspace_root.join(".gaugeblock").join("config.toml").is_file() {
+    let consolidated_config_preview = if has_legacy_items
+        || workspace_root
+            .join(".gaugeblock")
+            .join("config.toml")
+            .is_file()
+    {
         consolidate_configs(workspace_root).ok()
     } else {
         None
@@ -85,4 +90,3 @@ pub fn discover_migration(workspace_root: &Path) -> Result<MigrationPlan> {
         has_legacy_items,
     })
 }
-

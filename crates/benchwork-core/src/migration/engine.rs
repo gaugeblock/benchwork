@@ -8,7 +8,11 @@ use std::path::Path;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 /// Executes the migration plan.
-pub fn execute_migration(plan: &MigrationPlan, dry_run: bool, force: bool) -> Result<MigrationReceipt> {
+pub fn execute_migration(
+    plan: &MigrationPlan,
+    dry_run: bool,
+    force: bool,
+) -> Result<MigrationReceipt> {
     let now = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_err(|e| BenchworkError::Workspace(e.to_string()))?
@@ -33,7 +37,10 @@ pub fn execute_migration(plan: &MigrationPlan, dry_run: bool, force: bool) -> Re
             MigrationItemKind::DirectoryMove => {
                 if !full_src.exists() {
                     skipped_count += 1;
-                    details.push(format!("Skipped {}: source does not exist", item.source.display()));
+                    details.push(format!(
+                        "Skipped {}: source does not exist",
+                        item.source.display()
+                    ));
                     continue;
                 }
 
@@ -46,13 +53,20 @@ pub fn execute_migration(plan: &MigrationPlan, dry_run: bool, force: bool) -> Re
                         backup_paths.push(bak);
                     } else {
                         skipped_count += 1;
-                        details.push(format!("Skipped {}: destination already exists", item.destination.display()));
+                        details.push(format!(
+                            "Skipped {}: destination already exists",
+                            item.destination.display()
+                        ));
                         continue;
                     }
                 }
 
                 if dry_run {
-                    details.push(format!("[DRY RUN] Would move {} -> {}", item.source.display(), item.destination.display()));
+                    details.push(format!(
+                        "[DRY RUN] Would move {} -> {}",
+                        item.source.display(),
+                        item.destination.display()
+                    ));
                     migrated_count += 1;
                 } else {
                     if let Some(parent) = full_dst.parent() {
@@ -62,7 +76,11 @@ pub fn execute_migration(plan: &MigrationPlan, dry_run: bool, force: bool) -> Re
                         copy_dir_recursive(&full_src, &full_dst)?;
                         let _ = fs::remove_dir_all(&full_src);
                     }
-                    details.push(format!("Moved {} -> {}", item.source.display(), item.destination.display()));
+                    details.push(format!(
+                        "Moved {} -> {}",
+                        item.source.display(),
+                        item.destination.display()
+                    ));
                     migrated_count += 1;
                 }
             }
@@ -72,7 +90,11 @@ pub fn execute_migration(plan: &MigrationPlan, dry_run: bool, force: bool) -> Re
                 }
                 let bak = full_src.with_extension(format!("bak.{}", now));
                 if dry_run {
-                    details.push(format!("[DRY RUN] Would archive {} -> {}", item.source.display(), bak.display()));
+                    details.push(format!(
+                        "[DRY RUN] Would archive {} -> {}",
+                        item.source.display(),
+                        bak.display()
+                    ));
                 } else {
                     fs::rename(&full_src, &bak)?;
                     backup_paths.push(bak);

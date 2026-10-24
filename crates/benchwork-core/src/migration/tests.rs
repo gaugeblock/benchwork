@@ -48,8 +48,12 @@ fn test_discover_and_execute_migration() {
     assert_eq!(receipt.migrated_count, 2);
     assert!(!legacy_storypole.exists());
     assert!(root.join(".gaugeblock").join("storypole").is_dir());
-    assert!(root.join(".gaugeblock").join("storypole").join("ledger.jsonl").is_file());
+    assert!(
+        root.join(".gaugeblock")
+            .join("storypole")
+            .join("ledger.jsonl")
+            .is_file()
+    );
     assert!(root.join(".gaugeblock").join("config.toml").is_file());
     assert!(root.join(".gaugeblock").join(".gitignore").is_file());
 }
-

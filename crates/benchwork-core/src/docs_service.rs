@@ -3,10 +3,12 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
+pub use chalkline_core::docs::{
+    DocAuditItem, DocAuditReport, DocStatus, DocsConfig as CoreDocsConfig,
+};
 use chalkline_core::docs::{
     DocMigrationPlan, DocType, DocsConfig, render_template, verify_docs_drift,
 };
-pub use chalkline_core::docs::{DocAuditItem, DocAuditReport, DocStatus, DocsConfig as CoreDocsConfig};
 use miter_engine::inspect_workspace;
 
 use crate::error::{BenchworkError, Result};
@@ -72,11 +74,7 @@ pub fn scaffold_docs(
 }
 
 /// Generates or applies a brownfield document migration plan.
-pub fn migrate_docs(
-    root_path: &Path,
-    source_path: &Path,
-    apply: bool,
-) -> Result<DocMigrationPlan> {
+pub fn migrate_docs(root_path: &Path, source_path: &Path, apply: bool) -> Result<DocMigrationPlan> {
     let config = DocsConfig::load_or_default(root_path)
         .map_err(|e| BenchworkError::Workspace(format!("Failed to load docs.toml: {e}")))?;
     let plan = DocMigrationPlan::plan_from_file(source_path, &config)

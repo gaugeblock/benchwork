@@ -73,4 +73,3 @@ pub struct MigrationReceipt {
     /// Created backup file or directory paths.
     pub backup_paths: Vec<PathBuf>,
 }
-

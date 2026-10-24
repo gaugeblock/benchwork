@@ -59,4 +59,3 @@ datasets/
 *.bak*
 "#
 }
-

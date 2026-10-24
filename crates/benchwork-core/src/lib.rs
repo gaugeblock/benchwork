@@ -22,7 +22,6 @@ pub use config_types::{
     DiscoverModelsRequest, DiscoverModelsResponse, RoleOverrideConfig, TestInferenceReceipt,
     TestInferenceRequest, UniversalModelConfig,
 };
-pub use model_discovery::discover_remote_models;
 pub use dag_service::{
     archive_task_service, claim_task_lease, get_dag_view, get_task_briefing, link_tasks_service,
     record_task_handoff, split_task_service, unarchive_task_service, update_task_details,
@@ -38,6 +37,7 @@ pub use migration::{
     discover_migration, execute_migration,
 };
 pub use model::*;
+pub use model_discovery::discover_remote_models;
 pub use spec_studio::{load_spec_bundle, preview_contract, resolve_decision};
 pub use storypole_core::model::decision::HandoffPacket;
 pub use storypole_core::model::task::{TaskScope, TaskStatus};

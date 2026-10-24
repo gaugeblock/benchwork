@@ -30,7 +30,10 @@ pub async fn discover_remote_models(req: &DiscoverModelsRequest) -> Result<Disco
     let candidate_urls = if raw_base.ends_with("/v1") {
         vec![format!("{raw_base}/models")]
     } else {
-        vec![format!("{raw_base}/v1/models"), format!("{raw_base}/models")]
+        vec![
+            format!("{raw_base}/v1/models"),
+            format!("{raw_base}/models"),
+        ]
     };
 
     let client = match reqwest::Client::builder()
@@ -111,4 +114,3 @@ pub async fn discover_remote_models(req: &DiscoverModelsRequest) -> Result<Disco
         message: format!("Model discovery failed: {last_error}"),
     })
 }
-
