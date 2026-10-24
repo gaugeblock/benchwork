@@ -4,9 +4,10 @@ import { api } from '../../api/client';
 import { InspectorHeader } from './inspector/InspectorHeader';
 import { InspectorScope } from './inspector/InspectorScope';
 import { InspectorPlan } from './inspector/InspectorPlan';
+import { InspectorEdges } from './inspector/InspectorEdges';
 import { InspectorDecisions } from './inspector/InspectorDecisions';
 import { InspectorHandoffAndGate } from './inspector/InspectorHandoffAndGate';
-import { CheckSquare, GitFork } from 'lucide-react';
+import { CheckSquare } from 'lucide-react';
 
 interface TaskBriefingDrawerProps {
   taskId: string;
@@ -76,6 +77,18 @@ export const TaskBriefingDrawer: React.FC<TaskBriefingDrawerProps> = ({
     setBriefing(updated);
   };
 
+  const handleLink = async (targetKey: string, kind: string) => {
+    await api.linkTasks(taskId, targetKey, kind);
+    const updated = await api.getTaskBriefing(taskId);
+    setBriefing(updated);
+  };
+
+  const handleSplit = async (subtasks: string[], sequential: boolean) => {
+    await api.splitTask(taskId, subtasks, sequential);
+    const updated = await api.getTaskBriefing(taskId);
+    setBriefing(updated);
+  };
+
   return (
     <div className="absolute right-0 top-0 bottom-0 w-[460px] bg-cad-surface border-l border-cad-border shadow-2xl flex flex-col z-20 overflow-hidden">
       {loading ? (
@@ -137,29 +150,12 @@ export const TaskBriefingDrawer: React.FC<TaskBriefingDrawerProps> = ({
             )}
 
             {/* Dependency Edges & Related Tasks */}
-            {briefing.related_tasks_summary && briefing.related_tasks_summary.length > 0 && (
-              <div className="flex flex-col gap-1.5">
-                <span className="text-[10px] uppercase font-bold text-cad-muted tracking-wider flex items-center gap-1">
-                  <GitFork className="w-3 h-3 text-cad-cyan" /> Related Tasks & Edges
-                </span>
-                <div className="flex flex-col gap-1.5 p-2 rounded bg-cad-bg border border-cad-border">
-                  {briefing.related_tasks_summary.map(([key, title, status], i) => (
-                    <div
-                      key={i}
-                      className="flex items-center justify-between p-1.5 rounded bg-cad-surface border border-cad-border text-[11px]"
-                    >
-                      <div className="flex items-center gap-1.5 truncate">
-                        <span className="font-mono font-bold text-cad-cyan">{key}</span>
-                        <span className="truncate text-cad-text">{title}</span>
-                      </div>
-                      <span className="text-[9px] px-1.5 py-0.2 rounded border uppercase font-mono text-cad-muted">
-                        {status}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            <InspectorEdges
+              relatedTasks={briefing.related_tasks_summary || []}
+              ticketKey={briefing.task.ticket_key}
+              onLink={handleLink}
+              onSplit={handleSplit}
+            />
 
             {/* Decisions */}
             <InspectorDecisions

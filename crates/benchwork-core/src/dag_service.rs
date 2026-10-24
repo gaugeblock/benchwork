@@ -8,7 +8,8 @@ use storypole_core::dag::topological_sort;
 use storypole_core::index::query::{get_all_tasks, get_task_by_id, resolve_task_id};
 use storypole_core::model::decision::HandoffPacket;
 use storypole_core::model::events::{LedgerEvent, TaskContextBriefing};
-use storypole_core::model::task::TaskStatus;
+use storypole_core::model::task::{EdgeKind, TaskNode, TaskStatus};
+use storypole_core::ops::graph::{link_tasks as storypole_link, split_task as storypole_split};
 use storypole_core::ops::mutations::{UpdateTaskParams, update_task};
 use storypole_core::ops::workflow::claim_task;
 
@@ -158,4 +159,47 @@ pub fn update_task_details(
         .map_err(|e| BenchworkError::Storypole(e.to_string()))?;
 
     get_task_briefing(root_path, task_id_or_key)
+}
+
+/// Connect two tasks with a directed edge (BlockedBy, RelatedTo, ParentEpic).
+pub fn link_tasks_service(
+    root_path: &Path,
+    source_key: &str,
+    target_key: &str,
+    kind_str: &str,
+) -> Result<()> {
+    let mut store =
+        StorypoleStore::open(root_path).map_err(|e| BenchworkError::Storypole(e.to_string()))?;
+
+    let source_id = resolve_task_id(store.conn(), source_key)
+        .map_err(|e| BenchworkError::TaskNotFound(e.to_string()))?;
+    let target_id = resolve_task_id(store.conn(), target_key)
+        .map_err(|e| BenchworkError::TaskNotFound(e.to_string()))?;
+
+    let kind = match kind_str.to_lowercase().as_str() {
+        "related_to" => EdgeKind::RelatedTo,
+        "parent_epic" => EdgeKind::ParentEpic,
+        "discovered_from" => EdgeKind::DiscoveredFrom,
+        _ => EdgeKind::BlockedBy,
+    };
+
+    storypole_link(&mut store, source_id, target_id, kind)
+        .map_err(|e| BenchworkError::Storypole(e.to_string()))
+}
+
+/// Split an oversized task into a parent Epic and child subtasks.
+pub fn split_task_service(
+    root_path: &Path,
+    parent_key: &str,
+    subtasks: Vec<String>,
+    sequential: bool,
+) -> Result<Vec<TaskNode>> {
+    let mut store =
+        StorypoleStore::open(root_path).map_err(|e| BenchworkError::Storypole(e.to_string()))?;
+
+    let parent_id = resolve_task_id(store.conn(), parent_key)
+        .map_err(|e| BenchworkError::TaskNotFound(e.to_string()))?;
+
+    storypole_split(&mut store, parent_id, subtasks, sequential)
+        .map_err(|e| BenchworkError::Storypole(e.to_string()))
 }

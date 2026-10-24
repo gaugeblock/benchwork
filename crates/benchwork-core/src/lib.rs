@@ -13,7 +13,8 @@ pub mod xray_service;
 
 pub use capabilities::scan_capabilities;
 pub use dag_service::{
-    claim_task_lease, get_dag_view, get_task_briefing, record_task_handoff, update_task_details,
+    claim_task_lease, get_dag_view, get_task_briefing, link_tasks_service, record_task_handoff,
+    split_task_service, update_task_details,
 };
 pub use error::{BenchworkError, Result};
 pub use hub_service::{delete_spool_trace, get_model_hub_status, ping_inference};

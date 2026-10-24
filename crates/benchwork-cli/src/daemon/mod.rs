@@ -1,5 +1,6 @@
 //! Axum daemon server, router configuration, and embedded UI asset serving.
 
+pub mod routes_dag;
 pub mod routes_state;
 pub mod routes_synth;
 pub mod streams;
@@ -64,22 +65,30 @@ pub async fn start_daemon(
             "/api/v1/spec/contract-preview",
             post(routes_state::post_contract_preview),
         )
-        .route("/api/v1/dag", get(routes_state::get_dag))
+        .route("/api/v1/dag", get(routes_dag::get_dag))
         .route(
             "/api/v1/dag/{id}/briefing",
-            get(routes_state::get_task_briefing_handler),
+            get(routes_dag::get_task_briefing_handler),
         )
         .route(
             "/api/v1/dag/{id}/claim",
-            post(routes_state::post_claim_task_handler),
+            post(routes_dag::post_claim_task_handler),
         )
         .route(
             "/api/v1/dag/{id}/handoff",
-            post(routes_state::post_record_handoff_handler),
+            post(routes_dag::post_record_handoff_handler),
         )
         .route(
             "/api/v1/dag/{id}/update",
-            post(routes_state::post_update_task_handler),
+            post(routes_dag::post_update_task_handler),
+        )
+        .route(
+            "/api/v1/dag/{id}/link",
+            post(routes_dag::post_link_tasks_handler),
+        )
+        .route(
+            "/api/v1/dag/{id}/split",
+            post(routes_dag::post_split_task_handler),
         )
         .route("/api/v1/xray/patterns", get(routes_synth::get_patterns))
         .route(

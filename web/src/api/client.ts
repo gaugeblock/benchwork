@@ -116,6 +116,20 @@ export const api = {
       body: JSON.stringify(data),
     }),
 
+  linkTasks: (taskId: string, targetKey: string, kind?: string) =>
+    fetchJson<{ success: boolean; edge_kind: string }>(`/api/v1/dag/${taskId}/link`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ target_key: targetKey, kind: kind || 'blocked_by' }),
+    }),
+
+  splitTask: (taskId: string, subtasks: string[], sequential?: boolean) =>
+    fetchJson<{ parent_id: string; child_ids: string[] }>(`/api/v1/dag/${taskId}/split`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ subtasks, sequential: Boolean(sequential) }),
+    }),
+
   getPatterns: () => fetchJson<DadoPattern[]>('/api/v1/xray/patterns'),
 
   compileHole: (data: { pattern_id: string; hole_id: string; format: string }) =>
