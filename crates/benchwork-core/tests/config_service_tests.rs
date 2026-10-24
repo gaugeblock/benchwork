@@ -46,3 +46,25 @@ fn test_config_write_and_read_roundtrip() -> Result<(), Box<dyn std::error::Erro
     assert_eq!(reloaded.mode, "openai_compatible");
     Ok(())
 }
+
+#[tokio::test]
+async fn test_model_discovery_error_handling() -> Result<(), Box<dyn std::error::Error>> {
+    let empty_req = benchwork_core::DiscoverModelsRequest {
+        base_url: "".to_string(),
+        api_key: None,
+        api_key_env: None,
+    };
+    let res = benchwork_core::discover_remote_models(&empty_req).await?;
+    assert!(!res.success);
+    assert_eq!(res.message, "Base URL cannot be empty");
+
+    let invalid_req = benchwork_core::DiscoverModelsRequest {
+        base_url: "http://127.0.0.1:9999/v1".to_string(),
+        api_key: Some("dummy".to_string()),
+        api_key_env: None,
+    };
+    let res_invalid = benchwork_core::discover_remote_models(&invalid_req).await?;
+    assert!(!res_invalid.success);
+    assert!(res_invalid.models.is_empty());
+    Ok(())
+}

@@ -51,6 +51,22 @@ pub struct TestInferenceReceipt {
     pub message: String,
 }
 
+/// Request to discover available models from an OpenAI-compatible endpoint.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct DiscoverModelsRequest {
+    pub base_url: String,
+    pub api_key: Option<String>,
+    pub api_key_env: Option<String>,
+}
+
+/// Response containing discovered model identifiers.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct DiscoverModelsResponse {
+    pub success: bool,
+    pub models: Vec<String>,
+    pub message: String,
+}
+
 impl Default for UniversalModelConfig {
     fn default() -> Self {
         Self {

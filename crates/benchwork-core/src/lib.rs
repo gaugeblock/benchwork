@@ -12,14 +12,17 @@ pub mod error;
 pub mod hub_service;
 pub mod migration;
 pub mod model;
+pub mod model_discovery;
 pub mod spec_studio;
 pub mod xray_service;
 
 pub use capabilities::scan_capabilities;
 pub use config_service::{read_sawhorse_config, test_inference_slot, write_sawhorse_config};
 pub use config_types::{
-    RoleOverrideConfig, TestInferenceReceipt, TestInferenceRequest, UniversalModelConfig,
+    DiscoverModelsRequest, DiscoverModelsResponse, RoleOverrideConfig, TestInferenceReceipt,
+    TestInferenceRequest, UniversalModelConfig,
 };
+pub use model_discovery::discover_remote_models;
 pub use dag_service::{
     archive_task_service, claim_task_lease, get_dag_view, get_task_briefing, link_tasks_service,
     record_task_handoff, split_task_service, unarchive_task_service, update_task_details,
