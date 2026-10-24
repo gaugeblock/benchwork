@@ -4,16 +4,13 @@ import { api } from '../../api/client';
 import { PatternHolesView } from './PatternHolesView';
 import { GrammarAndStream } from './GrammarAndStream';
 import { useLiveStream } from '../../api/useLiveStream';
-import { Play, Sparkles, Search } from 'lucide-react';
+import { Search, BookOpen, Activity, ArrowRight } from 'lucide-react';
 
 export const SynthesisXrayPanel: React.FC = () => {
   const [patterns, setPatterns] = useState<DadoPattern[]>([]);
   const [selectedPattern, setSelectedPattern] = useState<DadoPattern | null>(null);
   const [selectedHole, setSelectedHole] = useState<TypedHole | null>(null);
   const [search, setSearch] = useState('');
-  const [taskIdInput, setTaskIdInput] = useState('');
-  const [forceInProcess, setForceInProcess] = useState(false);
-  const [triggering, setTriggering] = useState(false);
   const [liveLogs, setLiveLogs] = useState<{ step: string; detail: string; timestamp: number }[]>([]);
 
   const loadPatterns = useCallback(async () => {
@@ -57,28 +54,6 @@ export const SynthesisXrayPanel: React.FC = () => {
     }
   });
 
-  const handleRun = async (taskId?: string) => {
-    setTriggering(true);
-    try {
-      await api.triggerSynthesis({
-        task_id: taskId || undefined,
-        force_in_process: forceInProcess,
-      });
-      setLiveLogs((prev) => [
-        ...prev,
-        {
-          step: 'Dispatched',
-          detail: `Triggered synthesis for ${taskId || 'next ready task'}`,
-          timestamp: Date.now(),
-        },
-      ]);
-    } catch (err) {
-      alert(`Synthesis trigger failed: ${err}`);
-    } finally {
-      setTriggering(false);
-    }
-  };
-
   const filtered = patterns.filter(
     (p) =>
       p.pattern_id.toLowerCase().includes(search.toLowerCase()) ||
@@ -87,49 +62,38 @@ export const SynthesisXrayPanel: React.FC = () => {
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden bg-cad-bg">
-      {/* Top Synthesis Run Controls Bar */}
-      <div className="px-4 py-2 border-b border-cad-border bg-cad-surface flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-2">
-          <button
-            disabled={triggering}
-            onClick={() => handleRun()}
-            className="px-3 py-1.5 bg-cad-cyan/20 border border-cad-cyan text-cad-cyan hover:bg-cad-cyan/30 disabled:opacity-40 rounded text-xs font-bold flex items-center gap-1.5 transition-colors"
-          >
-            <Play className="w-3.5 h-3.5 fill-current" />
-            Run Next Ready Task
-          </button>
-
-          <div className="flex items-center gap-1 bg-cad-bg border border-cad-border rounded px-2 py-1">
-            <input
-              type="text"
-              placeholder="Task ID / Key (e.g. GB-6)..."
-              value={taskIdInput}
-              onChange={(e) => setTaskIdInput(e.target.value)}
-              className="bg-transparent text-xs text-cad-text focus:outline-none w-44 font-mono"
-            />
-            <button
-              disabled={triggering || !taskIdInput.trim()}
-              onClick={() => handleRun(taskIdInput.trim())}
-              className="text-[11px] font-semibold text-cad-cyan hover:underline disabled:opacity-30 disabled:no-underline"
-            >
-              Synthesize
-            </button>
+      {/* Educational Neurosymbolic Header Banner */}
+      <div className="px-4 py-2.5 border-b border-cad-border bg-cad-surface flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="p-1.5 rounded bg-cad-cyan/15 text-cad-cyan border border-cad-cyan/30">
+            <BookOpen className="w-4 h-4" />
           </div>
-
-          <label className="flex items-center gap-1.5 text-xs text-cad-muted cursor-pointer ml-2">
-            <input
-              type="checkbox"
-              checked={forceInProcess}
-              onChange={(e) => setForceInProcess(e.target.checked)}
-              className="rounded border-cad-border bg-cad-bg text-cad-cyan focus:ring-0"
-            />
-            <span>Force In-Process</span>
-          </label>
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-xs font-bold text-cad-text uppercase tracking-wider">
+                Neurosymbolic AST X-Ray & Grammar Studio
+              </h2>
+              <span className="text-[10px] px-2 py-0.5 rounded font-mono font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                dado + batten + joiner
+              </span>
+            </div>
+            <p className="text-[11px] text-cad-muted leading-tight">
+              Inspect deterministic AST pattern skeletons, typed hole contracts, and real-time CFG grammar sampling constraints.
+            </p>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2 text-xs text-cad-muted">
-          <Sparkles className="w-4 h-4 text-cad-cyan" />
-          <span>Neurosymbolic Synthesis Orchestrator (joiner)</span>
+        <div className="flex items-center gap-2 text-xs">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-cad-bg border border-cad-border text-cad-muted text-[11px]">
+            <Activity className="w-3.5 h-3.5 text-cad-emerald animate-pulse" />
+            <span>Telemetry Listener Active</span>
+          </div>
+          <span className="text-[11px] text-cad-muted flex items-center gap-1">
+            <span>Synthesis Triggers:</span>
+            <span className="font-semibold text-cad-cyan flex items-center gap-0.5">
+              Panel 2 Backlog <ArrowRight className="w-3 h-3 inline" />
+            </span>
+          </span>
         </div>
       </div>
 
