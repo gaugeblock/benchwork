@@ -10,6 +10,7 @@ pub mod dag_service;
 pub mod docs_service;
 pub mod error;
 pub mod hub_service;
+pub mod migration;
 pub mod model;
 pub mod spec_studio;
 pub mod xray_service;
@@ -29,6 +30,10 @@ pub use docs_service::{
 };
 pub use error::{BenchworkError, Result};
 pub use hub_service::{delete_spool_trace, get_model_hub_status, ping_inference};
+pub use migration::{
+    MigrationItem, MigrationItemKind, MigrationItemStatus, MigrationPlan, MigrationReceipt,
+    discover_migration, execute_migration,
+};
 pub use model::*;
 pub use spec_studio::{load_spec_bundle, preview_contract, resolve_decision};
 pub use storypole_core::model::decision::HandoffPacket;
