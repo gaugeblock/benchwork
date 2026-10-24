@@ -214,3 +214,31 @@ pub async fn post_split_task_handler(
         ),
     }
 }
+
+/// POST /api/v1/dag/:id/archive
+pub async fn post_archive_task_handler(
+    State(ctx): State<Arc<DaemonContext>>,
+    AxumPath(task_id): AxumPath<String>,
+) -> impl IntoResponse {
+    match archive_task_service(&ctx.state.root_path, &task_id) {
+        Ok(()) => (StatusCode::OK, Json(json!({ "success": true }))),
+        Err(e) => (
+            StatusCode::BAD_REQUEST,
+            Json(json!({ "error": e.to_string() })),
+        ),
+    }
+}
+
+/// POST /api/v1/dag/:id/unarchive
+pub async fn post_unarchive_task_handler(
+    State(ctx): State<Arc<DaemonContext>>,
+    AxumPath(task_id): AxumPath<String>,
+) -> impl IntoResponse {
+    match unarchive_task_service(&ctx.state.root_path, &task_id) {
+        Ok(()) => (StatusCode::OK, Json(json!({ "success": true }))),
+        Err(e) => (
+            StatusCode::BAD_REQUEST,
+            Json(json!({ "error": e.to_string() })),
+        ),
+    }
+}

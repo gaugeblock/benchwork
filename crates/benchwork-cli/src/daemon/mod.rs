@@ -90,6 +90,14 @@ pub async fn start_daemon(
             "/api/v1/dag/{id}/split",
             post(routes_dag::post_split_task_handler),
         )
+        .route(
+            "/api/v1/dag/{id}/archive",
+            post(routes_dag::post_archive_task_handler),
+        )
+        .route(
+            "/api/v1/dag/{id}/unarchive",
+            post(routes_dag::post_unarchive_task_handler),
+        )
         .route("/api/v1/xray/patterns", get(routes_synth::get_patterns))
         .route(
             "/api/v1/xray/compile-hole",

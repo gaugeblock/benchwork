@@ -47,3 +47,4 @@ export interface ModelHubStatus {
   spool_traces: AnonymizedSynthesisTrace[];
   spool_counts_by_tier: Record<string, number>;
 }
+

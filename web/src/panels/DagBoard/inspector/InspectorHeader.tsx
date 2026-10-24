@@ -1,6 +1,18 @@
 import React, { useState } from 'react';
 import type { TaskNode } from '../../../types';
-import { X, Loader2, Sparkles, ShieldCheck, Clock, Edit3, Copy, Check, MessageSquare } from 'lucide-react';
+import {
+  X,
+  Loader2,
+  Sparkles,
+  ShieldCheck,
+  Clock,
+  Edit3,
+  Copy,
+  Check,
+  MessageSquare,
+  Archive,
+  ArchiveRestore,
+} from 'lucide-react';
 import { InspectorClaimModal } from './InspectorClaimModal';
 import { InspectorHandoffModal } from './InspectorHandoffModal';
 import { InspectorEditModal } from './InspectorEditModal';
@@ -22,6 +34,8 @@ interface InspectorHeaderProps {
   onCopyTicket?: () => void;
   copyFeedback?: boolean;
   onDiscussInChat?: (task: TaskNode) => void;
+  onArchive?: (taskId: string) => Promise<void>;
+  onUnarchive?: (taskId: string) => Promise<void>;
 }
 
 export const InspectorHeader: React.FC<InspectorHeaderProps> = ({
@@ -35,6 +49,8 @@ export const InspectorHeader: React.FC<InspectorHeaderProps> = ({
   onCopyTicket,
   copyFeedback,
   onDiscussInChat,
+  onArchive,
+  onUnarchive,
 }) => {
   const [showClaimModal, setShowClaimModal] = useState(false);
   const [showHandoffModal, setShowHandoffModal] = useState(false);
@@ -54,6 +70,8 @@ export const InspectorHeader: React.FC<InspectorHeaderProps> = ({
         return 'text-cad-amber border-cad-amber/40 bg-cad-amber/10';
       case 'deferred':
         return 'text-purple-400 border-purple-400/40 bg-purple-400/10';
+      case 'archived':
+        return 'text-zinc-500 border-zinc-700 bg-zinc-800/40';
       default:
         return 'text-cad-muted border-cad-border bg-cad-bg';
     }
@@ -170,6 +188,28 @@ export const InspectorHeader: React.FC<InspectorHeaderProps> = ({
           >
             <MessageSquare className="w-3.5 h-3.5" />
             <span>Discuss in Chat</span>
+          </button>
+        )}
+
+        {task.status === 'verified' && onArchive && (
+          <button
+            onClick={() => onArchive(task.id)}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-300 hover:text-white hover:bg-zinc-700 text-xs transition-colors"
+            title="Archive this completed task to declutter the backlog"
+          >
+            <Archive className="w-3.5 h-3.5" />
+            <span>Archive</span>
+          </button>
+        )}
+
+        {task.status === 'archived' && onUnarchive && (
+          <button
+            onClick={() => onUnarchive(task.id)}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-300 hover:text-white hover:bg-zinc-700 text-xs transition-colors"
+            title="Unarchive this task back into active verified backlog"
+          >
+            <ArchiveRestore className="w-3.5 h-3.5" />
+            <span>Unarchive</span>
           </button>
         )}
       </div>

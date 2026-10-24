@@ -16,6 +16,9 @@ pub struct DagQuery {
     pub kind: Option<String>,
     /// Filter for tasks having unresolved decisions.
     pub needs_decision: Option<bool>,
+    /// Include archived tasks in response (default: false).
+    #[serde(default)]
+    pub include_archived: bool,
 }
 
 /// Topological DAG response structure.
@@ -42,4 +45,6 @@ pub struct DagStats {
     pub verified: usize,
     /// Blocked tasks.
     pub blocked: usize,
+    /// Archived tasks.
+    pub archived: usize,
 }

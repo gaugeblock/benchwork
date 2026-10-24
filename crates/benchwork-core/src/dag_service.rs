@@ -9,6 +9,9 @@ use storypole_core::index::query::{get_all_tasks, get_task_by_id, resolve_task_i
 use storypole_core::model::decision::HandoffPacket;
 use storypole_core::model::events::{LedgerEvent, TaskContextBriefing};
 use storypole_core::model::task::{EdgeKind, TaskNode, TaskStatus};
+use storypole_core::ops::archive::{
+    archive_task as storypole_archive, unarchive_task as storypole_unarchive,
+};
 use storypole_core::ops::graph::{link_tasks as storypole_link, split_task as storypole_split};
 use storypole_core::ops::mutations::{UpdateTaskParams, update_task};
 use storypole_core::ops::workflow::claim_task;
@@ -52,6 +55,12 @@ pub fn get_dag_view(root_path: &Path, query: &DagQuery) -> Result<DagView> {
         let has_pending = task.decisions.iter().any(|d| d.chosen_option.is_none());
         let matches_decision = query.needs_decision.is_none_or(|nd| nd == has_pending);
 
+        let is_archived = task.status == TaskStatus::Archived;
+        let allow_archived = query.include_archived || query.status.as_deref() == Some("archived");
+        if is_archived && !allow_archived {
+            continue;
+        }
+
         if matches_repo && matches_crate && matches_status && matches_kind && matches_decision {
             stats.total += 1;
             match task.status {
@@ -61,6 +70,7 @@ pub fn get_dag_view(root_path: &Path, query: &DagQuery) -> Result<DagView> {
                 }
                 TaskStatus::Verified => stats.verified += 1,
                 TaskStatus::Blocked => stats.blocked += 1,
+                TaskStatus::Archived => stats.archived += 1,
                 _ => {}
             }
             filtered_nodes.push(task.clone());
@@ -201,5 +211,25 @@ pub fn split_task_service(
         .map_err(|e| BenchworkError::TaskNotFound(e.to_string()))?;
 
     storypole_split(&mut store, parent_id, subtasks, sequential)
+        .map_err(|e| BenchworkError::Storypole(e.to_string()))
+}
+
+/// Archives a task (typically completed or verified), hiding it from the active DAG view.
+pub fn archive_task_service(root_path: &Path, task_id_or_key: &str) -> Result<()> {
+    let mut store =
+        StorypoleStore::open(root_path).map_err(|e| BenchworkError::Storypole(e.to_string()))?;
+    let task_id = resolve_task_id(store.conn(), task_id_or_key)
+        .map_err(|e| BenchworkError::TaskNotFound(e.to_string()))?;
+    storypole_archive(&mut store, task_id).map_err(|e| BenchworkError::Storypole(e.to_string()))
+}
+
+/// Unarchives an archived task, restoring it to its previous state (or Verified).
+pub fn unarchive_task_service(root_path: &Path, task_id_or_key: &str) -> Result<()> {
+    let mut store =
+        StorypoleStore::open(root_path).map_err(|e| BenchworkError::Storypole(e.to_string()))?;
+    let task_id = resolve_task_id(store.conn(), task_id_or_key)
+        .map_err(|e| BenchworkError::TaskNotFound(e.to_string()))?;
+    storypole_unarchive(&mut store, task_id)
+        .map(|_| ())
         .map_err(|e| BenchworkError::Storypole(e.to_string()))
 }

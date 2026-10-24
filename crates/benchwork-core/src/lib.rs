@@ -19,8 +19,8 @@ pub use config_types::{
     RoleOverrideConfig, TestInferenceReceipt, TestInferenceRequest, UniversalModelConfig,
 };
 pub use dag_service::{
-    claim_task_lease, get_dag_view, get_task_briefing, link_tasks_service, record_task_handoff,
-    split_task_service, update_task_details,
+    archive_task_service, claim_task_lease, get_dag_view, get_task_briefing, link_tasks_service,
+    record_task_handoff, split_task_service, unarchive_task_service, update_task_details,
 };
 pub use error::{BenchworkError, Result};
 pub use hub_service::{delete_spool_trace, get_model_hub_status, ping_inference};

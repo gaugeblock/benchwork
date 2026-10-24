@@ -1,7 +1,7 @@
 //! Data structures for Universal API and sawhorse.toml model configuration.
 
-use std::collections::BTreeMap;
 use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
 
 /// Wire format for universal model fallback and per-role overrides.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

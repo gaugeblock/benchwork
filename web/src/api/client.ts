@@ -59,6 +59,7 @@ export const api = {
     status?: string;
     kind?: string;
     needs_decision?: boolean;
+    include_archived?: boolean;
   }) => {
     const searchParams = new URLSearchParams();
     if (params?.repo) searchParams.set('repo', params.repo);
@@ -67,6 +68,8 @@ export const api = {
     if (params?.kind) searchParams.set('kind', params.kind);
     if (params?.needs_decision !== undefined)
       searchParams.set('needs_decision', String(params.needs_decision));
+    if (params?.include_archived !== undefined)
+      searchParams.set('include_archived', String(params.include_archived));
     const qs = searchParams.toString();
     return fetchJson<DagView>(`/api/v1/dag${qs ? `?${qs}` : ''}`);
   },
@@ -131,6 +134,16 @@ export const api = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ subtasks, sequential: Boolean(sequential) }),
+    }),
+
+  archiveTask: (taskId: string) =>
+    fetchJson<{ success: boolean }>(`/api/v1/dag/${taskId}/archive`, {
+      method: 'POST',
+    }),
+
+  unarchiveTask: (taskId: string) =>
+    fetchJson<{ success: boolean }>(`/api/v1/dag/${taskId}/unarchive`, {
+      method: 'POST',
     }),
 
   getPatterns: () => fetchJson<DadoPattern[]>('/api/v1/xray/patterns'),

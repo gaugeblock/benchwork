@@ -5,7 +5,7 @@ import { TaskGraphView } from './TaskGraphView';
 import { KanbanBoardView } from './KanbanBoardView';
 import { TaskTableView } from './TaskTableView';
 import { TaskBriefingDrawer } from './TaskBriefingDrawer';
-import { Filter, Columns, Network, List, CheckSquare } from 'lucide-react';
+import { Filter, Columns, Network, List, CheckSquare, Archive } from 'lucide-react';
 
 interface DagBoardPanelProps {
   onDiscussInChat?: (task: TaskNode) => void;
@@ -18,6 +18,7 @@ export const DagBoardPanel: React.FC<DagBoardPanelProps> = ({ onDiscussInChat })
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [kindFilter, setKindFilter] = useState<string>('all');
   const [needsDecision, setNeedsDecision] = useState<boolean>(false);
+  const [includeArchived, setIncludeArchived] = useState<boolean>(false);
   const [viewMode, setViewMode] = useState<'dag' | 'kanban' | 'list'>('dag');
 
   const loadDag = useCallback(async () => {
@@ -26,6 +27,7 @@ export const DagBoardPanel: React.FC<DagBoardPanelProps> = ({ onDiscussInChat })
       if (statusFilter !== 'all') params.status = statusFilter;
       if (kindFilter !== 'all') params.kind = kindFilter;
       if (needsDecision) params.needs_decision = true;
+      if (includeArchived) params.include_archived = true;
       const data = await api.getDag(params);
       setDag(data);
     } catch (err) {
@@ -33,7 +35,7 @@ export const DagBoardPanel: React.FC<DagBoardPanelProps> = ({ onDiscussInChat })
     } finally {
       setLoading(false);
     }
-  }, [statusFilter, kindFilter, needsDecision]);
+  }, [statusFilter, kindFilter, needsDecision, includeArchived]);
 
   useEffect(() => {
     loadDag();
@@ -66,6 +68,7 @@ export const DagBoardPanel: React.FC<DagBoardPanelProps> = ({ onDiscussInChat })
               <option value="in_progress">In Progress</option>
               <option value="verified">Verified</option>
               <option value="blocked">Blocked</option>
+              <option value="archived">Archived</option>
             </select>
           </div>
 
@@ -98,6 +101,20 @@ export const DagBoardPanel: React.FC<DagBoardPanelProps> = ({ onDiscussInChat })
               Needs Decision
             </span>
           </label>
+
+          {/* Show Archived Filter */}
+          <label className="flex items-center gap-1.5 text-xs text-cad-muted cursor-pointer">
+            <input
+              type="checkbox"
+              checked={includeArchived}
+              onChange={(e) => setIncludeArchived(e.target.checked)}
+              className="rounded border-cad-border bg-cad-bg text-zinc-400 focus:ring-0"
+            />
+            <span className="flex items-center gap-1">
+              <Archive className="w-3 h-3 text-zinc-400" />
+              Show Archived
+            </span>
+          </label>
         </div>
 
         {/* Stats Summary & View Switcher */}
@@ -107,6 +124,9 @@ export const DagBoardPanel: React.FC<DagBoardPanelProps> = ({ onDiscussInChat })
             <span className="text-cad-cyan">Ready: <b>{dag?.stats.ready || 0}</b></span>
             <span className="text-cad-amber">Blocked: <b>{dag?.stats.blocked || 0}</b></span>
             <span className="text-cad-emerald">Verified: <b>{dag?.stats.verified || 0}</b></span>
+            {dag?.stats.archived !== undefined && dag.stats.archived > 0 && (
+              <span className="text-zinc-500">Archived: <b>{dag.stats.archived}</b></span>
+            )}
           </div>
 
           <div className="flex bg-cad-bg border border-cad-border rounded p-0.5">
@@ -169,6 +189,7 @@ export const DagBoardPanel: React.FC<DagBoardPanelProps> = ({ onDiscussInChat })
           onClose={() => setSelectedTaskId(null)}
           onSynthesize={handleSynthesize}
           onDiscussInChat={onDiscussInChat}
+          onTaskArchived={loadDag}
         />
       )}
     </div>

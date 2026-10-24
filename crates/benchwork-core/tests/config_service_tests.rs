@@ -1,8 +1,8 @@
+use benchwork_core::{
+    RoleOverrideConfig, UniversalModelConfig, read_sawhorse_config, write_sawhorse_config,
+};
 use std::collections::BTreeMap;
 use tempfile::tempdir;
-use benchwork_core::{
-    read_sawhorse_config, write_sawhorse_config, RoleOverrideConfig, UniversalModelConfig,
-};
 
 #[test]
 fn test_default_config_reading() -> Result<(), Box<dyn std::error::Error>> {

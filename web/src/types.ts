@@ -9,6 +9,7 @@ export type TaskStatus =
   | 'verifying'
   | 'verified'
   | 'deferred'
+  | 'archived'
   | 'failed';
 
 export type TaskKind = 'epic' | 'feature' | 'refactor' | 'bug' | 'tech_debt' | 'spike';
@@ -164,6 +165,7 @@ export interface DagStats {
   in_progress: number;
   verified: number;
   blocked: number;
+  archived?: number;
 }
 
 export interface DagView {

@@ -15,6 +15,7 @@ interface TaskBriefingDrawerProps {
   onClose: () => void;
   onSynthesize?: (taskId: string) => void;
   onDiscussInChat?: (task: TaskNode) => void;
+  onTaskArchived?: () => void;
 }
 
 export const TaskBriefingDrawer: React.FC<TaskBriefingDrawerProps> = ({
@@ -22,6 +23,7 @@ export const TaskBriefingDrawer: React.FC<TaskBriefingDrawerProps> = ({
   onClose,
   onSynthesize,
   onDiscussInChat,
+  onTaskArchived,
 }) => {
   const [briefing, setBriefing] = useState<TaskContextBriefing | null>(null);
   const [loading, setLoading] = useState(true);
@@ -93,6 +95,20 @@ export const TaskBriefingDrawer: React.FC<TaskBriefingDrawerProps> = ({
     setBriefing(updated);
   };
 
+  const handleArchive = async () => {
+    await api.archiveTask(taskId);
+    if (onTaskArchived) onTaskArchived();
+    const updated = await api.getTaskBriefing(taskId);
+    setBriefing(updated);
+  };
+
+  const handleUnarchive = async () => {
+    await api.unarchiveTask(taskId);
+    if (onTaskArchived) onTaskArchived();
+    const updated = await api.getTaskBriefing(taskId);
+    setBriefing(updated);
+  };
+
   const handleCopyTicket = async () => {
     if (!briefing) return;
     const ok = await copyTextToClipboard(formatTaskBriefingMarkdown(briefing));
@@ -121,6 +137,8 @@ export const TaskBriefingDrawer: React.FC<TaskBriefingDrawerProps> = ({
             onCopyTicket={handleCopyTicket}
             copyFeedback={ticketCopied}
             onDiscussInChat={onDiscussInChat}
+            onArchive={handleArchive}
+            onUnarchive={handleUnarchive}
           />
 
           <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 text-xs select-text">

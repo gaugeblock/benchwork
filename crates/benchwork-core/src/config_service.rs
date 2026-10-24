@@ -10,9 +10,7 @@ use sawhorse_core::config::schema::{
 };
 use sawhorse_core::types::{ExecutionMode, ModelRole};
 
-use crate::config_types::{
-    TestInferenceReceipt, TestInferenceRequest, UniversalModelConfig,
-};
+use crate::config_types::{TestInferenceReceipt, TestInferenceRequest, UniversalModelConfig};
 use crate::error::{BenchworkError, Result};
 
 /// Reads the active `sawhorse.toml` from the workspace root or returns defaults.
@@ -71,7 +69,12 @@ pub fn read_sawhorse_config(root_path: &Path) -> Result<UniversalModelConfig> {
     Ok(universal)
 }
 
-fn build_provider_mode(mode: &str, model_name: &str, base_url: Option<&str>, api_key_env: Option<&str>) -> ExecutionMode {
+fn build_provider_mode(
+    mode: &str,
+    model_name: &str,
+    base_url: Option<&str>,
+    api_key_env: Option<&str>,
+) -> ExecutionMode {
     match mode {
         "local_runtime" => ExecutionMode::LocalRuntime {
             model_id: model_name.to_string(),
