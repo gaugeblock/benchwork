@@ -3,6 +3,8 @@
 import type {
   DagView,
   DadoPattern,
+  DiscoverModelsRequest,
+  DiscoverModelsResponse,
   HoleCompileResponse,
   ModelHubStatus,
   SharedTypeContract,
@@ -175,6 +177,13 @@ export const api = {
 
   testInference: (data: TestInferenceRequest) =>
     fetchJson<TestInferenceReceipt>('/api/v1/hub/test-inference', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    }),
+
+  discoverModels: (data: DiscoverModelsRequest) =>
+    fetchJson<DiscoverModelsResponse>('/api/v1/hub/models/discover', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),

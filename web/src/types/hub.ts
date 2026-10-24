@@ -32,6 +32,18 @@ export interface TestInferenceReceipt {
   message: string;
 }
 
+export interface DiscoverModelsRequest {
+  base_url: string;
+  api_key?: string;
+  api_key_env?: string;
+}
+
+export interface DiscoverModelsResponse {
+  success: boolean;
+  models: string[];
+  message: string;
+}
+
 export interface AnonymizedSynthesisTrace {
   trace_id: string;
   language: string;
