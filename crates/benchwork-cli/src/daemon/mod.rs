@@ -106,6 +106,14 @@ pub async fn start_daemon(
             delete(routes_synth::delete_spool_trace_handler),
         )
         .route("/api/v1/hub/ping", post(routes_synth::post_hub_ping))
+        .route(
+            "/api/v1/hub/config",
+            get(routes_synth::get_hub_config).post(routes_synth::post_hub_config),
+        )
+        .route(
+            "/api/v1/hub/test-inference",
+            post(routes_synth::post_test_inference),
+        )
         .route("/api/v1/ws", get(streams::ws_handler))
         .route("/api/v1/events", get(streams::sse_handler))
         .layer(cors)

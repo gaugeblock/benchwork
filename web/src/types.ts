@@ -197,21 +197,7 @@ export interface HoleCompileResponse {
   allowed_identifiers: string[];
 }
 
-export interface AnonymizedSynthesisTrace {
-  trace_id: string;
-  language: string;
-  tier: 'bronze' | 'silver' | 'gold' | 'diamond';
-  selected_pattern_id?: string;
-  anonymized_scope_signature: string;
-  filled_holes: [string, string][];
-  rejected_attempt?: string;
-}
-
-export interface ModelHubStatus {
-  roles: Record<string, string>;
-  spool_traces: AnonymizedSynthesisTrace[];
-  spool_counts_by_tier: Record<string, number>;
-}
+export * from './types/hub';
 
 export interface LiveEvent {
   type:

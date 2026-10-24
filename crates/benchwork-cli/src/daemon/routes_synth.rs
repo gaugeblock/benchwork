@@ -106,3 +106,39 @@ pub async fn post_hub_ping(Json(req): Json<InferencePingRequest>) -> impl IntoRe
         ),
     }
 }
+
+/// GET /api/v1/hub/config
+pub async fn get_hub_config(State(ctx): State<Arc<DaemonContext>>) -> impl IntoResponse {
+    match read_sawhorse_config(&ctx.state.root_path) {
+        Ok(config) => (StatusCode::OK, Json(json!(config))),
+        Err(e) => (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({ "error": e.to_string() })),
+        ),
+    }
+}
+
+/// POST /api/v1/hub/config
+pub async fn post_hub_config(
+    State(ctx): State<Arc<DaemonContext>>,
+    Json(config): Json<UniversalModelConfig>,
+) -> impl IntoResponse {
+    match write_sawhorse_config(&ctx.state.root_path, &config) {
+        Ok(()) => (StatusCode::OK, Json(json!({ "success": true }))),
+        Err(e) => (
+            StatusCode::BAD_REQUEST,
+            Json(json!({ "error": e.to_string() })),
+        ),
+    }
+}
+
+/// POST /api/v1/hub/test-inference
+pub async fn post_test_inference(Json(req): Json<TestInferenceRequest>) -> impl IntoResponse {
+    match test_inference_slot(&req).await {
+        Ok(receipt) => (StatusCode::OK, Json(json!(receipt))),
+        Err(e) => (
+            StatusCode::BAD_REQUEST,
+            Json(json!({ "error": e.to_string() })),
+        ),
+    }
+}

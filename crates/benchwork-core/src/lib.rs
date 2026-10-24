@@ -4,6 +4,8 @@
 #![warn(missing_debug_implementations)]
 
 pub mod capabilities;
+pub mod config_service;
+pub mod config_types;
 pub mod dag_service;
 pub mod error;
 pub mod hub_service;
@@ -12,6 +14,10 @@ pub mod spec_studio;
 pub mod xray_service;
 
 pub use capabilities::scan_capabilities;
+pub use config_service::{read_sawhorse_config, test_inference_slot, write_sawhorse_config};
+pub use config_types::{
+    RoleOverrideConfig, TestInferenceReceipt, TestInferenceRequest, UniversalModelConfig,
+};
 pub use dag_service::{
     claim_task_lease, get_dag_view, get_task_briefing, link_tasks_service, record_task_handoff,
     split_task_service, update_task_details,

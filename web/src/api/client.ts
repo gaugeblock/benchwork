@@ -8,6 +8,9 @@ import type {
   SharedTypeContract,
   SpecBundle,
   TaskContextBriefing,
+  TestInferenceReceipt,
+  TestInferenceRequest,
+  UniversalModelConfig,
   WorkspaceCapabilities,
 } from '../types';
 
@@ -147,6 +150,22 @@ export const api = {
     }),
 
   getHubStatus: () => fetchJson<ModelHubStatus>('/api/v1/hub/models'),
+
+  getHubConfig: () => fetchJson<UniversalModelConfig>('/api/v1/hub/config'),
+
+  saveHubConfig: (config: UniversalModelConfig) =>
+    fetchJson<{ success: boolean }>('/api/v1/hub/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(config),
+    }),
+
+  testInference: (data: TestInferenceRequest) =>
+    fetchJson<TestInferenceReceipt>('/api/v1/hub/test-inference', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    }),
 
   deleteSpoolTrace: (traceId: string) =>
     fetchJson<{ deleted: boolean }>(`/api/v1/hub/spool/${traceId}`, {
