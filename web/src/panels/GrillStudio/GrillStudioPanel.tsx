@@ -1,11 +1,15 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import type { SpecBundle } from '../../types';
+import type { SpecBundle, TaskNode } from '../../types';
 import { api } from '../../api/client';
 import { DecisionCard } from './DecisionCard';
 import { ContractPreview } from './ContractPreview';
-import { FileText, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { FileText, CheckCircle2, ShieldAlert, MessageSquare } from 'lucide-react';
 
-export const GrillStudioPanel: React.FC = () => {
+interface GrillStudioPanelProps {
+  initialChatTask?: TaskNode | null;
+}
+
+export const GrillStudioPanel: React.FC<GrillStudioPanelProps> = ({ initialChatTask }) => {
   const [bundle, setBundle] = useState<SpecBundle | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeDoc, setActiveDoc] = useState<string>('SPEC.md');
@@ -88,6 +92,21 @@ export const GrillStudioPanel: React.FC = () => {
               {bundle?.pending_decisions.length || 0} Pending
             </span>
           </div>
+
+          {initialChatTask && (
+            <div className="p-3 bg-cad-cyan/10 border-b border-cad-cyan/30 flex items-start gap-2">
+              <MessageSquare className="w-4 h-4 text-cad-cyan shrink-0 mt-0.5" />
+              <div className="flex flex-col gap-0.5 text-xs">
+                <div className="flex items-center gap-1.5">
+                  <span className="font-mono font-bold text-cad-cyan">{initialChatTask.ticket_key}</span>
+                  <span className="font-semibold text-cad-text">{initialChatTask.title}</span>
+                </div>
+                <span className="text-[11px] text-cad-muted">
+                  Focusing discussion and decisions on this ticket.
+                </span>
+              </div>
+            </div>
+          )}
 
           <div className="flex-1 p-3 overflow-y-auto flex flex-col gap-3">
             {bundle?.pending_decisions && bundle.pending_decisions.length > 0 ? (

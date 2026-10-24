@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { TaskNode } from '../../../types';
-import { X, Loader2, Sparkles, ShieldCheck, Clock, Edit3 } from 'lucide-react';
+import { X, Loader2, Sparkles, ShieldCheck, Clock, Edit3, Copy, Check, MessageSquare } from 'lucide-react';
 import { InspectorClaimModal } from './InspectorClaimModal';
 import { InspectorHandoffModal } from './InspectorHandoffModal';
 import { InspectorEditModal } from './InspectorEditModal';
@@ -19,6 +19,9 @@ interface InspectorHeaderProps {
     status: string;
   }) => Promise<void>;
   onUpdate?: (data: any) => Promise<void>;
+  onCopyTicket?: () => void;
+  copyFeedback?: boolean;
+  onDiscussInChat?: (task: TaskNode) => void;
 }
 
 export const InspectorHeader: React.FC<InspectorHeaderProps> = ({
@@ -29,6 +32,9 @@ export const InspectorHeader: React.FC<InspectorHeaderProps> = ({
   onClaim,
   onHandoff,
   onUpdate,
+  onCopyTicket,
+  copyFeedback,
+  onDiscussInChat,
 }) => {
   const [showClaimModal, setShowClaimModal] = useState(false);
   const [showHandoffModal, setShowHandoffModal] = useState(false);
@@ -71,13 +77,34 @@ export const InspectorHeader: React.FC<InspectorHeaderProps> = ({
             P{task.priority}
           </span>
         </div>
-        <button
-          onClick={onClose}
-          className="p-1 hover:bg-cad-surface rounded text-cad-muted hover:text-cad-text transition-colors"
-          title="Close Inspector"
-        >
-          <X className="w-4 h-4" />
-        </button>
+        <div className="flex items-center gap-1.5">
+          {onCopyTicket && (
+            <button
+              onClick={onCopyTicket}
+              className="flex items-center gap-1 px-2 py-0.5 bg-cad-bg border border-cad-border hover:border-cad-cyan/50 text-cad-muted hover:text-cad-cyan rounded text-[11px] transition-colors"
+              title="Copy entire ticket as Markdown"
+            >
+              {copyFeedback ? (
+                <>
+                  <Check className="w-3 h-3 text-cad-emerald" />
+                  <span className="text-[10px] text-cad-emerald font-semibold">Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3 h-3" />
+                  <span className="text-[10px]">Copy</span>
+                </>
+              )}
+            </button>
+          )}
+          <button
+            onClick={onClose}
+            className="p-1 hover:bg-cad-surface rounded text-cad-muted hover:text-cad-text transition-colors"
+            title="Close Inspector"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       <h2 className="text-sm font-semibold text-cad-text leading-snug">{task.title}</h2>
@@ -132,6 +159,17 @@ export const InspectorHeader: React.FC<InspectorHeaderProps> = ({
           >
             <Edit3 className="w-3.5 h-3.5" />
             <span>Edit</span>
+          </button>
+        )}
+
+        {onDiscussInChat && (
+          <button
+            onClick={() => onDiscussInChat(task)}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded bg-cad-cyan/15 border border-cad-cyan/40 text-cad-cyan font-bold text-xs hover:bg-cad-cyan/25 transition-all shadow-sm"
+            title="Discuss or /grill-me this ticket in Chat"
+          >
+            <MessageSquare className="w-3.5 h-3.5" />
+            <span>Discuss in Chat</span>
           </button>
         )}
       </div>

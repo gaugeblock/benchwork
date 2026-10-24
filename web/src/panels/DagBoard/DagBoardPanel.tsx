@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import type { DagView } from '../../types';
+import type { DagView, TaskNode } from '../../types';
 import { api } from '../../api/client';
 import { TaskGraphView } from './TaskGraphView';
 import { KanbanBoardView } from './KanbanBoardView';
@@ -7,7 +7,11 @@ import { TaskTableView } from './TaskTableView';
 import { TaskBriefingDrawer } from './TaskBriefingDrawer';
 import { Filter, Columns, Network, List, CheckSquare } from 'lucide-react';
 
-export const DagBoardPanel: React.FC = () => {
+interface DagBoardPanelProps {
+  onDiscussInChat?: (task: TaskNode) => void;
+}
+
+export const DagBoardPanel: React.FC<DagBoardPanelProps> = ({ onDiscussInChat }) => {
   const [dag, setDag] = useState<DagView | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
@@ -164,6 +168,7 @@ export const DagBoardPanel: React.FC = () => {
           taskId={selectedTaskId}
           onClose={() => setSelectedTaskId(null)}
           onSynthesize={handleSynthesize}
+          onDiscussInChat={onDiscussInChat}
         />
       )}
     </div>

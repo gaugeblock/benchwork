@@ -1,28 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import type { TaskContextBriefing } from '../../types';
+import type { TaskContextBriefing, TaskNode } from '../../types';
 import { api } from '../../api/client';
 import { InspectorHeader } from './inspector/InspectorHeader';
 import { InspectorScope } from './inspector/InspectorScope';
+import { InspectorDescription } from './inspector/InspectorDescription';
 import { InspectorPlan } from './inspector/InspectorPlan';
 import { InspectorEdges } from './inspector/InspectorEdges';
 import { InspectorDecisions } from './inspector/InspectorDecisions';
 import { InspectorHandoffAndGate } from './inspector/InspectorHandoffAndGate';
-import { CheckSquare } from 'lucide-react';
+import { copyTextToClipboard, formatTaskBriefingMarkdown } from './inspector/clipboardUtils';
 
 interface TaskBriefingDrawerProps {
   taskId: string;
   onClose: () => void;
   onSynthesize?: (taskId: string) => void;
+  onDiscussInChat?: (task: TaskNode) => void;
 }
 
 export const TaskBriefingDrawer: React.FC<TaskBriefingDrawerProps> = ({
   taskId,
   onClose,
   onSynthesize,
+  onDiscussInChat,
 }) => {
   const [briefing, setBriefing] = useState<TaskContextBriefing | null>(null);
   const [loading, setLoading] = useState(true);
   const [synthesizing, setSynthesizing] = useState(false);
+  const [ticketCopied, setTicketCopied] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -89,8 +93,17 @@ export const TaskBriefingDrawer: React.FC<TaskBriefingDrawerProps> = ({
     setBriefing(updated);
   };
 
+  const handleCopyTicket = async () => {
+    if (!briefing) return;
+    const ok = await copyTextToClipboard(formatTaskBriefingMarkdown(briefing));
+    if (ok) {
+      setTicketCopied(true);
+      setTimeout(() => setTicketCopied(false), 2000);
+    }
+  };
+
   return (
-    <div className="absolute right-0 top-0 bottom-0 w-[460px] bg-cad-surface border-l border-cad-border shadow-2xl flex flex-col z-20 overflow-hidden">
+    <div className="absolute right-0 top-0 bottom-0 w-[460px] bg-cad-surface border-l border-cad-border shadow-2xl flex flex-col z-20 overflow-hidden select-text">
       {loading ? (
         <div className="flex-1 flex items-center justify-center text-xs text-cad-muted animate-pulse">
           Loading Task Context Briefing...
@@ -105,41 +118,23 @@ export const TaskBriefingDrawer: React.FC<TaskBriefingDrawerProps> = ({
             onClaim={handleClaim}
             onHandoff={handleHandoff}
             onUpdate={handleUpdate}
+            onCopyTicket={handleCopyTicket}
+            copyFeedback={ticketCopied}
+            onDiscussInChat={onDiscussInChat}
           />
 
-          <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 text-xs">
+          <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 text-xs select-text">
             {/* Scope Coordinates & Collision Warnings */}
             <InspectorScope
               scope={briefing.task.scope}
               collisionWarnings={briefing.file_collision_warnings}
             />
 
-            {/* Description */}
-            <div className="flex flex-col gap-1.5">
-              <span className="text-[10px] uppercase font-bold text-cad-muted tracking-wider">
-                Description
-              </span>
-              <p className="text-cad-text leading-relaxed bg-cad-bg/60 p-3 rounded border border-cad-border whitespace-pre-wrap">
-                {briefing.task.description || 'No description provided.'}
-              </p>
-            </div>
-
-            {/* Acceptance Criteria Checklist */}
-            {briefing.task.acceptance_criteria && briefing.task.acceptance_criteria.length > 0 && (
-              <div className="flex flex-col gap-1.5">
-                <span className="text-[10px] uppercase font-bold text-cad-muted tracking-wider">
-                  Acceptance Criteria ({briefing.task.acceptance_criteria.length})
-                </span>
-                <div className="flex flex-col gap-1.5 p-3 rounded bg-cad-bg border border-cad-border">
-                  {briefing.task.acceptance_criteria.map((crit, i) => (
-                    <div key={i} className="flex items-start gap-2 text-[11px] text-cad-text">
-                      <CheckSquare className="w-3.5 h-3.5 text-cad-cyan shrink-0 mt-0.5" />
-                      <span className="leading-tight">{crit}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* Description & Acceptance Criteria */}
+            <InspectorDescription
+              description={briefing.task.description}
+              acceptanceCriteria={briefing.task.acceptance_criteria}
+            />
 
             {/* Execution Plan & Blueprint */}
             {briefing.task.plan && (
