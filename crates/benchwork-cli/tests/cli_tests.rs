@@ -31,3 +31,20 @@ async fn test_daemon_client_endpoint_mock() {
     let snap = state.snapshot().expect("snapshot");
     assert!(snap.capabilities.spec_docs.primary_spec_present);
 }
+
+#[test]
+fn test_cli_migration_flow() {
+    let tmp = tempdir().expect("tempdir");
+    let root = tmp.path();
+
+    fs::create_dir_all(root.join(".storypole")).expect("create .storypole");
+    fs::write(root.join(".storypole").join("ledger.jsonl"), "{}\n").expect("write ledger");
+
+    let plan = benchwork_core::discover_migration(root).expect("discover");
+    assert!(plan.has_legacy_items);
+    assert_eq!(plan.items.len(), 1);
+
+    let receipt = benchwork_core::execute_migration(&plan, false, false).expect("migrate");
+    assert_eq!(receipt.migrated_count, 1);
+    assert!(root.join(".gaugeblock").join("storypole").exists());
+}

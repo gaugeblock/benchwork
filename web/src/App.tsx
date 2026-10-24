@@ -6,6 +6,7 @@ import { GrillStudioPanel } from './panels/GrillStudio/GrillStudioPanel';
 import { DagBoardPanel } from './panels/DagBoard/DagBoardPanel';
 import { SynthesisXrayPanel } from './panels/SynthesisXray/SynthesisXrayPanel';
 import { ModelHubPanel } from './panels/ModelTelemetryHub/ModelHubPanel';
+import { MigrationBanner } from './panels/MigrationBanner';
 import {
   FileText,
   Network,
@@ -114,6 +115,8 @@ export const App: React.FC = () => {
           </span>
         </div>
       </header>
+
+      <MigrationBanner onMigrated={loadCapabilities} />
 
       {/* 4-Panel Navigation Tabs */}
       <nav className="h-9 border-b border-cad-border bg-cad-subsurface/40 flex items-center px-4 gap-1 shrink-0">

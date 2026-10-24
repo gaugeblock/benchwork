@@ -194,4 +194,25 @@ export const api = {
         body: JSON.stringify({ role, prompt }),
       }
     ),
+
+  getMigrationPlan: () =>
+    fetchJson<{
+      workspace_root: string;
+      items: Array<{ source: string; destination: string; kind: string; description: string }>;
+      consolidated_config_preview?: string;
+      has_legacy_items: boolean;
+    }>('/api/v1/migration/plan'),
+
+  executeMigration: (data: { dry_run?: boolean; force?: boolean }) =>
+    fetchJson<{
+      executed_at_epoch_ms: number;
+      migrated_count: number;
+      skipped_count: number;
+      dry_run: boolean;
+      details: string[];
+    }>('/api/v1/migration/execute', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    }),
 };

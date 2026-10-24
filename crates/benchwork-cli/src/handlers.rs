@@ -2,11 +2,12 @@
 
 use std::path::PathBuf;
 
-use benchwork_core::BenchworkState;
-use benchwork_core::scan_capabilities;
+use benchwork_core::{
+    BenchworkState, discover_migration, execute_migration, scan_capabilities,
+};
 use benchwork_mcp::run_stdio_server;
 
-use crate::args::{FormatArgs, UpArgs};
+use crate::args::{FormatArgs, MigrateArgs, UpArgs};
 use crate::daemon::start_daemon;
 
 /// Executes the `benchwork capabilities` command.
@@ -80,4 +81,36 @@ pub async fn handle_up(
 /// Executes the `benchwork mcp` command.
 pub async fn handle_mcp() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     run_stdio_server().await
+}
+
+/// Executes the `benchwork migrate` command.
+pub fn handle_migrate(
+    root_path: PathBuf,
+    args: MigrateArgs,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let plan = discover_migration(&root_path)?;
+    if !plan.has_legacy_items {
+        if args.json {
+            println!("{}", serde_json::to_string_pretty(&serde_json::json!({
+                "status": "already_unified",
+                "message": "Workspace is already using unified .gaugeblock/ configuration"
+            }))?);
+        } else {
+            println!("Workspace is already unified under .gaugeblock/ (no legacy items found).");
+        }
+        return Ok(());
+    }
+
+    let receipt = execute_migration(&plan, args.dry_run, args.force)?;
+    if args.json {
+        println!("{}", serde_json::to_string_pretty(&receipt)?);
+    } else {
+        println!("--- Migration {} ---", if args.dry_run { "Dry Run" } else { "Receipt" });
+        println!("Migrated items: {}", receipt.migrated_count);
+        println!("Skipped items:  {}", receipt.skipped_count);
+        for detail in &receipt.details {
+            println!("  - {detail}");
+        }
+    }
+    Ok(())
 }

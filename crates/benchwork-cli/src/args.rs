@@ -24,6 +24,8 @@ pub enum Commands {
     Capabilities(FormatArgs),
     /// Capture a full snapshot of workspace state.
     Snapshot(FormatArgs),
+    /// Migrate legacy dotfiles (.storypole, sawhorse.toml, .miter, etc.) to .gaugeblock/.
+    Migrate(MigrateArgs),
     /// Launch stdio JSON-RPC 2.0 MCP server for agent integration.
     Mcp,
 }
@@ -51,6 +53,22 @@ pub struct UpArgs {
 /// Arguments for formatted output subcommands.
 #[derive(Debug, Args)]
 pub struct FormatArgs {
+    /// Format output as pretty JSON.
+    #[arg(long, default_value_t = false)]
+    pub json: bool,
+}
+
+/// Arguments for `benchwork migrate`.
+#[derive(Debug, Args)]
+pub struct MigrateArgs {
+    /// Perform a dry run without modifying the filesystem.
+    #[arg(long, default_value_t = false)]
+    pub dry_run: bool,
+
+    /// Force overwrite or backup of colliding destination paths.
+    #[arg(long, default_value_t = false)]
+    pub force: bool,
+
     /// Format output as pretty JSON.
     #[arg(long, default_value_t = false)]
     pub json: bool,

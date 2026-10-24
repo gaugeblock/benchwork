@@ -11,7 +11,7 @@ use clap::Parser;
 use tracing_subscriber::EnvFilter;
 
 use args::{Cli, Commands, UpArgs};
-use handlers::{handle_capabilities, handle_mcp, handle_snapshot, handle_up};
+use handlers::{handle_capabilities, handle_mcp, handle_migrate, handle_snapshot, handle_up};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
@@ -28,6 +28,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         Some(Commands::Up(args)) => handle_up(root, args).await?,
         Some(Commands::Capabilities(args)) => handle_capabilities(root, args)?,
         Some(Commands::Snapshot(args)) => handle_snapshot(root, args)?,
+        Some(Commands::Migrate(args)) => handle_migrate(root, args)?,
         Some(Commands::Mcp) => handle_mcp().await?,
         None => {
             // Default to running `benchwork up` with default parameters

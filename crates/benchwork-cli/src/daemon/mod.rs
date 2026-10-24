@@ -2,6 +2,7 @@
 
 pub mod routes_dag;
 pub mod routes_docs;
+pub mod routes_migration;
 pub mod routes_state;
 pub mod routes_synth;
 pub mod streams;
@@ -11,14 +12,14 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 
-use axum::Router;
 use axum::extract::Request;
 use axum::http::header::{CONTENT_TYPE, HeaderMap};
 use axum::http::{StatusCode, Uri};
 use axum::response::{Html, IntoResponse, Response};
 use axum::routing::{delete, get, post};
-use benchwork_core::BenchworkState;
+use axum::Router;
 use benchwork_core::model::LiveEvent;
+use benchwork_core::BenchworkState;
 use rust_embed::RustEmbed;
 use tower_http::cors::{Any, CorsLayer};
 use tracing::{error, info};
@@ -137,6 +138,14 @@ pub async fn start_daemon(
             "/api/v1/docs/migrate",
             post(routes_docs::post_docs_migrate_handler),
         )
+        .route(
+            "/api/v1/migration/plan",
+            get(routes_migration::get_migration_plan),
+        )
+        .route(
+            "/api/v1/migration/execute",
+            post(routes_migration::post_execute_migration),
+        )
         .route("/api/v1/ws", get(streams::ws_handler))
         .route("/api/v1/events", get(streams::sse_handler))
         .layer(cors)
@@ -193,10 +202,7 @@ async fn handle_static(uri: Uri, _req: Request, cfg: Arc<ServerConfig>) -> impl 
 
     match WebAssets::get(&path) {
         Some(content) => {
-            let mime = mime_guess::from_path(&path)
-                .first_or_octet_stream()
-                .as_ref()
-                .to_string();
+            let mime = mime_guess::from_path(&path).first_or_octet_stream().to_string();
             ([(CONTENT_TYPE, mime)], content.data.into_owned()).into_response()
         }
         None => match WebAssets::get("index.html") {
@@ -208,10 +214,8 @@ async fn handle_static(uri: Uri, _req: Request, cfg: Arc<ServerConfig>) -> impl 
 
 async fn forward_to_dev_server(uri: Uri) -> Response {
     let client = reqwest::Client::new();
-    let dev_url = format!(
-        "http://127.0.0.1:5173{}",
-        uri.path_and_query().map(|pq| pq.as_str()).unwrap_or("/")
-    );
+    let query = uri.path_and_query().map(|pq| pq.as_str()).unwrap_or("/");
+    let dev_url = format!("http://127.0.0.1:5173{query}");
     match client.get(&dev_url).send().await {
         Ok(resp) => {
             let status = StatusCode::from_u16(resp.status().as_u16()).unwrap_or(StatusCode::OK);
