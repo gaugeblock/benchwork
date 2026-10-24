@@ -12,13 +12,16 @@ pub mod spec_studio;
 pub mod xray_service;
 
 pub use capabilities::scan_capabilities;
-pub use dag_service::{claim_task_lease, get_dag_view, get_task_briefing, record_task_handoff};
+pub use dag_service::{
+    claim_task_lease, get_dag_view, get_task_briefing, record_task_handoff, update_task_details,
+};
 pub use error::{BenchworkError, Result};
 pub use hub_service::{delete_spool_trace, get_model_hub_status, ping_inference};
 pub use model::*;
 pub use spec_studio::{load_spec_bundle, preview_contract, resolve_decision};
 pub use storypole_core::model::decision::HandoffPacket;
-pub use storypole_core::model::task::TaskStatus;
+pub use storypole_core::model::task::{TaskScope, TaskStatus};
+pub use storypole_core::ops::mutations::UpdateTaskParams;
 pub use xray_service::{compile_hole_grammar, list_patterns, trigger_synthesis};
 
 use std::path::PathBuf;

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import type { TaskNode } from '../../../types';
-import { X, Loader2, Sparkles, ShieldCheck, Clock } from 'lucide-react';
+import { X, Loader2, Sparkles, ShieldCheck, Clock, Edit3 } from 'lucide-react';
 import { InspectorClaimModal } from './InspectorClaimModal';
 import { InspectorHandoffModal } from './InspectorHandoffModal';
+import { InspectorEditModal } from './InspectorEditModal';
 
 interface InspectorHeaderProps {
   task: TaskNode;
@@ -17,6 +18,7 @@ interface InspectorHeaderProps {
     last_error_or_blocker?: string;
     status: string;
   }) => Promise<void>;
+  onUpdate?: (data: any) => Promise<void>;
 }
 
 export const InspectorHeader: React.FC<InspectorHeaderProps> = ({
@@ -26,9 +28,11 @@ export const InspectorHeader: React.FC<InspectorHeaderProps> = ({
   synthesizing,
   onClaim,
   onHandoff,
+  onUpdate,
 }) => {
   const [showClaimModal, setShowClaimModal] = useState(false);
   const [showHandoffModal, setShowHandoffModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -119,6 +123,17 @@ export const InspectorHeader: React.FC<InspectorHeaderProps> = ({
             <span>Record Handoff</span>
           </button>
         )}
+
+        {onUpdate && (
+          <button
+            onClick={() => setShowEditModal(true)}
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded bg-cad-surface border border-cad-border text-cad-muted hover:text-cad-text text-xs transition-colors"
+            title="Edit Task Details & Scope"
+          >
+            <Edit3 className="w-3.5 h-3.5" />
+            <span>Edit</span>
+          </button>
+        )}
       </div>
 
       {onClaim && (
@@ -137,6 +152,15 @@ export const InspectorHeader: React.FC<InspectorHeaderProps> = ({
           agentId={task.active_claim?.agent_id || 'antigravity'}
           onClose={() => setShowHandoffModal(false)}
           onSubmit={onHandoff}
+        />
+      )}
+
+      {onUpdate && (
+        <InspectorEditModal
+          isOpen={showEditModal}
+          task={task}
+          onClose={() => setShowEditModal(false)}
+          onUpdate={onUpdate}
         />
       )}
     </div>

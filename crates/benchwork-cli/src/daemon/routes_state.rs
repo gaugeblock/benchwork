@@ -177,3 +177,61 @@ pub async fn post_record_handoff_handler(
         ),
     }
 }
+
+/// Request payload for mutating a task's details and scope.
+#[derive(Debug, serde::Deserialize)]
+pub struct UpdateTaskPayload {
+    pub title: Option<String>,
+    pub description: Option<String>,
+    pub priority: Option<u8>,
+    pub repo: Option<String>,
+    pub crate_name: Option<String>,
+    pub module_path: Option<String>,
+    pub target_files: Option<Vec<String>>,
+    pub target_symbols: Option<Vec<String>>,
+    pub labels: Option<Vec<String>>,
+    pub acceptance_criteria: Option<Vec<String>>,
+}
+
+/// POST /api/v1/dag/:id/update
+pub async fn post_update_task_handler(
+    State(ctx): State<Arc<DaemonContext>>,
+    AxumPath(task_id): AxumPath<String>,
+    Json(payload): Json<UpdateTaskPayload>,
+) -> impl IntoResponse {
+    let has_scope = payload.repo.is_some()
+        || payload.crate_name.is_some()
+        || payload.module_path.is_some()
+        || payload.target_files.is_some()
+        || payload.target_symbols.is_some()
+        || payload.labels.is_some();
+
+    let scope = if has_scope {
+        Some(TaskScope {
+            repo: payload.repo,
+            crate_name: payload.crate_name,
+            module_path: payload.module_path,
+            target_files: payload.target_files.unwrap_or_default(),
+            target_symbols: payload.target_symbols.unwrap_or_default(),
+            labels: payload.labels.unwrap_or_default(),
+        })
+    } else {
+        None
+    };
+
+    let params = UpdateTaskParams {
+        title: payload.title,
+        description: payload.description,
+        priority: payload.priority,
+        scope,
+        acceptance_criteria: payload.acceptance_criteria,
+    };
+
+    match update_task_details(&ctx.state.root_path, &task_id, params) {
+        Ok(briefing) => (StatusCode::OK, Json(json!(briefing))),
+        Err(e) => (
+            StatusCode::BAD_REQUEST,
+            Json(json!({ "error": e.to_string() })),
+        ),
+    }
+}

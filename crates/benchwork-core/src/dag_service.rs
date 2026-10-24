@@ -9,6 +9,7 @@ use storypole_core::index::query::{get_all_tasks, get_task_by_id, resolve_task_i
 use storypole_core::model::decision::HandoffPacket;
 use storypole_core::model::events::{LedgerEvent, TaskContextBriefing};
 use storypole_core::model::task::TaskStatus;
+use storypole_core::ops::mutations::{UpdateTaskParams, update_task};
 use storypole_core::ops::workflow::claim_task;
 
 use crate::error::{BenchworkError, Result};
@@ -139,4 +140,22 @@ pub fn record_task_handoff(
             new_status,
         })
         .map_err(|e| BenchworkError::Storypole(e.to_string()))
+}
+
+/// Mutates an existing task's fields and scope.
+pub fn update_task_details(
+    root_path: &Path,
+    task_id_or_key: &str,
+    params: UpdateTaskParams,
+) -> Result<TaskContextBriefing> {
+    let mut store =
+        StorypoleStore::open(root_path).map_err(|e| BenchworkError::Storypole(e.to_string()))?;
+
+    let task_id = resolve_task_id(store.conn(), task_id_or_key)
+        .map_err(|e| BenchworkError::TaskNotFound(e.to_string()))?;
+
+    update_task(&mut store, task_id, params)
+        .map_err(|e| BenchworkError::Storypole(e.to_string()))?;
+
+    get_task_briefing(root_path, task_id_or_key)
 }

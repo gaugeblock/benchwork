@@ -95,6 +95,27 @@ export const api = {
       body: JSON.stringify(data),
     }),
 
+  updateTask: (
+    taskId: string,
+    data: {
+      title?: string;
+      description?: string;
+      priority?: number;
+      repo?: string;
+      crate_name?: string;
+      module_path?: string;
+      target_files?: string[];
+      target_symbols?: string[];
+      labels?: string[];
+      acceptance_criteria?: string[];
+    }
+  ) =>
+    fetchJson<TaskContextBriefing>(`/api/v1/dag/${taskId}/update`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    }),
+
   getPatterns: () => fetchJson<DadoPattern[]>('/api/v1/xray/patterns'),
 
   compileHole: (data: { pattern_id: string; hole_id: string; format: string }) =>

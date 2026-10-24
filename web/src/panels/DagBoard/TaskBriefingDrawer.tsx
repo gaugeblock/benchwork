@@ -71,6 +71,11 @@ export const TaskBriefingDrawer: React.FC<TaskBriefingDrawerProps> = ({
     setBriefing(updated);
   };
 
+  const handleUpdate = async (data: any) => {
+    const updated = await api.updateTask(taskId, data);
+    setBriefing(updated);
+  };
+
   return (
     <div className="absolute right-0 top-0 bottom-0 w-[460px] bg-cad-surface border-l border-cad-border shadow-2xl flex flex-col z-20 overflow-hidden">
       {loading ? (
@@ -86,6 +91,7 @@ export const TaskBriefingDrawer: React.FC<TaskBriefingDrawerProps> = ({
             synthesizing={synthesizing}
             onClaim={handleClaim}
             onHandoff={handleHandoff}
+            onUpdate={handleUpdate}
           />
 
           <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 text-xs">
