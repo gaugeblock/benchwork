@@ -13,6 +13,7 @@ export interface UniversalModelConfig {
   model_name: string;
   base_url?: string;
   api_key_env?: string;
+  api_key?: string;
   mode: string;
   role_overrides: Record<string, RoleOverrideConfig>;
 }
@@ -22,6 +23,7 @@ export interface TestInferenceRequest {
   model_name: string;
   base_url?: string;
   api_key_env?: string;
+  api_key?: string;
   mode: string;
 }
 

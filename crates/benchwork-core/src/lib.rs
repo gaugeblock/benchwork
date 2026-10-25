@@ -24,7 +24,7 @@ pub use config_types::{
     DiscoverModelsRequest, DiscoverModelsResponse, RoleOverrideConfig, TestInferenceReceipt,
     TestInferenceRequest, UniversalModelConfig,
 };
-pub use credentials::{load_credentials, persist_credential};
+pub use credentials::{load_credentials, persist_credential, resolve_credential};
 pub use dag_service::{
     archive_task_service, claim_task_lease, get_dag_view, get_task_briefing, link_tasks_service,
     record_task_handoff, split_task_service, unarchive_task_service, update_task_details,

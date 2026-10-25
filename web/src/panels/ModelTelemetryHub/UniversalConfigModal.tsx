@@ -84,6 +84,7 @@ export const UniversalConfigModal: React.FC<UniversalConfigModalProps> = ({
         model_name: config.model_name,
         base_url: config.base_url,
         api_key_env: config.api_key_env,
+        api_key: directApiKey.trim() || undefined,
         mode: config.mode,
       });
       setTestReceipt(receipt);
@@ -102,8 +103,12 @@ export const UniversalConfigModal: React.FC<UniversalConfigModalProps> = ({
   const handleSave = async () => {
     setSaving(true);
     try {
-      await api.saveHubConfig(config);
-      onSaved(config);
+      const payload = {
+        ...config,
+        api_key: directApiKey.trim() || undefined,
+      };
+      await api.saveHubConfig(payload);
+      onSaved(payload);
       onClose();
     } catch (err: any) {
       alert(`Failed to save sawhorse.toml: ${err.message}`);

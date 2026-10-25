@@ -1,10 +1,9 @@
 //! Connectivity and latency testing for candidate model configurations.
 
-use std::path::Path;
 use std::time::{Duration, Instant};
 
 use crate::config_types::{TestInferenceReceipt, TestInferenceRequest};
-use crate::error::{BenchworkError, Result};
+use crate::error::Result;
 
 /// Tests inference connectivity and latency against a candidate model configuration.
 pub async fn test_inference_slot(req: &TestInferenceRequest) -> Result<TestInferenceReceipt> {
@@ -102,3 +101,4 @@ pub async fn test_inference_slot(req: &TestInferenceRequest) -> Result<TestInfer
         ),
     })
 }
+

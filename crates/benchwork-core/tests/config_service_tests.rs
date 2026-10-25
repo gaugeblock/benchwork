@@ -24,6 +24,7 @@ fn test_config_write_and_read_roundtrip() -> Result<(), Box<dyn std::error::Erro
             provider: "Local".to_string(),
             model_name: "llama-3-8b".to_string(),
             base_url: Some("http://127.0.0.1:8080".to_string()),
+            api_key: None,
             api_key_env: None,
             mode: "local_runtime".to_string(),
         },
@@ -35,6 +36,7 @@ fn test_config_write_and_read_roundtrip() -> Result<(), Box<dyn std::error::Erro
         model_name: "claude-3-5-sonnet".to_string(),
         base_url: Some("https://api.anthropic.com/v1".to_string()),
         api_key_env: Some("ANTHROPIC_API_KEY".to_string()),
+        api_key: None,
         mode: "openai_compatible".to_string(),
         role_overrides: overrides,
     };
@@ -66,5 +68,32 @@ async fn test_model_discovery_error_handling() -> Result<(), Box<dyn std::error:
     let res_invalid = benchwork_core::discover_remote_models(&invalid_req).await?;
     assert!(!res_invalid.success);
     assert!(res_invalid.models.is_empty());
+    Ok(())
+}
+
+#[tokio::test]
+async fn test_inference_slot_credential_handling() -> Result<(), Box<dyn std::error::Error>> {
+    let req_missing = benchwork_core::TestInferenceRequest {
+        provider: "Cline".to_string(),
+        model_name: "claude-3-7-sonnet".to_string(),
+        base_url: None,
+        api_key: None,
+        api_key_env: Some("NON_EXISTENT_VAR_12345".to_string()),
+        mode: "openai_compatible".to_string(),
+    };
+    let receipt = benchwork_core::test_inference_slot(&req_missing).await?;
+    assert!(!receipt.success);
+    assert!(receipt.message.contains("API key not provided"));
+
+    let req_inline = benchwork_core::TestInferenceRequest {
+        provider: "Cline".to_string(),
+        model_name: "claude-3-7-sonnet".to_string(),
+        base_url: None,
+        api_key: Some("test-key".to_string()),
+        api_key_env: Some("NON_EXISTENT_VAR_12345".to_string()),
+        mode: "openai_compatible".to_string(),
+    };
+    let receipt_inline = benchwork_core::test_inference_slot(&req_inline).await?;
+    assert!(receipt_inline.success);
     Ok(())
 }

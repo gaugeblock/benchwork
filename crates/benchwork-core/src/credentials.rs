@@ -1,4 +1,4 @@
-//! Environment credential persistence and process environment loading.
+//! Environment credential persistence and secure lookup.
 
 use std::collections::BTreeMap;
 use std::fs;
@@ -6,8 +6,13 @@ use std::path::Path;
 
 use crate::error::Result;
 
-/// Loads KEY=VALUE pairs from `.gaugeblock/.env` into the process environment.
-pub fn load_credentials(root_path: &Path) {
+/// Resolves a credential value first from the process environment, then `.gaugeblock/.env`.
+pub fn resolve_credential(root_path: &Path, key: &str) -> Option<String> {
+    if let Ok(val) = std::env::var(key)
+        && !val.trim().is_empty()
+    {
+        return Some(val);
+    }
     let env_path = root_path.join(".gaugeblock").join(".env");
     if let Ok(content) = fs::read_to_string(&env_path) {
         for line in content.lines() {
@@ -15,25 +20,31 @@ pub fn load_credentials(root_path: &Path) {
             if line.is_empty() || line.starts_with('#') {
                 continue;
             }
-            if let Some((k, v)) = line.split_once('=') {
-                let key = k.trim();
+            if let Some((k, v)) = line.split_once('=')
+                && k.trim() == key
+            {
                 let val = v.trim().trim_matches('"').trim_matches('\'');
-                if !key.is_empty() && std::env::var(key).is_err() {
-                    std::env::set_var(key, val);
+                if !val.is_empty() {
+                    return Some(val.to_string());
                 }
             }
         }
     }
+    None
 }
 
-/// Persists a credential key-value pair to `.gaugeblock/.env` and sets it in `std::env`.
+/// Compatibility no-op or pre-flight reader for credentials.
+pub fn load_credentials(_root_path: &Path) {
+    // Process env loading without unsafe set_var
+}
+
+/// Persists a credential key-value pair to `.gaugeblock/.env`.
 pub fn persist_credential(root_path: &Path, key: &str, val: &str) -> Result<()> {
     let k = key.trim();
     let v = val.trim();
     if k.is_empty() || v.is_empty() {
         return Ok(());
     }
-    std::env::set_var(k, v);
 
     let gb_dir = root_path.join(".gaugeblock");
     if !gb_dir.exists() {
@@ -57,7 +68,7 @@ pub fn persist_credential(root_path: &Path, key: &str, val: &str) -> Result<()> 
 
     entries.insert(k.to_string(), format!("\"{v}\""));
 
-    let mut out = String::from("# Gaugeblock local process environment credentials (DO NOT COMMIT)\n");
+    let mut out = String::from("# Gaugeblock local credentials (DO NOT COMMIT)\n");
     for (ek, ev) in entries {
         out.push_str(&format!("{ek}={ev}\n"));
     }

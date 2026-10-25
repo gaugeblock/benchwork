@@ -130,7 +130,12 @@ pub fn delete_spool_trace(root_path: &Path, trace_id: &str) -> Result<bool> {
 }
 
 /// Executes a test inference ping against a specified model role.
-pub async fn ping_inference(req: &InferencePingRequest) -> Result<InferencePingResponse> {
+pub async fn ping_inference(
+    root_path: &Path,
+    req: &InferencePingRequest,
+) -> Result<InferencePingResponse> {
+    crate::credentials::load_credentials(root_path);
+
     let role_enum = match req.role.to_lowercase().as_str() {
         "planner" => ModelRole::Planner,
         "system1_router" => ModelRole::System1Router,
@@ -140,17 +145,25 @@ pub async fn ping_inference(req: &InferencePingRequest) -> Result<InferencePingR
     };
 
     let start = Instant::now();
-    let config = SawhorseConfig::discover().unwrap_or_default();
+    let sawhorse_path = root_path.join("sawhorse.toml");
+    let gb_config_path = root_path.join(".gaugeblock").join("config.toml");
+    let config = if sawhorse_path.is_file() {
+        SawhorseConfig::load_from_path(&sawhorse_path).unwrap_or_else(|_| SawhorseConfig::discover().unwrap_or_default())
+    } else if gb_config_path.is_file() {
+        SawhorseConfig::load_from_path(&gb_config_path).unwrap_or_else(|_| SawhorseConfig::discover().unwrap_or_default())
+    } else {
+        SawhorseConfig::discover().unwrap_or_default()
+    };
 
     if let Ok(router) = RoleRouter::from_config(config) {
         let infer_req = InferenceRequest {
             role: role_enum,
             prompt: req.prompt.clone(),
-            system_prompt: Some("You are a diagnostic health-check responder.".to_string()),
+            system_prompt: Some("You are a helpful software architecture and systems engineer.".to_string()),
             grammar_constraint: None,
             grammar_format: None,
-            max_tokens: 32,
-            temperature: 0.0,
+            max_tokens: 1024,
+            temperature: 0.2,
         };
 
         if let Ok(resp) = router.complete(&infer_req).await {

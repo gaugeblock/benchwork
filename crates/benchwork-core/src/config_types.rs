@@ -80,6 +80,7 @@ impl Default for UniversalModelConfig {
             provider: "DeepSeek".to_string(),
             model_name: "deepseek-coder".to_string(),
             base_url: Some("https://api.deepseek.com/v1".to_string()),
+            api_key: None,
             api_key_env: Some("DEEPSEEK_API_KEY".to_string()),
             mode: "openai_compatible".to_string(),
             role_overrides: BTreeMap::new(),

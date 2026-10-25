@@ -9,7 +9,7 @@ use sawhorse_core::config::schema::{
 };
 use sawhorse_core::types::{ExecutionMode, ModelRole};
 
-use crate::config_types::{TestInferenceReceipt, TestInferenceRequest, UniversalModelConfig};
+use crate::config_types::UniversalModelConfig;
 use crate::error::{BenchworkError, Result};
 
 /// Reads the active `sawhorse.toml` from the workspace root or returns defaults.

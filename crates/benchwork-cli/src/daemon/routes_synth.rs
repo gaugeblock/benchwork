@@ -97,8 +97,11 @@ pub async fn delete_spool_trace_handler(
 }
 
 /// POST /api/v1/hub/ping
-pub async fn post_hub_ping(Json(req): Json<InferencePingRequest>) -> impl IntoResponse {
-    match ping_inference(&req).await {
+pub async fn post_hub_ping(
+    State(ctx): State<Arc<DaemonContext>>,
+    Json(req): Json<InferencePingRequest>,
+) -> impl IntoResponse {
+    match ping_inference(&ctx.state.root_path, &req).await {
         Ok(res) => (StatusCode::OK, Json(json!(res))),
         Err(e) => (
             StatusCode::INTERNAL_SERVER_ERROR,
