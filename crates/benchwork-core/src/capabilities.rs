@@ -13,7 +13,18 @@ use crate::error::Result;
 use crate::model::{SpecDocsStatus, WorkspaceCapabilities};
 
 /// Technical markdown filenames inspected by the scanner.
-const SPEC_CANDIDATES: &[&str] = &["SPEC.md", "PRODUCT.md", "ARCHITECTURE.md", "DESIGN.md"];
+const SPEC_CANDIDATES: &[&str] = &[
+    "SPEC.md",
+    "README.md",
+    "CONTRACTS.md",
+    "PRODUCT.md",
+    "ARCHITECTURE.md",
+    "DESIGN.md",
+    "ROADMAP.md",
+    "CHANGELOG.md",
+    "AGENTS.md",
+    "CONTRIBUTING.md",
+];
 
 /// Scans the given workspace root directory and returns detected capabilities.
 pub fn scan_capabilities(root_path: &Path) -> Result<WorkspaceCapabilities> {
@@ -42,6 +53,19 @@ fn scan_spec_docs(root_path: &Path) -> SpecDocsStatus {
     for candidate in SPEC_CANDIDATES {
         if root_path.join(candidate).is_file() {
             detected_files.push((*candidate).to_string());
+        }
+    }
+
+    if let Ok(entries) = std::fs::read_dir(root_path) {
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.is_file()
+                && path.extension().and_then(|e| e.to_str()) == Some("md")
+                && let Some(name) = path.file_name().and_then(|n| n.to_str())
+                && !detected_files.iter().any(|d| d == name)
+            {
+                detected_files.push(name.to_string());
+            }
         }
     }
 

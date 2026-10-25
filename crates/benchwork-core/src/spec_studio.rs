@@ -7,7 +7,6 @@ use std::path::Path;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use chalkline_core::{DecisionHole, SpecParser};
-use dado_core::polyglot::{generate_rust_struct, generate_ts_interface, generate_zod_schema};
 use storypole_core::StorypoleStore;
 use storypole_core::index::query::{get_all_tasks, resolve_task_id};
 use storypole_core::model::decision::TaskDecision;
@@ -15,13 +14,21 @@ use storypole_core::ops::decisions::decide;
 use uuid::Uuid;
 
 use crate::error::{BenchworkError, Result};
-use crate::model::{
-    ContractPreviewRequest, ContractPreviewResponse, DecisionResolutionReceipt, PendingDecision,
-    ResolveDecisionRequest, SpecBundle,
-};
+use crate::model::{DecisionResolutionReceipt, PendingDecision, ResolveDecisionRequest, SpecBundle};
+pub use crate::spec_preview::preview_contract;
 
 /// Candidate supporting document filenames.
-const SUPPORTING_CANDIDATES: &[&str] = &["PRODUCT.md", "ARCHITECTURE.md", "DESIGN.md"];
+const SUPPORTING_CANDIDATES: &[&str] = &[
+    "README.md",
+    "CONTRACTS.md",
+    "PRODUCT.md",
+    "ARCHITECTURE.md",
+    "DESIGN.md",
+    "ROADMAP.md",
+    "CHANGELOG.md",
+    "AGENTS.md",
+    "CONTRIBUTING.md",
+];
 
 /// Loads the specification bundle, including primary spec, supporting docs, decisions, and contracts.
 pub fn load_spec_bundle(root_path: &Path) -> Result<SpecBundle> {
@@ -32,15 +39,7 @@ pub fn load_spec_bundle(root_path: &Path) -> Result<SpecBundle> {
         None
     };
 
-    let mut supporting_docs = BTreeMap::new();
-    for name in SUPPORTING_CANDIDATES {
-        let path = root_path.join(name);
-        if path.is_file()
-            && let Ok(content) = fs::read_to_string(&path)
-        {
-            supporting_docs.insert((*name).to_string(), content);
-        }
-    }
+    let supporting_docs = collect_supporting_docs(root_path);
 
     let mut contracts = Vec::new();
     let mut pending_decisions = Vec::new();
@@ -211,17 +210,31 @@ fn append_decision_to_spec(root_path: &Path, req: &ResolveDecisionRequest) -> Re
     Ok(true)
 }
 
-/// Generates polyglot code previews from a `SharedTypeContract`.
-pub fn preview_contract(req: &ContractPreviewRequest) -> Result<ContractPreviewResponse> {
-    let rust_code = generate_rust_struct(&req.contract);
-    let typescript_code = generate_ts_interface(&req.contract);
-    let zod_code = generate_zod_schema(&req.contract);
-
-    Ok(ContractPreviewResponse {
-        rust_code,
-        typescript_code,
-        zod_code,
-    })
+fn collect_supporting_docs(root_path: &Path) -> BTreeMap<String, String> {
+    let mut docs = BTreeMap::new();
+    for name in SUPPORTING_CANDIDATES {
+        let p = root_path.join(name);
+        if p.is_file()
+            && let Ok(content) = fs::read_to_string(&p)
+        {
+            docs.insert((*name).to_string(), content);
+        }
+    }
+    if let Ok(entries) = fs::read_dir(root_path) {
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.is_file()
+                && path.extension().and_then(|e| e.to_str()) == Some("md")
+                && let Some(file_name) = path.file_name().and_then(|n| n.to_str())
+                && file_name != "SPEC.md"
+                && !docs.contains_key(file_name)
+                && let Ok(content) = fs::read_to_string(&path)
+            {
+                docs.insert(file_name.to_string(), content);
+            }
+        }
+    }
+    docs
 }
 
 fn epoch_now() -> u64 {

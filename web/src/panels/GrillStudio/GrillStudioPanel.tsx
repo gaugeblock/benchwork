@@ -47,10 +47,23 @@ export const GrillStudioPanel: React.FC<GrillStudioPanelProps> = ({ initialChatT
     );
   }
 
-  const docTabs = ['SPEC.md', ...Object.keys(bundle?.supporting_docs || {})];
+  const supportingKeys = Object.keys(bundle?.supporting_docs || {});
+  const docTabs = [
+    ...(bundle?.primary_spec ? ['SPEC.md'] : []),
+    ...supportingKeys,
+    ...(!bundle?.primary_spec && supportingKeys.length === 0 ? ['SPEC.md'] : []),
+  ];
+
+  useEffect(() => {
+    if (docTabs.length > 0 && !docTabs.includes(activeDoc)) {
+      setActiveDoc(docTabs[0]);
+    }
+  }, [docTabs, activeDoc]);
+
   const activeContent =
     activeDoc === 'SPEC.md'
-      ? bundle?.primary_spec || '# SPEC.md not found in workspace root\n'
+      ? bundle?.primary_spec ||
+        '# SPEC.md not found in workspace root\n\nUse the 9-Document Topology panel on the right to scaffold SPEC.md or other architectural specifications.'
       : bundle?.supporting_docs[activeDoc] || '';
 
   return (

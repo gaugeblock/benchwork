@@ -17,9 +17,22 @@ use crate::error::{BenchworkError, Result};
 pub fn audit_docs(root_path: &Path) -> Result<DocAuditReport> {
     let config = DocsConfig::load_or_default(root_path)
         .map_err(|e| BenchworkError::Workspace(format!("Failed to load docs.toml: {e}")))?;
-    let inventory = inspect_workspace(root_path)
-        .map_err(|e| BenchworkError::Workspace(format!("Failed to inspect workspace AST: {e}")))?;
+    let inventory = safe_inventory(root_path);
     Ok(verify_docs_drift(root_path, &config, &inventory))
+}
+
+fn safe_inventory(root_path: &Path) -> miter_engine::WorkspaceInventory {
+    inspect_workspace(root_path).unwrap_or_else(|_| miter_engine::WorkspaceInventory {
+        root_dir: root_path.to_path_buf(),
+        workspace_name: root_path
+            .file_name()
+            .map(|n| n.to_string_lossy().to_string()),
+        crates: Vec::new(),
+        cli_commands: Vec::new(),
+        public_types: Vec::new(),
+        git: None,
+        toolchain: miter_engine::ToolchainInventory::default(),
+    })
 }
 
 /// Loads `.gaugeblock/docs.toml` or returns defaults if absent.
@@ -43,8 +56,7 @@ pub fn scaffold_docs(
 ) -> Result<Vec<String>> {
     let config = DocsConfig::load_or_default(root_path)
         .map_err(|e| BenchworkError::Workspace(format!("Failed to load docs.toml: {e}")))?;
-    let inventory = inspect_workspace(root_path)
-        .map_err(|e| BenchworkError::Workspace(format!("Failed to inspect workspace: {e}")))?;
+    let inventory = safe_inventory(root_path);
 
     let mut created = Vec::new();
     for doc_type in DocType::ALL {

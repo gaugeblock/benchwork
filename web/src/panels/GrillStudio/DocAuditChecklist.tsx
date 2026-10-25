@@ -15,16 +15,19 @@ import {
 export const DocAuditChecklist: React.FC = () => {
   const [report, setReport] = useState<DocAuditReport | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [scaffolding, setScaffolding] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const fetchAudit = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const data = await docsApi.getDocsAudit();
       setReport(data);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed fetching doc audit report:', err);
+      setError(err?.message || 'Failed to connect to documentation audit service');
     } finally {
       setLoading(false);
     }
@@ -113,6 +116,17 @@ export const DocAuditChecklist: React.FC = () => {
 
       {/* Checklist Viewport */}
       <div className="flex-1 p-3 overflow-y-auto flex flex-col gap-2">
+        {error && (
+          <div className="p-3 rounded bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex flex-col gap-2">
+            <span>{error}</span>
+            <button
+              onClick={fetchAudit}
+              className="self-start px-2 py-1 bg-red-500/20 hover:bg-red-500/30 rounded text-[11px] font-semibold text-red-300"
+            >
+              Retry
+            </button>
+          </div>
+        )}
         {report?.items.map((item) => (
           <div
             key={item.doc_type}

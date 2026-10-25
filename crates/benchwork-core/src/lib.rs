@@ -14,6 +14,7 @@ pub mod hub_service;
 pub mod migration;
 pub mod model;
 pub mod model_discovery;
+pub mod spec_preview;
 pub mod spec_studio;
 pub mod test_inference;
 pub mod xray_service;
