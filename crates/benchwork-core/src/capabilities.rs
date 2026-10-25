@@ -119,7 +119,8 @@ fn scan_dado(root_path: &Path) -> usize {
 }
 
 fn scan_sawhorse(root_path: &Path) -> bool {
-    root_path.join("sawhorse.toml").is_file()
+    root_path.join(".gaugeblock").join("config.toml").is_file()
+        || root_path.join("sawhorse.toml").is_file()
         || root_path.join(".sawhorse").join("config.toml").is_file()
 }
 

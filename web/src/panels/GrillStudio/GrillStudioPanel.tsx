@@ -39,14 +39,6 @@ export const GrillStudioPanel: React.FC<GrillStudioPanelProps> = ({ initialChatT
     loadData();
   }, [loadData]);
 
-  if (loading) {
-    return (
-      <div className="flex-1 flex items-center justify-center text-xs text-cad-muted animate-pulse">
-        Loading Technical Specifications & /grill-me Studio...
-      </div>
-    );
-  }
-
   const supportingKeys = Object.keys(bundle?.supporting_docs || {});
   const docTabs = [
     ...(bundle?.primary_spec ? ['SPEC.md'] : []),
@@ -59,6 +51,14 @@ export const GrillStudioPanel: React.FC<GrillStudioPanelProps> = ({ initialChatT
       setActiveDoc(docTabs[0]);
     }
   }, [docTabs, activeDoc]);
+
+  if (loading) {
+    return (
+      <div className="flex-1 flex items-center justify-center text-xs text-cad-muted animate-pulse">
+        Loading Technical Specifications & /grill-me Studio...
+      </div>
+    );
+  }
 
   const activeContent =
     activeDoc === 'SPEC.md'
