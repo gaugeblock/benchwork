@@ -6,6 +6,21 @@ use reqwest::header::{ACCEPT, AUTHORIZATION, USER_AGENT};
 use serde::Deserialize;
 use std::time::Duration;
 
+const CLINE_PASS_MODELS: &[&str] = &[
+    "cline-pass/deepseek-v4-pro",
+    "cline-pass/deepseek-v4.1-flash",
+    "cline-pass/glm-5.3",
+    "cline-pass/glm-5.3-flash",
+    "cline-pass/kimi-k3",
+    "cline-pass/qwen3.8-max",
+    "cline-pass/qwen3.7-max",
+    "cline-pass/qwen3.7-plus",
+    "cline-pass/mimo-v2.5",
+    "cline-pass/mimo-v2.5-pro",
+    "cline-pass/minimax-m3",
+    "cline-pass/muse-spark-1.3-contributor",
+];
+
 #[derive(Debug, Deserialize)]
 struct OpenAiModelItem {
     id: String,
@@ -14,6 +29,33 @@ struct OpenAiModelItem {
 #[derive(Debug, Deserialize)]
 struct OpenAiModelsPayload {
     data: Option<Vec<OpenAiModelItem>>,
+}
+
+fn resolve_discovery_key(req: &DiscoverModelsRequest) -> Option<String> {
+    if let Some(ref k) = req.api_key
+        && !k.trim().is_empty()
+    {
+        return Some(k.clone());
+    }
+
+    if let Some(ref env_name) = req.api_key_env
+        && !env_name.trim().is_empty()
+    {
+        if let Ok(val) = std::env::var(env_name)
+            && !val.trim().is_empty()
+        {
+            return Some(val);
+        }
+        return sawhorse_core::config::resolve_secret_from_env_file(env_name);
+    }
+
+    for fallback in &["CLINE_API_KEY", "OPENAI_API_KEY", "OPENROUTER_API_KEY"] {
+        if let Some(val) = sawhorse_core::config::resolve_secret_from_env_file(fallback) {
+            return Some(val);
+        }
+    }
+
+    None
 }
 
 /// Dynamically discovers available models from an OpenAI-compatible `/models` endpoint.
@@ -50,18 +92,7 @@ pub async fn discover_remote_models(req: &DiscoverModelsRequest) -> Result<Disco
         }
     };
 
-    let api_key = req
-        .api_key
-        .as_ref()
-        .filter(|k| !k.trim().is_empty())
-        .cloned()
-        .or_else(|| {
-            req.api_key_env
-                .as_ref()
-                .filter(|e| !e.trim().is_empty())
-                .and_then(|env_name| std::env::var(env_name).ok())
-        });
-
+    let api_key = resolve_discovery_key(req);
     let mut last_error = "No response from candidate endpoints".to_string();
 
     for url in candidate_urls {
@@ -87,6 +118,14 @@ pub async fn discover_remote_models(req: &DiscoverModelsRequest) -> Result<Disco
                             .filter(|id| !id.trim().is_empty())
                             .collect();
 
+                        if raw_base.contains("cline.bot") {
+                            for &cm in CLINE_PASS_MODELS {
+                                if !models.iter().any(|m| m == cm) {
+                                    models.push(cm.to_string());
+                                }
+                            }
+                        }
+
                         models.sort();
                         models.dedup();
 
@@ -106,6 +145,16 @@ pub async fn discover_remote_models(req: &DiscoverModelsRequest) -> Result<Disco
                 last_error = e.to_string();
             }
         }
+    }
+
+    // Fallback for ClinePass if endpoint failed or was unreachable
+    if raw_base.contains("cline.bot") {
+        let models: Vec<String> = CLINE_PASS_MODELS.iter().map(|s| s.to_string()).collect();
+        return Ok(DiscoverModelsResponse {
+            success: true,
+            models,
+            message: "Using curated ClinePass models catalog".to_string(),
+        });
     }
 
     Ok(DiscoverModelsResponse {

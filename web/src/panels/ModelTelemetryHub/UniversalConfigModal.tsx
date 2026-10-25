@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { UniversalModelConfig, TestInferenceReceipt } from '../../types';
 import { api } from '../../api/client';
 import { Cpu, ShieldCheck, Activity, Save, ChevronDown, ChevronRight, X, AlertCircle } from 'lucide-react';
 import { ConnectionStep } from './ConnectionStep';
 import { ModelStep } from './ModelStep';
-import { PROVIDER_PRESETS } from './presets';
+import { PROVIDER_PRESETS, CLINEPASS_MODELS } from './presets';
 
 interface UniversalConfigModalProps {
   config: UniversalModelConfig;
@@ -20,7 +20,7 @@ export const UniversalConfigModal: React.FC<UniversalConfigModalProps> = ({
   onSaved,
 }) => {
   const [config, setConfig] = useState<UniversalModelConfig>(initialConfig);
-  const [directApiKey, setDirectApiKey] = useState('');
+  const [directApiKey, setDirectApiKey] = useState(initialConfig.api_key || '');
   const [discoveredModels, setDiscoveredModels] = useState<string[]>([]);
   const [fetchingModels, setFetchingModels] = useState(false);
   const [fetchMsg, setFetchMsg] = useState<{ text: string; error: boolean } | null>(null);
@@ -28,6 +28,18 @@ export const UniversalConfigModal: React.FC<UniversalConfigModalProps> = ({
   const [testing, setTesting] = useState(false);
   const [testReceipt, setTestReceipt] = useState<TestInferenceReceipt | null>(null);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setConfig(initialConfig);
+      setDirectApiKey(initialConfig.api_key || '');
+      setTestReceipt(null);
+      setFetchMsg(null);
+      if (initialConfig.provider === 'ClinePass') {
+        setDiscoveredModels(CLINEPASS_MODELS);
+      }
+    }
+  }, [isOpen, initialConfig]);
 
   if (!isOpen) return null;
 
@@ -42,10 +54,15 @@ export const UniversalConfigModal: React.FC<UniversalConfigModalProps> = ({
         api_key_env: preset.env || undefined,
         model_name: preset.model || prev.model_name,
       }));
+      if (provider === 'ClinePass') {
+        setDiscoveredModels(CLINEPASS_MODELS);
+      } else {
+        setDiscoveredModels([]);
+      }
     } else {
       setConfig((prev) => ({ ...prev, provider }));
+      setDiscoveredModels([]);
     }
-    setDiscoveredModels([]);
     setFetchMsg(null);
   };
 
@@ -111,7 +128,7 @@ export const UniversalConfigModal: React.FC<UniversalConfigModalProps> = ({
       onSaved(payload);
       onClose();
     } catch (err: any) {
-      alert(`Failed to save sawhorse.toml: ${err.message}`);
+      alert(`Failed to save configuration: ${err.message}`);
     } finally {
       setSaving(false);
     }
@@ -156,6 +173,7 @@ export const UniversalConfigModal: React.FC<UniversalConfigModalProps> = ({
 
           <ModelStep
             modelName={config.model_name}
+            provider={config.provider}
             discoveredModels={discoveredModels}
             onModelNameChange={(m) => setConfig({ ...config, model_name: m })}
           />

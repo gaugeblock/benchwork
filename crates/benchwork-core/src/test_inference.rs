@@ -5,21 +5,37 @@ use std::time::{Duration, Instant};
 use crate::config_types::{TestInferenceReceipt, TestInferenceRequest};
 use crate::error::Result;
 
+fn resolve_api_key(req: &TestInferenceRequest) -> Option<String> {
+    if let Some(ref k) = req.api_key
+        && !k.trim().is_empty()
+    {
+        return Some(k.clone());
+    }
+
+    if let Some(ref env_name) = req.api_key_env
+        && !env_name.trim().is_empty()
+    {
+        if let Ok(val) = std::env::var(env_name)
+            && !val.trim().is_empty()
+        {
+            return Some(val);
+        }
+        return sawhorse_core::config::resolve_secret_from_env_file(env_name);
+    }
+
+    for fallback in &["CLINE_API_KEY", "OPENAI_API_KEY", "OPENROUTER_API_KEY"] {
+        if let Some(val) = sawhorse_core::config::resolve_secret_from_env_file(fallback) {
+            return Some(val);
+        }
+    }
+
+    None
+}
+
 /// Tests inference connectivity and latency against a candidate model configuration.
 pub async fn test_inference_slot(req: &TestInferenceRequest) -> Result<TestInferenceReceipt> {
     let start = Instant::now();
-
-    let resolved_key = req
-        .api_key
-        .as_ref()
-        .filter(|k| !k.trim().is_empty())
-        .cloned()
-        .or_else(|| {
-            req.api_key_env
-                .as_ref()
-                .filter(|e| !e.trim().is_empty())
-                .and_then(|env_name| std::env::var(env_name).ok())
-        });
+    let resolved_key = resolve_api_key(req);
 
     if req.mode == "openai_compatible" && resolved_key.is_none() {
         let env_var = req.api_key_env.as_deref().unwrap_or("OPENAI_API_KEY");
@@ -28,7 +44,7 @@ pub async fn test_inference_slot(req: &TestInferenceRequest) -> Result<TestInfer
             latency_ms: start.elapsed().as_millis() as u64,
             model_used: req.model_name.clone(),
             message: format!(
-                "API key not provided and environment variable '{env_var}' is not set"
+                "API key not provided and environment variable '{env_var}' is not set in environment or .gaugeblock/.env"
             ),
         });
     }
@@ -45,7 +61,7 @@ pub async fn test_inference_slot(req: &TestInferenceRequest) -> Result<TestInfer
         };
 
         let client = match reqwest::Client::builder()
-            .timeout(Duration::from_secs(5))
+            .timeout(Duration::from_secs(8))
             .build()
         {
             Ok(c) => c,
@@ -79,15 +95,19 @@ pub async fn test_inference_slot(req: &TestInferenceRequest) -> Result<TestInfer
                             "Successfully verified endpoint and credentials ({latency_ms}ms)"
                         ),
                     });
-                } else if status == reqwest::StatusCode::UNAUTHORIZED {
-                    return Ok(TestInferenceReceipt {
-                        success: false,
-                        latency_ms,
-                        model_used: req.model_name.clone(),
-                        message: "Authentication failed (HTTP 401 Unauthorized): Invalid API key"
-                            .to_string(),
-                    });
                 }
+                let err_body = resp.text().await.unwrap_or_default();
+                let message = if status == reqwest::StatusCode::UNAUTHORIZED {
+                    "Authentication failed (HTTP 401 Unauthorized): Invalid API key".to_string()
+                } else {
+                    format!("Endpoint probe returned HTTP {status}: {err_body}")
+                };
+                return Ok(TestInferenceReceipt {
+                    success: false,
+                    latency_ms,
+                    model_used: req.model_name.clone(),
+                    message,
+                });
             }
             Err(e) => {
                 return Ok(TestInferenceReceipt {

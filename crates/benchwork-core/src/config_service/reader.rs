@@ -78,7 +78,7 @@ fn load_raw_sawhorse_config(root_path: &Path) -> Option<SawhorseConfig> {
         return Some(cfg);
     }
 
-    SawhorseConfig::discover().ok()
+    None
 }
 
 fn extract_provider_mode(mode: &ExecutionMode, universal: &mut UniversalModelConfig) {
