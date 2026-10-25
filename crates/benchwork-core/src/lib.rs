@@ -6,6 +6,7 @@
 pub mod capabilities;
 pub mod config_service;
 pub mod config_types;
+pub mod credentials;
 pub mod dag_service;
 pub mod docs_service;
 pub mod error;
@@ -14,6 +15,7 @@ pub mod migration;
 pub mod model;
 pub mod model_discovery;
 pub mod spec_studio;
+pub mod test_inference;
 pub mod xray_service;
 
 pub use capabilities::scan_capabilities;
@@ -22,6 +24,7 @@ pub use config_types::{
     DiscoverModelsRequest, DiscoverModelsResponse, RoleOverrideConfig, TestInferenceReceipt,
     TestInferenceRequest, UniversalModelConfig,
 };
+pub use credentials::{load_credentials, persist_credential};
 pub use dag_service::{
     archive_task_service, claim_task_lease, get_dag_view, get_task_briefing, link_tasks_service,
     record_task_handoff, split_task_service, unarchive_task_service, update_task_details,

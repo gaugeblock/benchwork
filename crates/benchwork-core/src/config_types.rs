@@ -11,6 +11,8 @@ pub struct UniversalModelConfig {
     pub model_name: String,
     pub base_url: Option<String>,
     pub api_key_env: Option<String>,
+    #[serde(default)]
+    pub api_key: Option<String>,
     #[serde(default = "default_mode")]
     pub mode: String,
     #[serde(default)]
@@ -28,6 +30,8 @@ pub struct RoleOverrideConfig {
     pub provider: String,
     pub model_name: String,
     pub base_url: Option<String>,
+    #[serde(default)]
+    pub api_key: Option<String>,
     pub api_key_env: Option<String>,
     pub mode: String,
 }
@@ -38,6 +42,8 @@ pub struct TestInferenceRequest {
     pub provider: String,
     pub model_name: String,
     pub base_url: Option<String>,
+    #[serde(default)]
+    pub api_key: Option<String>,
     pub api_key_env: Option<String>,
     pub mode: String,
 }

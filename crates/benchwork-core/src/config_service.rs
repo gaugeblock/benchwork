@@ -3,7 +3,6 @@
 use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
-use std::time::Instant;
 
 use sawhorse_core::config::schema::{
     OpenAiDialect, ProviderConfig, RoleConfig, SawhorseConfig, TimeoutConfig,
@@ -15,6 +14,7 @@ use crate::error::{BenchworkError, Result};
 
 /// Reads the active `sawhorse.toml` from the workspace root or returns defaults.
 pub fn read_sawhorse_config(root_path: &Path) -> Result<UniversalModelConfig> {
+    crate::credentials::load_credentials(root_path);
     let config_path = root_path.join("sawhorse.toml");
     if !config_path.is_file() {
         return Ok(UniversalModelConfig::default());
@@ -167,33 +167,15 @@ pub fn write_sawhorse_config(root_path: &Path, config: &UniversalModelConfig) ->
 
     let out_path = root_path.join("sawhorse.toml");
     fs::write(&out_path, serialized)?;
+
+    if let Some(ref key) = config.api_key
+        && !key.trim().is_empty()
+    {
+        let env_var = config.api_key_env.as_deref().unwrap_or("OPENAI_API_KEY");
+        crate::credentials::persist_credential(root_path, env_var, key)?;
+    }
+
     Ok(())
 }
 
-/// Tests inference connectivity and latency against a candidate model configuration.
-pub async fn test_inference_slot(req: &TestInferenceRequest) -> Result<TestInferenceReceipt> {
-    let start = Instant::now();
-
-    if req.mode == "openai_compatible"
-        && let Some(ref env_var) = req.api_key_env
-        && std::env::var(env_var).is_err()
-    {
-        return Ok(TestInferenceReceipt {
-            success: false,
-            latency_ms: start.elapsed().as_millis() as u64,
-            model_used: req.model_name.clone(),
-            message: format!("Environment variable '{env_var}' is not set in process environment"),
-        });
-    }
-
-    let latency_ms = start.elapsed().as_millis() as u64;
-    Ok(TestInferenceReceipt {
-        success: true,
-        latency_ms: latency_ms.max(12),
-        model_used: req.model_name.clone(),
-        message: format!(
-            "Successfully connected to {} ({}) via {}",
-            req.model_name, req.provider, req.mode
-        ),
-    })
-}
+pub use crate::test_inference::test_inference_slot;
