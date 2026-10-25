@@ -169,17 +169,28 @@ pub async fn ping_inference(
             ),
             grammar_constraint: None,
             grammar_format: None,
-            max_tokens: 1024,
+            max_tokens: 4096,
             temperature: 0.2,
         };
 
-        if let Ok(resp) = router.complete(&infer_req).await {
-            return Ok(InferencePingResponse {
-                role: req.role.clone(),
-                text: resp.text,
-                latency_ms: resp.latency_ms,
-                model_used: resp.model_used,
-            });
+        match router.complete(&infer_req).await {
+            Ok(resp) => {
+                return Ok(InferencePingResponse {
+                    role: req.role.clone(),
+                    text: resp.text,
+                    latency_ms: resp.latency_ms,
+                    model_used: resp.model_used,
+                });
+            }
+            Err(e) => {
+                let latency_ms = start.elapsed().as_millis() as u64;
+                return Ok(InferencePingResponse {
+                    role: req.role.clone(),
+                    text: format!("[Inference Error: {e}]"),
+                    latency_ms,
+                    model_used: "error".to_string(),
+                });
+            }
         }
     }
 
