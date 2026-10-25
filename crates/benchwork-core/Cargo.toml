@@ -11,13 +11,13 @@ description = "Core domain types, workspace aggregation, and multi-crate service
 workspace = true
 
 [dependencies]
-batten-core = "0.1.0-beta.1"
-chalkline-core = "0.1.0-beta.1"
-dado-core = "0.1.0-beta.1"
-joiner-core = "0.1.0-beta.1"
-miter-engine = "0.1.0-alpha.2"
-sawhorse-core = "0.1.0-beta.1"
-storypole-core = "0.1.0-beta.1"
+batten-core = "0.1.0-beta.2"
+chalkline-core = "0.1.0-beta.2"
+dado-core = "0.1.0-beta.2"
+joiner-core = "0.1.0-beta.2"
+miter-engine = "0.1.0-alpha.3"
+sawhorse-core = "0.1.0-beta.2"
+storypole-core = "0.1.0-beta.2"
 
 async-trait = "0.1"
 futures = "0.3"

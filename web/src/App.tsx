@@ -7,6 +7,7 @@ import { DagBoardPanel } from './panels/DagBoard/DagBoardPanel';
 import { SynthesisXrayPanel } from './panels/SynthesisXray/SynthesisXrayPanel';
 import { ModelHubPanel } from './panels/ModelTelemetryHub/ModelHubPanel';
 import { MigrationBanner } from './panels/MigrationBanner';
+import packageJson from '../package.json';
 import {
   FileText,
   Network,
@@ -60,7 +61,7 @@ export const App: React.FC = () => {
               benchwork
             </span>
             <span className="text-[10px] px-1.5 py-0.5 rounded bg-cad-bg border border-cad-border text-cad-cyan font-mono">
-              v0.1.0-beta.2
+              v{packageJson.version}
             </span>
           </div>
 
