@@ -12,14 +12,14 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 
+use axum::Router;
 use axum::extract::Request;
 use axum::http::header::{CONTENT_TYPE, HeaderMap};
 use axum::http::{StatusCode, Uri};
 use axum::response::{Html, IntoResponse, Response};
 use axum::routing::{delete, get, post};
-use axum::Router;
-use benchwork_core::model::LiveEvent;
 use benchwork_core::BenchworkState;
+use benchwork_core::model::LiveEvent;
 use rust_embed::RustEmbed;
 use tower_http::cors::{Any, CorsLayer};
 use tracing::{error, info};
@@ -64,7 +64,8 @@ pub async fn start_daemon(
         .route("/api/v1/spec", get(routes_state::get_spec))
         .route("/api/v1/spec/decide", post(routes_state::post_decide))
         .route(
-            "/api/v1/spec/contract-preview", post(routes_state::post_contract_preview),
+            "/api/v1/spec/contract-preview",
+            post(routes_state::post_contract_preview),
         )
         .route("/api/v1/dag", get(routes_dag::get_dag))
         .route(
@@ -130,8 +131,7 @@ pub async fn start_daemon(
         .route("/api/v1/docs/audit", get(routes_docs::get_docs_audit))
         .route(
             "/api/v1/docs/config",
-            get(routes_docs::get_docs_config_handler)
-                .post(routes_docs::post_docs_config_handler),
+            get(routes_docs::get_docs_config_handler).post(routes_docs::post_docs_config_handler),
         )
         .route(
             "/api/v1/docs/scaffold",
@@ -205,7 +205,9 @@ async fn handle_static(uri: Uri, _req: Request, cfg: Arc<ServerConfig>) -> impl 
 
     match WebAssets::get(&path) {
         Some(content) => {
-            let mime = mime_guess::from_path(&path).first_or_octet_stream().to_string();
+            let mime = mime_guess::from_path(&path)
+                .first_or_octet_stream()
+                .to_string();
             ([(CONTENT_TYPE, mime)], content.data.into_owned()).into_response()
         }
         None => match WebAssets::get("index.html") {

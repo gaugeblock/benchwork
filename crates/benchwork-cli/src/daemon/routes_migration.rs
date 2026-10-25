@@ -5,9 +5,7 @@ use std::sync::Arc;
 use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::Json;
-use benchwork_core::{
-    MigrationPlan, MigrationReceipt, discover_migration, execute_migration,
-};
+use benchwork_core::{MigrationPlan, MigrationReceipt, discover_migration, execute_migration};
 use serde::Deserialize;
 
 use super::routes_state::DaemonContext;
@@ -43,4 +41,3 @@ pub async fn post_execute_migration(
         .map(Json)
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))
 }
-

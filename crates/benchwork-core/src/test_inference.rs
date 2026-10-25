@@ -27,7 +27,9 @@ pub async fn test_inference_slot(req: &TestInferenceRequest) -> Result<TestInfer
             success: false,
             latency_ms: start.elapsed().as_millis() as u64,
             model_used: req.model_name.clone(),
-            message: format!("API key not provided and environment variable '{env_var}' is not set"),
+            message: format!(
+                "API key not provided and environment variable '{env_var}' is not set"
+            ),
         });
     }
 
@@ -42,7 +44,10 @@ pub async fn test_inference_slot(req: &TestInferenceRequest) -> Result<TestInfer
             format!("{raw_base}/v1/models")
         };
 
-        let client = match reqwest::Client::builder().timeout(Duration::from_secs(5)).build() {
+        let client = match reqwest::Client::builder()
+            .timeout(Duration::from_secs(5))
+            .build()
+        {
             Ok(c) => c,
             Err(e) => {
                 return Ok(TestInferenceReceipt {
@@ -54,7 +59,9 @@ pub async fn test_inference_slot(req: &TestInferenceRequest) -> Result<TestInfer
             }
         };
 
-        let mut builder = client.get(&probe_url).header("User-Agent", "gaugeblock-benchwork/0.1.0");
+        let mut builder = client
+            .get(&probe_url)
+            .header("User-Agent", "gaugeblock-benchwork/0.1.0");
         if let Some(ref key) = resolved_key {
             builder = builder.header("Authorization", format!("Bearer {key}"));
         }
@@ -68,14 +75,17 @@ pub async fn test_inference_slot(req: &TestInferenceRequest) -> Result<TestInfer
                         success: true,
                         latency_ms: latency_ms.max(1),
                         model_used: req.model_name.clone(),
-                        message: format!("Successfully verified endpoint and credentials ({latency_ms}ms)"),
+                        message: format!(
+                            "Successfully verified endpoint and credentials ({latency_ms}ms)"
+                        ),
                     });
                 } else if status == reqwest::StatusCode::UNAUTHORIZED {
                     return Ok(TestInferenceReceipt {
                         success: false,
                         latency_ms,
                         model_used: req.model_name.clone(),
-                        message: "Authentication failed (HTTP 401 Unauthorized): Invalid API key".to_string(),
+                        message: "Authentication failed (HTTP 401 Unauthorized): Invalid API key"
+                            .to_string(),
                     });
                 }
             }
@@ -101,4 +111,3 @@ pub async fn test_inference_slot(req: &TestInferenceRequest) -> Result<TestInfer
         ),
     })
 }
-

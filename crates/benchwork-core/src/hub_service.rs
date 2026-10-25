@@ -148,9 +148,11 @@ pub async fn ping_inference(
     let sawhorse_path = root_path.join("sawhorse.toml");
     let gb_config_path = root_path.join(".gaugeblock").join("config.toml");
     let config = if sawhorse_path.is_file() {
-        SawhorseConfig::load_from_path(&sawhorse_path).unwrap_or_else(|_| SawhorseConfig::discover().unwrap_or_default())
+        SawhorseConfig::load_from_path(&sawhorse_path)
+            .unwrap_or_else(|_| SawhorseConfig::discover().unwrap_or_default())
     } else if gb_config_path.is_file() {
-        SawhorseConfig::load_from_path(&gb_config_path).unwrap_or_else(|_| SawhorseConfig::discover().unwrap_or_default())
+        SawhorseConfig::load_from_path(&gb_config_path)
+            .unwrap_or_else(|_| SawhorseConfig::discover().unwrap_or_default())
     } else {
         SawhorseConfig::discover().unwrap_or_default()
     };
@@ -159,7 +161,9 @@ pub async fn ping_inference(
         let infer_req = InferenceRequest {
             role: role_enum,
             prompt: req.prompt.clone(),
-            system_prompt: Some("You are a helpful software architecture and systems engineer.".to_string()),
+            system_prompt: Some(
+                "You are a helpful software architecture and systems engineer.".to_string(),
+            ),
             grammar_constraint: None,
             grammar_format: None,
             max_tokens: 1024,
