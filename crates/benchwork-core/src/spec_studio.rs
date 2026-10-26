@@ -14,7 +14,9 @@ use storypole_core::ops::decisions::decide;
 use uuid::Uuid;
 
 use crate::error::{BenchworkError, Result};
-use crate::model::{DecisionResolutionReceipt, PendingDecision, ResolveDecisionRequest, SpecBundle};
+use crate::model::{
+    DecisionResolutionReceipt, PendingDecision, ResolveDecisionRequest, SpecBundle,
+};
 pub use crate::spec_preview::preview_contract;
 
 /// Candidate supporting document filenames.

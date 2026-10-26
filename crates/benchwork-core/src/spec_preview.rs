@@ -17,4 +17,3 @@ pub fn preview_contract(req: &ContractPreviewRequest) -> Result<ContractPreviewR
         zod_code,
     })
 }
-

@@ -1,3 +1,5 @@
+#![allow(clippy::unwrap_used)]
+
 use benchwork_core::audit_docs;
 use std::path::PathBuf;
 

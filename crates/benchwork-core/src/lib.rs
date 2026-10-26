@@ -4,6 +4,7 @@
 #![warn(missing_debug_implementations)]
 
 pub mod capabilities;
+pub mod chat_harness;
 pub mod config_service;
 pub mod config_types;
 pub mod credentials;
