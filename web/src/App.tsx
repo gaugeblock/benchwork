@@ -7,6 +7,7 @@ import { DagBoardPanel } from './panels/DagBoard/DagBoardPanel';
 import { SynthesisXrayPanel } from './panels/SynthesisXray/SynthesisXrayPanel';
 import { ModelHubPanel } from './panels/ModelTelemetryHub/ModelHubPanel';
 import { MigrationBanner } from './panels/MigrationBanner';
+import { CopilotRail } from './chat/CopilotRail';
 import packageJson from '../package.json';
 import {
   FileText,
@@ -172,10 +173,18 @@ export const App: React.FC = () => {
 
       {/* Active Panel Viewport */}
       <main className="flex-1 flex overflow-hidden">
-        {activeTab === 'spec' && <GrillStudioPanel initialChatTask={activeChatTask} />}
-        {activeTab === 'dag' && <DagBoardPanel onDiscussInChat={handleDiscussInChat} />}
-        {activeTab === 'xray' && <SynthesisXrayPanel />}
-        {activeTab === 'hub' && <ModelHubPanel />}
+        <div className="flex-1 flex overflow-hidden">
+          {activeTab === 'spec' && <GrillStudioPanel initialChatTask={activeChatTask} />}
+          {activeTab === 'dag' && <DagBoardPanel onDiscussInChat={handleDiscussInChat} />}
+          {activeTab === 'xray' && <SynthesisXrayPanel />}
+          {activeTab === 'hub' && <ModelHubPanel />}
+        </div>
+
+        {/* Persistent Generative UI Chat Copilot Rail (GB-46) */}
+        <CopilotRail
+          activePanel={activeTab}
+          focusedTaskKey={activeChatTask?.ticket_key}
+        />
       </main>
     </div>
   );
