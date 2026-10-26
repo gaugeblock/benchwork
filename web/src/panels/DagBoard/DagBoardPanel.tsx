@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import type { DagView, TaskNode } from '../../types';
 import { api } from '../../api/client';
+import { usePersistentState } from '../../hooks/usePersistentState';
 import { TaskGraphView } from './TaskGraphView';
 import { KanbanBoardView } from './KanbanBoardView';
 import { TaskTableView } from './TaskTableView';
@@ -15,11 +16,11 @@ export const DagBoardPanel: React.FC<DagBoardPanelProps> = ({ onDiscussInChat })
   const [dag, setDag] = useState<DagView | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [kindFilter, setKindFilter] = useState<string>('all');
-  const [needsDecision, setNeedsDecision] = useState<boolean>(false);
-  const [includeArchived, setIncludeArchived] = useState<boolean>(false);
-  const [viewMode, setViewMode] = useState<'dag' | 'kanban' | 'list'>('dag');
+  const [statusFilter, setStatusFilter] = usePersistentState<string>('benchwork_dag_status_filter', 'all');
+  const [kindFilter, setKindFilter] = usePersistentState<string>('benchwork_dag_kind_filter', 'all');
+  const [needsDecision, setNeedsDecision] = usePersistentState<boolean>('benchwork_dag_needs_decision', false);
+  const [includeArchived, setIncludeArchived] = usePersistentState<boolean>('benchwork_dag_include_archived', false);
+  const [viewMode, setViewMode] = usePersistentState<'dag' | 'kanban' | 'list'>('benchwork_dag_view_mode', 'dag');
 
   const loadDag = useCallback(async () => {
     try {

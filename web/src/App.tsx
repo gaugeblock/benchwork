@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { api } from './api/client';
 import { useLiveStream } from './api/useLiveStream';
+import { usePersistentState } from './hooks/usePersistentState';
+import { useHashRoute } from './hooks/useHashRoute';
 import type { WorkspaceCapabilities, LiveEvent, TaskNode } from './types';
 import { DocsSpecsPanel } from './panels/DocsSpecs/DocsSpecsPanel';
 import { DagBoardPanel } from './panels/DagBoard/DagBoardPanel';
@@ -21,7 +23,12 @@ import {
 } from 'lucide-react';
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'spec' | 'dag' | 'xray' | 'hub'>('dag');
+  const [activeTab, setActiveTab] = usePersistentState<'spec' | 'dag' | 'xray' | 'hub'>(
+    'benchwork_active_tab',
+    'dag'
+  );
+
+  useHashRoute({ activeTab, setActiveTab });
   const [capabilities, setCapabilities] = useState<WorkspaceCapabilities | null>(null);
   const [activeChatTask, setActiveChatTask] = useState<TaskNode | null>(null);
 
