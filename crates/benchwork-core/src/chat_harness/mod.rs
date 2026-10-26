@@ -1,6 +1,7 @@
 //! Chat harness types, thread persistence, and session management.
 
 pub mod context_injector;
+pub mod orchestrator;
 pub mod telemetry_spool;
 pub mod tool_registry;
 

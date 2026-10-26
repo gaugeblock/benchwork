@@ -3,15 +3,13 @@
 #![forbid(unsafe_code)]
 #![warn(missing_debug_implementations)]
 
-mod args;
-mod daemon;
-mod handlers;
-
 use clap::Parser;
 use tracing_subscriber::EnvFilter;
 
-use args::{Cli, Commands, UpArgs};
-use handlers::{handle_capabilities, handle_mcp, handle_migrate, handle_snapshot, handle_up};
+use benchwork_cli::args::{Cli, Commands, UpArgs};
+use benchwork_cli::handlers::{
+    handle_capabilities, handle_mcp, handle_migrate, handle_snapshot, handle_up,
+};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
