@@ -6,8 +6,8 @@ use std::io::{BufRead, BufReader};
 use std::path::Path;
 
 use dado_core::PatternRegistry;
-use storypole_core::StorypoleStore;
 use storypole_core::index::query::get_all_tasks;
+use storypole_core::{StorypoleStore, StorypoleWorkspaceStore};
 
 use crate::error::Result;
 use crate::model::{SpecDocsStatus, WorkspaceCapabilities};
@@ -76,13 +76,24 @@ fn scan_spec_docs(root_path: &Path) -> SpecDocsStatus {
 }
 
 fn scan_storypole(root_path: &Path) -> (bool, BTreeMap<String, usize>, usize) {
-    let dot_dir = root_path.join(".storypole");
-    if !dot_dir.join("config.toml").is_file() {
-        return (false, BTreeMap::new(), 0);
-    }
-
     let mut task_counts = BTreeMap::new();
     let mut pending_decisions = 0;
+
+    if let Ok(ws) = StorypoleWorkspaceStore::open(root_path)
+        && let Ok(tasks) = get_all_tasks(ws.conn())
+    {
+        for task in tasks.values() {
+            let status_name = format!("{:?}", task.status).to_lowercase();
+            *task_counts.entry(status_name).or_insert(0) += 1;
+
+            for dec in &task.decisions {
+                if dec.chosen_option.is_none() {
+                    pending_decisions += 1;
+                }
+            }
+        }
+        return (true, task_counts, pending_decisions);
+    }
 
     if let Ok(store) = StorypoleStore::open(root_path)
         && let Ok(tasks) = get_all_tasks(store.conn())
@@ -100,9 +111,9 @@ fn scan_storypole(root_path: &Path) -> (bool, BTreeMap<String, usize>, usize) {
         return (true, task_counts, pending_decisions);
     }
 
-    // Fallback: check ledger.jsonl line count if sqlite wasn't ready
+    let dot_dir = StorypoleStore::resolve_dot_dir(root_path);
     let ledger_path = dot_dir.join("ledger.jsonl");
-    let active = ledger_path.is_file();
+    let active = ledger_path.is_file() || dot_dir.join("config.toml").is_file();
     (active, task_counts, pending_decisions)
 }
 

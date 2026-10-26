@@ -4,6 +4,8 @@ use std::fs;
 use std::path::Path;
 
 use serde::{Deserialize, Serialize};
+use storypole_core::index::query::get_all_tasks;
+use storypole_core::{StorypoleStore, StorypoleWorkspaceStore, TaskStatus};
 
 use crate::error::Result;
 
@@ -34,12 +36,29 @@ fn detect_git_branch(root_dir: &Path) -> String {
     "main".to_string()
 }
 
-/// Counts Storypole tasks in each status from the ledger.
+/// Counts Storypole tasks in each status from SQLite or the ledger.
 fn summarize_storypole(root_dir: &Path) -> (usize, usize, usize) {
-    let ledger_path = root_dir
-        .join(".gaugeblock")
-        .join("storypole")
-        .join("ledger.jsonl");
+    if let Ok(ws) = StorypoleWorkspaceStore::open(root_dir)
+        && let Ok(tasks) = get_all_tasks(ws.conn())
+    {
+        let mut ready = 0;
+        let mut in_progress = 0;
+        let mut blocked = 0;
+        for t in tasks.values() {
+            match t.status {
+                TaskStatus::Ready => ready += 1,
+                TaskStatus::InProgress | TaskStatus::Synthesizing | TaskStatus::Verifying => {
+                    in_progress += 1;
+                }
+                TaskStatus::Blocked => blocked += 1,
+                _ => {}
+            }
+        }
+        return (ready, in_progress, blocked);
+    }
+
+    let dot_dir = StorypoleStore::resolve_dot_dir(root_dir);
+    let ledger_path = dot_dir.join("ledger.jsonl");
     let mut ready = 0;
     let mut in_progress = 0;
     let mut blocked = 0;
@@ -97,7 +116,7 @@ pub fn expand_user_prompt(prompt: &str, root_dir: &Path) -> Result<String> {
         );
     }
 
-    // @doc:<ARCHETYPE> expansion
+    // @doc:<ARCHETYPE> and @task:<KEY> expansions
     for token in prompt.split_whitespace() {
         if let Some(archetype) = token.strip_prefix("@doc:") {
             let doc_file = format!("{archetype}.md");
@@ -110,11 +129,23 @@ pub fn expand_user_prompt(prompt: &str, root_dir: &Path) -> Result<String> {
                 expanded.push_str(&injection);
             }
         } else if let Some(task_key) = token.strip_prefix("@task:") {
-            let plan_path = root_dir
-                .join(".gaugeblock")
-                .join("storypole")
-                .join("plans")
-                .join(format!("{task_key}.md"));
+            let dot_dir = StorypoleStore::resolve_dot_dir(root_dir);
+            let mut plan_path = dot_dir.join("plans").join(format!("{task_key}.md"));
+
+            if !plan_path.is_file()
+                && let Ok(ws) = StorypoleWorkspaceStore::open(root_dir)
+            {
+                for m in ws.members() {
+                    if let Some(ref d) = m.dot_dir {
+                        let candidate = d.join("plans").join(format!("{task_key}.md"));
+                        if candidate.is_file() {
+                            plan_path = candidate;
+                            break;
+                        }
+                    }
+                }
+            }
+
             if let Ok(content) = fs::read_to_string(&plan_path) {
                 let preview: String = content.lines().take(30).collect::<Vec<_>>().join("\n");
                 let injection = format!(
