@@ -2,18 +2,21 @@
 
 #![allow(clippy::unwrap_used)]
 
-use axum::extract::State;
-use axum::http::StatusCode;
-use axum::response::IntoResponse;
 use std::sync::Arc;
 use tempfile::TempDir;
 
+use axum::extract::State;
+use axum::http::StatusCode;
+use axum::response::IntoResponse;
+use futures::StreamExt;
+
 use benchwork_cli::daemon::routes_chat::{
-    handle_apply_proposal, handle_get_autocomplete, handle_get_threads,
+    handle_apply_proposal, handle_chat_stream, handle_get_autocomplete, handle_get_threads,
 };
 use benchwork_cli::daemon::routes_state::DaemonContext;
 use benchwork_core::BenchworkState;
-use benchwork_core::chat_harness::orchestrator::ApplyProposalRequest;
+use benchwork_core::chat_harness::context_injector::UiViewportContext;
+use benchwork_core::chat_harness::orchestrator::{ApplyProposalRequest, ChatTurnRequest};
 
 #[tokio::test]
 async fn test_autocomplete_endpoint() {
@@ -75,4 +78,27 @@ async fn test_get_threads_endpoint_empty_and_populated() {
         .unwrap();
     let body: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
     assert!(body.get("threads").unwrap().is_array());
+}
+
+#[tokio::test]
+async fn test_chat_stream_endpoint() {
+    let temp = TempDir::new().unwrap();
+    let state = BenchworkState::new(temp.path().to_path_buf());
+    let ctx = Arc::new(DaemonContext { state });
+
+    let req = ChatTurnRequest {
+        thread_id: "thread-test".to_string(),
+        user_message: "Hello world".to_string(),
+        viewport: UiViewportContext::default(),
+        role: Some("planner".to_string()),
+    };
+
+    let sse_resp = handle_chat_stream(State(ctx), axum::Json(req)).await;
+    let mut stream = sse_resp.into_response().into_body().into_data_stream();
+
+    // Collect first SSE chunk from the receiver stream
+    if let Some(Ok(chunk)) = stream.next().await {
+        let chunk_str = String::from_utf8_lossy(&chunk);
+        assert!(!chunk_str.is_empty());
+    }
 }

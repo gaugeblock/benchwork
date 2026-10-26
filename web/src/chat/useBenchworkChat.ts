@@ -22,7 +22,7 @@ export interface BenchworkMessage {
   proposal?: StagedProposal;
 }
 
-export function useBenchworkChat(viewport: UiViewportContext) {
+export function useBenchworkChat(viewport: UiViewportContext, role: string = 'planner') {
   const [messages, setMessages] = useState<BenchworkMessage[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [threadId] = useState(() => `thread-${Date.now()}`);
@@ -45,6 +45,7 @@ export function useBenchworkChat(viewport: UiViewportContext) {
           thread_id: threadId,
           user_message: content,
           viewport,
+          role,
         }),
       });
 
@@ -79,6 +80,11 @@ export function useBenchworkChat(viewport: UiViewportContext) {
               setMessages((prev) =>
                 prev.map((m) => (m.id === assistantMsgId ? { ...m, content: assistantText } : m))
               );
+            } else if (parsed.type === 'error') {
+              assistantText += `\n\n⚠️ Error: ${parsed.message}`;
+              setMessages((prev) =>
+                prev.map((m) => (m.id === assistantMsgId ? { ...m, content: assistantText } : m))
+              );
             } else if (parsed.type === 'tool_proposal') {
               stagedProposal = {
                 proposalId: parsed.proposal_id,
@@ -96,12 +102,17 @@ export function useBenchworkChat(viewport: UiViewportContext) {
           }
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Chat stream failed:', err);
+      const errMsgId = `asst-err-${Date.now()}`;
+      setMessages((prev) => [
+        ...prev,
+        { id: errMsgId, role: 'assistant', content: `⚠️ Connection error: ${err?.message || err}`, timestampMs: Date.now() },
+      ]);
     } finally {
       setIsRunning(false);
     }
-  }, [threadId, viewport]);
+  }, [threadId, viewport, role]);
 
   const applyProposal = useCallback(
     async (proposalId: string, toolName: string, payloadJson: string, approved: boolean, editedPayload?: string) => {
@@ -119,7 +130,6 @@ export function useBenchworkChat(viewport: UiViewportContext) {
           }),
         });
 
-        // Clear pending proposal on card
         setMessages((prev) =>
           prev.map((m) => (m.proposal?.proposalId === proposalId ? { ...m, proposal: undefined } : m))
         );
@@ -156,3 +166,5 @@ export function useBenchworkChat(viewport: UiViewportContext) {
     applyProposal,
   };
 }
+
+export const useBenjiChat = useBenchworkChat;

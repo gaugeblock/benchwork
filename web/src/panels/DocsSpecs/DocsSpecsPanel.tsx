@@ -185,3 +185,4 @@ export const DocsSpecsPanel: React.FC = () => {
     </div>
   );
 };
+

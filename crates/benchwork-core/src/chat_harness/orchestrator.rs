@@ -26,6 +26,8 @@ pub struct ChatTurnRequest {
     pub thread_id: String,
     pub user_message: String,
     pub viewport: UiViewportContext,
+    #[serde(default)]
+    pub role: Option<String>,
 }
 
 /// Request payload to approve, reject, or edit a staged tool proposal.
