@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { api } from './api/client';
 import { useLiveStream } from './api/useLiveStream';
 import type { WorkspaceCapabilities, LiveEvent, TaskNode } from './types';
-import { GrillStudioPanel } from './panels/GrillStudio/GrillStudioPanel';
+import { DocsSpecsPanel } from './panels/DocsSpecs/DocsSpecsPanel';
 import { DagBoardPanel } from './panels/DagBoard/DagBoardPanel';
 import { SynthesisXrayPanel } from './panels/SynthesisXray/SynthesisXrayPanel';
 import { ModelHubPanel } from './panels/ModelTelemetryHub/ModelHubPanel';
@@ -27,7 +27,6 @@ export const App: React.FC = () => {
 
   const handleDiscussInChat = (task: TaskNode) => {
     setActiveChatTask(task);
-    setActiveTab('spec');
   };
 
   const loadCapabilities = useCallback(async () => {
@@ -131,7 +130,7 @@ export const App: React.FC = () => {
           }`}
         >
           <FileText className="w-3.5 h-3.5" />
-          Panel 1: Spec & /grill-me Studio
+          Panel 1: Docs & Specs
         </button>
 
         <button
@@ -174,7 +173,7 @@ export const App: React.FC = () => {
       {/* Active Panel Viewport */}
       <main className="flex-1 flex overflow-hidden">
         <div className="flex-1 flex overflow-hidden">
-          {activeTab === 'spec' && <GrillStudioPanel initialChatTask={activeChatTask} />}
+          {activeTab === 'spec' && <DocsSpecsPanel />}
           {activeTab === 'dag' && <DagBoardPanel onDiscussInChat={handleDiscussInChat} />}
           {activeTab === 'xray' && <SynthesisXrayPanel />}
           {activeTab === 'hub' && <ModelHubPanel />}
