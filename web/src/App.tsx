@@ -7,7 +7,7 @@ import { DagBoardPanel } from './panels/DagBoard/DagBoardPanel';
 import { SynthesisXrayPanel } from './panels/SynthesisXray/SynthesisXrayPanel';
 import { ModelHubPanel } from './panels/ModelTelemetryHub/ModelHubPanel';
 import { MigrationBanner } from './panels/MigrationBanner';
-import { CopilotRail } from './chat/CopilotRail';
+import { BenjiSidebar } from './components/assistant/BenjiSidebar';
 import packageJson from '../package.json';
 import {
   FileText,
@@ -179,8 +179,8 @@ export const App: React.FC = () => {
           {activeTab === 'hub' && <ModelHubPanel />}
         </div>
 
-        {/* Persistent Generative UI Chat Copilot Rail (GB-46) */}
-        <CopilotRail
+        {/* Unified AI Systems Engineering Assistant (Benji) (GB-60, GB-62) */}
+        <BenjiSidebar
           activePanel={activeTab}
           focusedTaskKey={activeChatTask?.ticket_key}
         />
