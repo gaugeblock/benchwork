@@ -65,6 +65,7 @@ export const BenjiSidebar: React.FC<BenjiSidebarProps> = ({
 
   return (
     <aside
+      data-testid="benji-sidebar"
       style={{ width: `${width}px` }}
       className={`relative flex flex-col h-full bg-cad-surface shrink-0 font-mono text-xs z-20 overflow-hidden ${
         dock === 'left' ? 'order-first border-r border-cad-border' : 'order-last border-l border-cad-border'
