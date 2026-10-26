@@ -64,7 +64,14 @@ pub async fn handle_chat_stream(
         let content = match inject_turn_context(&user_msg, &root, &viewport) {
             Ok(c) => c,
             Err(e) => {
-                send_sse_event(&tx, "error", &ChatStreamEvent::Error { message: e.to_string() }).await;
+                send_sse_event(
+                    &tx,
+                    "error",
+                    &ChatStreamEvent::Error {
+                        message: e.to_string(),
+                    },
+                )
+                .await;
                 return;
             }
         };
@@ -84,7 +91,14 @@ pub async fn handle_chat_stream(
         let router = match RoleRouter::from_config(sawhorse_cfg) {
             Ok(r) => r,
             Err(e) => {
-                send_sse_event(&tx, "error", &ChatStreamEvent::Error { message: e.to_string() }).await;
+                send_sse_event(
+                    &tx,
+                    "error",
+                    &ChatStreamEvent::Error {
+                        message: e.to_string(),
+                    },
+                )
+                .await;
                 return;
             }
         };
@@ -100,7 +114,14 @@ pub async fn handle_chat_stream(
         let mut stream = match router.complete_stream(&inf_req).await {
             Ok(s) => s,
             Err(err) => {
-                send_sse_event(&tx, "error", &ChatStreamEvent::Error { message: err.to_string() }).await;
+                send_sse_event(
+                    &tx,
+                    "error",
+                    &ChatStreamEvent::Error {
+                        message: err.to_string(),
+                    },
+                )
+                .await;
                 return;
             }
         };
@@ -110,10 +131,22 @@ pub async fn handle_chat_stream(
             match chunk {
                 Ok(token) => {
                     full_response.push_str(&token);
-                    send_sse_event(&tx, "text_delta", &ChatStreamEvent::TextDelta { delta: token }).await;
+                    send_sse_event(
+                        &tx,
+                        "text_delta",
+                        &ChatStreamEvent::TextDelta { delta: token },
+                    )
+                    .await;
                 }
                 Err(err) => {
-                    send_sse_event(&tx, "error", &ChatStreamEvent::Error { message: err.to_string() }).await;
+                    send_sse_event(
+                        &tx,
+                        "error",
+                        &ChatStreamEvent::Error {
+                            message: err.to_string(),
+                        },
+                    )
+                    .await;
                     break;
                 }
             }
@@ -151,7 +184,9 @@ async fn send_sse_event(
     payload: &ChatStreamEvent,
 ) {
     if let Ok(data) = serde_json::to_string(payload) {
-        let _ = tx.send(Ok(Event::default().event(event_name).data(data))).await;
+        let _ = tx
+            .send(Ok(Event::default().event(event_name).data(data)))
+            .await;
     }
 }
 

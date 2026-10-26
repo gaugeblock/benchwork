@@ -90,6 +90,28 @@ pub fn archive_task_service(root_path: &Path, task_id_or_key: &str) -> Result<()
     })
 }
 
+/// Result summary of a bulk archive operation.
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Default, PartialEq, Eq)]
+pub struct BulkArchiveResult {
+    pub archived_count: usize,
+    pub errors: Vec<String>,
+}
+
+/// Archives multiple tasks in a batch across governing stores.
+pub fn bulk_archive_tasks_service(
+    root_path: &Path,
+    task_ids: &[String],
+) -> Result<BulkArchiveResult> {
+    let mut result = BulkArchiveResult::default();
+    for id in task_ids {
+        match archive_task_service(root_path, id) {
+            Ok(()) => result.archived_count += 1,
+            Err(e) => result.errors.push(format!("{id}: {e}")),
+        }
+    }
+    Ok(result)
+}
+
 /// Unarchives an archived task, restoring it to its previous state (or Verified).
 pub fn unarchive_task_service(root_path: &Path, task_id_or_key: &str) -> Result<()> {
     with_governing_store(root_path, task_id_or_key, |store, task_id| {
@@ -98,4 +120,3 @@ pub fn unarchive_task_service(root_path: &Path, task_id_or_key: &str) -> Result<
             .map_err(|e| BenchworkError::Storypole(e.to_string()))
     })
 }
-

@@ -6,6 +6,8 @@ import { TaskGraphView } from './TaskGraphView';
 import { KanbanBoardView } from './KanbanBoardView';
 import { TaskTableView } from './TaskTableView';
 import { TaskBriefingDrawer } from './TaskBriefingDrawer';
+import { useBulkSelection } from './useBulkSelection';
+import { BulkActionBar } from './BulkActionBar';
 import { Filter, Columns, Network, List, CheckSquare, Archive } from 'lucide-react';
 
 interface DagBoardPanelProps {
@@ -21,6 +23,8 @@ export const DagBoardPanel: React.FC<DagBoardPanelProps> = ({ onDiscussInChat })
   const [needsDecision, setNeedsDecision] = usePersistentState<boolean>('benchwork_dag_needs_decision', false);
   const [includeArchived, setIncludeArchived] = usePersistentState<boolean>('benchwork_dag_include_archived', false);
   const [viewMode, setViewMode] = usePersistentState<'dag' | 'kanban' | 'list'>('benchwork_dag_view_mode', 'dag');
+  const { selectedIds, toggleSelect, clearSelection, toggleSelectAll, selectedCount } = useBulkSelection();
+  const [isArchiving, setIsArchiving] = useState(false);
 
   const loadDag = useCallback(async () => {
     try {
@@ -48,6 +52,20 @@ export const DagBoardPanel: React.FC<DagBoardPanelProps> = ({ onDiscussInChat })
       loadDag();
     } catch (err) {
       console.error('Failed triggering synthesis:', err);
+    }
+  };
+
+  const handleBulkArchive = async () => {
+    if (selectedCount === 0) return;
+    setIsArchiving(true);
+    try {
+      await api.bulkArchive(Array.from(selectedIds));
+      clearSelection();
+      loadDag();
+    } catch (err) {
+      console.error('Failed bulk archiving tasks:', err);
+    } finally {
+      setIsArchiving(false);
     }
   };
 
@@ -177,6 +195,9 @@ export const DagBoardPanel: React.FC<DagBoardPanelProps> = ({ onDiscussInChat })
           selectedTaskId={selectedTaskId}
           onSelectTask={(id) => setSelectedTaskId(id)}
           onSynthesize={handleSynthesize}
+          selectedIds={selectedIds}
+          onToggleSelect={toggleSelect}
+          onToggleSelectAll={toggleSelectAll}
         />
       ) : (
         <TaskTableView
@@ -184,8 +205,19 @@ export const DagBoardPanel: React.FC<DagBoardPanelProps> = ({ onDiscussInChat })
           selectedTaskId={selectedTaskId}
           onSelectTask={(id) => setSelectedTaskId(id)}
           onSynthesize={handleSynthesize}
+          selectedIds={selectedIds}
+          onToggleSelect={toggleSelect}
+          onToggleSelectAll={toggleSelectAll}
         />
       )}
+
+      {/* Floating Bulk Actions Bar */}
+      <BulkActionBar
+        selectedCount={selectedCount}
+        onClearSelection={clearSelection}
+        onBulkArchive={handleBulkArchive}
+        isArchiving={isArchiving}
+      />
 
       {/* Rich Task Inspector Slide-Over Drawer */}
       {selectedTaskId && (

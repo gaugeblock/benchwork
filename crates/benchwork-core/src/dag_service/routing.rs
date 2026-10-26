@@ -11,11 +11,7 @@ use uuid::Uuid;
 use crate::error::{BenchworkError, Result};
 
 /// Resolves the governing store and executes a mutating operation on it.
-pub fn with_governing_store<F, R>(
-    root_path: &Path,
-    task_id_or_key: &str,
-    mutate_fn: F,
-) -> Result<R>
+pub fn with_governing_store<F, R>(root_path: &Path, task_id_or_key: &str, mutate_fn: F) -> Result<R>
 where
     F: FnOnce(&mut StorypoleStore, Uuid) -> Result<R>,
 {
@@ -110,4 +106,3 @@ pub fn route_link_tasks(
     storypole_link(&mut store, source_id, target_id, kind)
         .map_err(|e| BenchworkError::Storypole(e.to_string()))
 }
-

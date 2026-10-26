@@ -7,6 +7,9 @@ interface TaskTableViewProps {
   selectedTaskId: string | null;
   onSelectTask: (id: string) => void;
   onSynthesize?: (taskId: string) => void;
+  selectedIds?: Set<string>;
+  onToggleSelect?: (id: string) => void;
+  onToggleSelectAll?: (ids: string[]) => void;
 }
 
 type SortField = 'ticket_key' | 'title' | 'kind' | 'status' | 'priority' | 'crate';
@@ -17,6 +20,9 @@ export const TaskTableView: React.FC<TaskTableViewProps> = ({
   selectedTaskId,
   onSelectTask,
   onSynthesize,
+  selectedIds,
+  onToggleSelect,
+  onToggleSelectAll,
 }) => {
   const [search, setSearch] = useState('');
   const [sortField, setSortField] = useState<SortField>('ticket_key');
@@ -60,6 +66,9 @@ export const TaskTableView: React.FC<TaskTableViewProps> = ({
     });
   }, [tasks, search, sortField, sortOrder]);
 
+  const allFilteredIds = useMemo(() => filteredAndSortedTasks.map((t) => t.id), [filteredAndSortedTasks]);
+  const isAllSelected = allFilteredIds.length > 0 && allFilteredIds.every((id) => selectedIds?.has(id));
+
   const renderSortIcon = (field: SortField) => {
     if (sortField !== field) return <ArrowUpDown className="w-3 h-3 text-cad-muted/50" />;
     return sortOrder === 'asc' ? <ArrowUp className="w-3 h-3 text-cad-cyan" /> : <ArrowDown className="w-3 h-3 text-cad-cyan" />;
@@ -87,6 +96,15 @@ export const TaskTableView: React.FC<TaskTableViewProps> = ({
         <table className="w-full text-left text-xs border-collapse">
           <thead className="bg-cad-surface sticky top-0 border-b border-cad-border z-10 text-[10px] uppercase font-bold text-cad-muted">
             <tr>
+              <th className="py-2 px-3 w-8 text-center">
+                <input
+                  type="checkbox"
+                  checked={isAllSelected}
+                  onChange={() => onToggleSelectAll?.(allFilteredIds)}
+                  className="rounded border-cad-border bg-cad-bg text-cad-cyan focus:ring-0 cursor-pointer"
+                  title="Select all displayed"
+                />
+              </th>
               <th onClick={() => toggleSort('ticket_key')} className="py-2 px-3 cursor-pointer hover:text-cad-text w-24">
                 <div className="flex items-center gap-1">Key {renderSortIcon('ticket_key')}</div>
               </th>
@@ -110,7 +128,8 @@ export const TaskTableView: React.FC<TaskTableViewProps> = ({
           </thead>
           <tbody className="divide-y divide-cad-border/60">
             {filteredAndSortedTasks.map((task) => {
-              const isSelected = selectedTaskId === task.id;
+              const isDrawerSelected = selectedTaskId === task.id;
+              const isChecked = selectedIds?.has(task.id) ?? false;
               const hasPendingDecision = task.decisions?.some((d) => !d.chosen_option);
 
               return (
@@ -118,9 +137,21 @@ export const TaskTableView: React.FC<TaskTableViewProps> = ({
                   key={task.id}
                   onClick={() => onSelectTask(task.id)}
                   className={`cursor-pointer transition-colors ${
-                    isSelected ? 'bg-cad-cyan/10 border-l-2 border-l-cad-cyan' : 'hover:bg-cad-surface/60'
+                    isChecked
+                      ? 'bg-cad-cyan/15 border-l-2 border-l-cad-cyan'
+                      : isDrawerSelected
+                      ? 'bg-cad-cyan/10 border-l-2 border-l-cad-cyan'
+                      : 'hover:bg-cad-surface/60'
                   }`}
                 >
+                  <td className="py-2.5 px-3 text-center" onClick={(e) => e.stopPropagation()}>
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={() => onToggleSelect?.(task.id)}
+                      className="rounded border-cad-border bg-cad-bg text-cad-cyan focus:ring-0 cursor-pointer"
+                    />
+                  </td>
                   <td className="py-2.5 px-3 font-mono font-bold text-cad-cyan">{task.ticket_key}</td>
                   <td className="py-2.5 px-3 text-cad-text font-medium">
                     <div className="flex items-center gap-1.5 truncate max-w-md">
