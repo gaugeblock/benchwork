@@ -134,4 +134,3 @@ pub fn list_suite_tools() -> Vec<ToolDefinition> {
         },
     ]
 }
-

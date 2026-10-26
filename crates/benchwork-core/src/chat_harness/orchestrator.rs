@@ -1,23 +1,40 @@
 //! Multi-step chat orchestrator, dual-mode tool parser, and proposal lifecycle.
 
-use std::path::Path;
 use serde::{Deserialize, Serialize};
+use std::path::Path;
 
-use crate::error::Result;
 use super::context_injector::UiViewportContext;
 use super::telemetry_spool::{spool_gold_dpo, spool_silver_sft};
 use super::{ChatLedgerEvent, append_chat_event};
+use crate::error::Result;
 
 /// Typed event emitted across the Server-Sent Events (SSE) stream.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum ChatStreamEvent {
-    TextDelta { delta: String },
-    ToolCallStart { call_id: String, tool_name: String },
-    ToolResult { call_id: String, output_json: String },
-    ToolProposal { proposal_id: String, tool_name: String, payload_json: String },
-    Done { turn_id: String, total_tokens: u32 },
-    Error { message: String },
+    TextDelta {
+        delta: String,
+    },
+    ToolCallStart {
+        call_id: String,
+        tool_name: String,
+    },
+    ToolResult {
+        call_id: String,
+        output_json: String,
+    },
+    ToolProposal {
+        proposal_id: String,
+        tool_name: String,
+        payload_json: String,
+    },
+    Done {
+        turn_id: String,
+        total_tokens: u32,
+    },
+    Error {
+        message: String,
+    },
 }
 
 /// Request payload for streaming a chat turn.
@@ -51,8 +68,10 @@ pub fn extract_xml_tool_calls(text: &str) -> Vec<(String, String)> {
         if let Some(end) = after_start.find("</tool_call>") {
             let inner = after_start[..end].trim();
             if let Ok(val) = serde_json::from_str::<serde_json::Value>(inner)
-                && let (Some(name), Some(args)) =
-                    (val.get("name").and_then(|n| n.as_str()), val.get("arguments"))
+                && let (Some(name), Some(args)) = (
+                    val.get("name").and_then(|n| n.as_str()),
+                    val.get("arguments"),
+                )
             {
                 results.push((name.to_string(), args.to_string()));
             }
@@ -86,13 +105,36 @@ pub fn apply_proposal(root_dir: &Path, req: &ApplyProposalRequest) -> Result<Str
     // Telemetry spooling: Silver SFT on clean approve, Gold DPO on edit or reject
     if req.approved {
         if let Some(ref edited) = req.edited_payload_json {
-            spool_gold_dpo(root_dir, &req.tool_name, edited, &req.payload_json, &req.tool_name, &req.proposal_id)?;
+            spool_gold_dpo(
+                root_dir,
+                &req.tool_name,
+                edited,
+                &req.payload_json,
+                &req.tool_name,
+                &req.proposal_id,
+            )?;
         } else {
-            spool_silver_sft(root_dir, &req.tool_name, &req.payload_json, &req.tool_name, &req.proposal_id)?;
+            spool_silver_sft(
+                root_dir,
+                &req.tool_name,
+                &req.payload_json,
+                &req.tool_name,
+                &req.proposal_id,
+            )?;
         }
     } else {
-        spool_gold_dpo(root_dir, &req.tool_name, "rejected_by_user", &req.payload_json, &req.tool_name, &req.proposal_id)?;
+        spool_gold_dpo(
+            root_dir,
+            &req.tool_name,
+            "rejected_by_user",
+            &req.payload_json,
+            &req.tool_name,
+            &req.proposal_id,
+        )?;
     }
 
-    Ok(format!("Proposal {} resolved (approved: {})", req.proposal_id, req.approved))
+    Ok(format!(
+        "Proposal {} resolved (approved: {})",
+        req.proposal_id, req.approved
+    ))
 }

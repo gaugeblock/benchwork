@@ -7,6 +7,9 @@ interface KanbanBoardViewProps {
   selectedTaskId: string | null;
   onSelectTask: (id: string) => void;
   onSynthesize?: (taskId: string) => void;
+  selectedIds?: Set<string>;
+  onToggleSelect?: (id: string) => void;
+  onToggleSelectAll?: (ids: string[]) => void;
 }
 
 export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
@@ -14,6 +17,9 @@ export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
   selectedTaskId,
   onSelectTask,
   onSynthesize,
+  selectedIds,
+  onToggleSelect,
+  onToggleSelectAll,
 }) => {
   const kanbanColumns: {
     key: string;
@@ -70,7 +76,16 @@ export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
           >
             {/* Column Header */}
             <div className="px-3 py-2 border-b border-cad-border bg-cad-subsurface flex items-center justify-between text-xs font-bold">
-              <span className={col.color}>{col.label}</span>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={colTasks.length > 0 && colTasks.every((t) => selectedIds?.has(t.id))}
+                  onChange={() => onToggleSelectAll?.(colTasks.map((t) => t.id))}
+                  className="rounded border-cad-border bg-cad-bg text-cad-cyan focus:ring-0 cursor-pointer"
+                  title={`Select all in ${col.label}`}
+                />
+                <span className={col.color}>{col.label}</span>
+              </div>
               <span className="text-[10px] px-1.5 py-0.2 bg-cad-bg rounded border border-cad-border text-cad-muted">
                 {colTasks.length}
               </span>
@@ -80,18 +95,32 @@ export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
             <div className="flex-1 p-2 overflow-y-auto flex flex-col gap-2">
               {colTasks.map((task) => {
                 const isSelected = selectedTaskId === task.id;
+                const isChecked = selectedIds?.has(task.id) ?? false;
                 return (
                   <div
                     key={task.id}
                     onClick={() => onSelectTask(task.id)}
                     className={`p-2.5 rounded border bg-cad-surface hover:border-cad-borderLight cursor-pointer transition-all flex flex-col gap-2 shadow-sm ${
-                      isSelected ? 'border-cad-cyan ring-1 ring-cad-cyan' : 'border-cad-border'
+                      isChecked
+                        ? 'border-cad-cyan ring-1 ring-cad-cyan bg-cad-cyan/5'
+                        : isSelected
+                        ? 'border-cad-cyan ring-1 ring-cad-cyan'
+                        : 'border-cad-border'
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-bold font-mono text-cad-cyan">
-                        {task.ticket_key}
-                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => onToggleSelect?.(task.id)}
+                          onClick={(e) => e.stopPropagation()}
+                          className="rounded border-cad-border bg-cad-bg text-cad-cyan focus:ring-0 cursor-pointer"
+                        />
+                        <span className="text-[11px] font-bold font-mono text-cad-cyan">
+                          {task.ticket_key}
+                        </span>
+                      </div>
                       <div className="flex items-center gap-1">
                         <span className="text-[9px] px-1.5 py-0.2 rounded bg-cad-bg border border-cad-border text-cad-muted uppercase font-medium">
                           {task.kind}

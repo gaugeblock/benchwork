@@ -1,4 +1,6 @@
-//! DAG board, task briefings, claims, mutations, and linking REST routes.
+//! Route handlers for DAG queries and task mutations.
+
+use std::sync::Arc;
 
 use axum::Json;
 use axum::extract::{Path as AxumPath, Query, State};
@@ -7,9 +9,9 @@ use axum::response::IntoResponse;
 use benchwork_core::model::*;
 use benchwork_core::*;
 use serde_json::json;
-use std::sync::Arc;
 
-use super::routes_state::DaemonContext;
+use super::types::*;
+use crate::daemon::routes_state::DaemonContext;
 
 /// GET /api/v1/dag
 pub async fn get_dag(
@@ -39,13 +41,6 @@ pub async fn get_task_briefing_handler(
     }
 }
 
-/// Request payload for claiming an agent lease on a task.
-#[derive(Debug, serde::Deserialize)]
-pub struct ClaimTaskPayload {
-    pub agent_id: String,
-    pub branch: Option<String>,
-}
-
 /// POST /api/v1/dag/:id/claim
 pub async fn post_claim_task_handler(
     State(ctx): State<Arc<DaemonContext>>,
@@ -64,17 +59,6 @@ pub async fn post_claim_task_handler(
             Json(json!({ "error": e.to_string() })),
         ),
     }
-}
-
-/// Request payload for recording an agent handoff packet.
-#[derive(Debug, serde::Deserialize)]
-pub struct HandoffTaskPayload {
-    pub recorded_by_agent: String,
-    pub completed_items: Vec<String>,
-    pub remaining_items: Vec<String>,
-    pub last_error_or_blocker: Option<String>,
-    pub dirty_files: Option<Vec<String>>,
-    pub status: Option<String>,
 }
 
 /// POST /api/v1/dag/:id/handoff
@@ -109,21 +93,6 @@ pub async fn post_record_handoff_handler(
             Json(json!({ "error": e.to_string() })),
         ),
     }
-}
-
-/// Request payload for mutating a task's details and scope.
-#[derive(Debug, serde::Deserialize)]
-pub struct UpdateTaskPayload {
-    pub title: Option<String>,
-    pub description: Option<String>,
-    pub priority: Option<u8>,
-    pub repo: Option<String>,
-    pub crate_name: Option<String>,
-    pub module_path: Option<String>,
-    pub target_files: Option<Vec<String>>,
-    pub target_symbols: Option<Vec<String>>,
-    pub labels: Option<Vec<String>>,
-    pub acceptance_criteria: Option<Vec<String>>,
 }
 
 /// POST /api/v1/dag/:id/update
@@ -169,13 +138,6 @@ pub async fn post_update_task_handler(
     }
 }
 
-/// Request payload for connecting tasks with a directed edge.
-#[derive(Debug, serde::Deserialize)]
-pub struct LinkTasksPayload {
-    pub target_id: String,
-    pub kind: Option<String>,
-}
-
 /// POST /api/v1/dag/:id/link
 pub async fn post_link_tasks_handler(
     State(ctx): State<Arc<DaemonContext>>,
@@ -190,13 +152,6 @@ pub async fn post_link_tasks_handler(
             Json(json!({ "error": e.to_string() })),
         ),
     }
-}
-
-/// Request payload for splitting an oversized task into subtasks.
-#[derive(Debug, serde::Deserialize)]
-pub struct SplitTaskPayload {
-    pub subtasks: Vec<String>,
-    pub sequential: Option<bool>,
 }
 
 /// POST /api/v1/dag/:id/split
@@ -238,6 +193,26 @@ pub async fn post_unarchive_task_handler(
         Ok(()) => (StatusCode::OK, Json(json!({ "success": true }))),
         Err(e) => (
             StatusCode::BAD_REQUEST,
+            Json(json!({ "error": e.to_string() })),
+        ),
+    }
+}
+
+/// POST /api/v1/dag/bulk-archive
+pub async fn post_bulk_archive_handler(
+    State(ctx): State<Arc<DaemonContext>>,
+    Json(payload): Json<BulkArchiveRequest>,
+) -> impl IntoResponse {
+    match bulk_archive_tasks_service(&ctx.state.root_path, &payload.task_ids) {
+        Ok(res) => (
+            StatusCode::OK,
+            Json(json!(BulkArchiveResponse {
+                archived_count: res.archived_count,
+                errors: res.errors,
+            })),
+        ),
+        Err(e) => (
+            StatusCode::INTERNAL_SERVER_ERROR,
             Json(json!({ "error": e.to_string() })),
         ),
     }

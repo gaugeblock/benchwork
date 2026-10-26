@@ -148,6 +148,16 @@ export const api = {
       method: 'POST',
     }),
 
+  bulkArchive: (taskIds: string[]) =>
+    fetchJson<{ archived_keys: string[]; failed_keys: Array<{ key: string; error: string }> }>(
+      '/api/v1/dag/bulk-archive',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ task_ids: taskIds }),
+      }
+    ),
+
   getPatterns: () => fetchJson<DadoPattern[]>('/api/v1/xray/patterns'),
 
   compileHole: (data: { pattern_id: string; hole_id: string; format: string }) =>
