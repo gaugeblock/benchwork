@@ -1,13 +1,4 @@
 {
-  "name": "benchwork-web",
-  "private": true,
-  "version": "0.1.0-beta.3",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "preview": "vite preview"
-  },
   "dependencies": {
     "@assistant-ui/react": "^0.15.31",
     "lucide-react": "^0.475.0",
@@ -23,5 +14,14 @@
     "tailwindcss": "^3.4.17",
     "typescript": "~5.7.2",
     "vite": "^6.0.7"
-  }
+  },
+  "name": "benchwork-web",
+  "private": true,
+  "scripts": {
+    "build": "tsc -b && vite build",
+    "dev": "vite",
+    "preview": "vite preview"
+  },
+  "type": "module",
+  "version": "0.1.0-beta.4"
 }
