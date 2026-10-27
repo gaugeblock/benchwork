@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.1.0-beta.5] - 2026-05-09
+
+### Added
+- Add bulk task multi-select and batch archiving in `benchwork-ui`/`benchwork-store` ([GB-66]).
+- Add localStorage and URL hash persistence for panels and views in `benchwork-ui` ([GB-65]).
+- Add resizable left/right dockable Benji sidebar with dynamic role selector in `benji` ([GB-62]).
+- Wire real Sawhorse SSE streaming inference and context injection in `sawnhorse` ([GB-63]).
+- Support multi-repository workspace rollups and store routing in `benchwork-store` ([GB-59]).
+- Initialize local backlog store with prefix BW in `benchwork-store`.
+
+### Fixed
+- Initialize `reasoning_effort` in `InferenceRequest` callsites in `sawnhorse`.
+
+### Changed
+- Realign Panel 1 to Docs & Specs and remove duplicate EngineerChat in `benchwork-ui` ([GB-61]).
+- Migrate scoped tasks and design plans in `benchwork-store`.
+
+### Maintenance
+- Configure Playwright E2E test suite for persistence, Benji chat, and bulk archiving in `benchwork-e2e` ([GB-67]).
+- Standardize README and establish 9-doc architecture in `benchwork-docs`.
+- Update release history with alpha and beta milestones in `benchwork-docs`.
+
 ### Documentation
 - Standardize README to 9-section template and establish AST-grounded 9-document architecture
 

@@ -11,7 +11,7 @@ description = "Model Context Protocol stdio server for benchwork"
 workspace = true
 
 [dependencies]
-benchwork-core = { path = "../benchwork-core", version = "0.1.0-beta.4" }
+benchwork-core = { path = "../benchwork-core", version = "0.1.0-beta.5" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 thiserror = "2.0"
