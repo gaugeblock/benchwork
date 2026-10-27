@@ -19,7 +19,7 @@
   "name": "benchwork-web",
   "private": true,
   "scripts": {
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && cp -r dist/* ../crates/benchwork-cli/dist/",
     "dev": "vite",
     "preview": "vite preview",
     "test:e2e": "playwright test"

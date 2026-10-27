@@ -12,7 +12,7 @@ use tracing::error;
 
 /// Embedded production web UI distribution bundle.
 #[derive(Debug, RustEmbed)]
-#[folder = "../../web/dist"]
+#[folder = "dist/"]
 pub struct WebAssets;
 
 /// Server configuration and proxy options.
