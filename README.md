@@ -1,18 +1,23 @@
-# `gaugeblock/benchwork`
+# `benchwork` — Modular Visual Workbench & Local Aggregator Daemon
 
-Modular visual workbench UI and local aggregator daemon for the [gaugeblock](https://gaugeblock.dev) neurosymbolic synthesis ecosystem.
+[![Version](https://img.shields.io/badge/version-0.1.0--beta.4-blue.svg)](https://gaugeblock.dev)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](LICENSE)
+[![gaugeblock](https://img.shields.io/badge/suite-gaugeblock-orange.svg)](https://github.com/gaugeblock)
+[![Documentation](https://img.shields.io/badge/docs-9--doc%20topology-green.svg)](ARCHITECTURE.md)
 
-`benchwork` is the single-binary visual control center (`benchwork up`) and state aggregator across `storypole`, `chalkline`, `dado`, `batten`, `sawhorse`, `joiner`, and `rabbet`. It operates strictly under the **Unix Standalone Law**: running `benchwork up` in any directory works immediately out of the box even if only `SPEC.md` or `.storypole/` exists, while dynamically illuminating live synthesis, grammar inspection, and telemetry panels as project capabilities are detected.
+Part of the **[`gaugeblock`](https://gaugeblock.dev)** neurosymbolic code synthesis ecosystem.
+
+> In fine woodworking, a **workbench** is the sturdy, flat, multi-functional foundation of the shop—fitted with vises, bench dogs, holdfasts, and tool rails—where all joinery, planing, and assembly are visually inspected, held rock-steady, and shaped. In the `gaugeblock` suite, `benchwork` is the single-binary visual control center (`benchwork up`): an industrial dark-mode CAD workbench uniting `SPEC.md`, live Storypole DAGs, Dado pattern X-Rays, Batten CFG rules, and the Benji AI engineer sidebar.
 
 ---
 
-## Architecture Overview
+## 1. Architecture Overview
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────┐
 │ Workspace Files & Stores                                               │
 │ SPEC.md  •  PRODUCT/ARCH/DESIGN.md  •  .storypole/  •  sawhorse.toml   │
-│ .dado/  •  .rabbet/spool/outbox.jsonl                                  │
+│ .gaugeblock/dado/  •  .gaugeblock/spool/outbox.jsonl                   │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
                                     ▼
@@ -29,8 +34,8 @@ Modular visual workbench UI and local aggregator daemon for the [gaugeblock](htt
 │ Web Workbench (web/ — Industrial Dark CAD UI: React 19 + TS + Tailwind)│
 │                                                                        │
 │ ┌──────────────────────────┐          ┌──────────────────────────────┐ │
-│ │ Panel 1: Spec & /grill-me│          │ Panel 2: Live Backlog & DAG  │ │
-│ │ - SPEC.md parser         │          │ - Interactive SVG CAD DAG    │ │
+│ │ Panel 1: Docs & /grill-me│          │ Panel 2: Live Backlog & DAG  │ │
+│ │ - 9-doc studio & viewer  │          │ - Interactive SVG CAD DAG    │ │
 │ │ - Dual-write decisions   │          │ - Status & role filtering    │ │
 │ │ - Polyglot types preview │          │ - Agent claim & handoff      │ │
 │ └──────────────────────────┘          └──────────────────────────────┘ │
@@ -45,72 +50,73 @@ Modular visual workbench UI and local aggregator daemon for the [gaugeblock](htt
 
 ---
 
-## Workspace Crate Structure
+## 2. Workspace Crate Layout
 
-`benchwork` is modularized into focused sub-crates under Rust 2024 (`resolver = "3"`):
-
-- **`crates/benchwork-core`**: Pure domain types, capability scanner (`capabilities.rs`), `SPEC.md` and decision resolution studio (`spec_studio.rs`), Storypole DAG management (`dag_service.rs`), Dado/Batten/Joiner X-Ray (`xray_service.rs`), and Sawhorse/Rabbet hub (`hub_service.rs`). Zero `.unwrap()` / `.expect()` in production library code.
-- **`crates/benchwork-cli`**: Clap CLI binary (`benchwork up`, `snapshot`, `capabilities`, `mcp`), embedding Axum REST, WebSocket, SSE routes, and `rust-embed` static frontend assets.
-- **`crates/benchwork-mcp`**: Stdio Model Context Protocol (MCP) server exposing tools: `benchwork_capabilities`, `benchwork_snapshot`, `benchwork_resolve_decision`, and `benchwork_trigger_synthesis`.
-- **`web/`**: Vite + React 19 + TypeScript + Tailwind CSS precision dark CAD workbench. 100% of `.ts` / `.tsx` files strictly obey the **≤ 250 LOC** engineering limit.
+* **`benchwork`**: Facade crate re-exporting `benchwork-core`.
+* **`crates/benchwork-core`**: Pure domain types, capability scanner (`capabilities.rs`), `SPEC.md` studio, Storypole DAG service, Dado/Batten/Joiner X-Ray service, and Sawhorse/Rabbet hub.
+* **`crates/benchwork-cli`**: Clap binary (`benchwork`) embedding Axum REST, WebSocket, SSE routes, and `rust-embed` static frontend bundle.
+* **`crates/benchwork-mcp`**: JSON-RPC 2.0 stdio Model Context Protocol (MCP) server.
+* **`web/`**: Precision dark CAD frontend in React 19, TypeScript, and Tailwind CSS (100% of `.ts`/`.tsx` files strictly <= 250 LOC).
 
 ---
 
-## Quickstart & CLI Commands
+## 3. Installation & CLI Quickstart
 
-### 1. Launch Visual Workbench
 ```bash
-# Launch daemon on http://127.0.0.1:4242 and open the browser
+# Install globally via cargo
+cargo install --path crates/benchwork-cli
+
+# 1. Launch visual workbench on http://127.0.0.1:4242 and open the browser
 benchwork up
 
-# Specify custom port and host
+# 2. Specify custom port and host
 benchwork up --port 8080 --host 0.0.0.0
 
-# Frontend development mode (proxies static UI requests to Vite dev server)
+# 3. Frontend development mode (proxies static UI requests to Vite dev server)
 benchwork up --dev 127.0.0.1:5173
-```
 
-### 2. Inspect Capabilities & Workspace Snapshot
-```bash
-# Detect detected workspace components
+# 4. Scan workspace capabilities and detected tools
 benchwork capabilities --json
 
-# Export complete unified state snapshot (spec, DAG, X-ray, hub)
+# 5. Export complete unified state snapshot across all panels
 benchwork snapshot --json
 ```
 
-### 3. Stdio Model Context Protocol (MCP) Server
-```bash
-benchwork mcp
-```
+---
+
+## 4. Model Context Protocol (MCP) Reference
+
+| Tool | Parameters | Description |
+|---|---|---|
+| `benchwork_capabilities` | `None` | Query detected ecosystem components and available feature panels. |
+| `benchwork_snapshot` | `None` | Retrieve full multi-panel state bundle (spec, DAG, X-Ray, hub). |
+| `benchwork_resolve_decision` | `decision_id, choice, rationale` | Resolve pending architectural decision from AI agent or UI. |
+| `benchwork_trigger_synthesis` | `task_key, in_place?` | Trigger neurosymbolic hole synthesis through Joiner daemon. |
 
 ---
 
-## API Endpoints
+## 5. Repository Documentation
 
-### REST API (`/api/v1`)
-- `GET /api/v1/capabilities` — Scan workspace capabilities (`SPEC.md`, Storypole, Dado, Sawhorse, Rabbet, etc.).
-- `GET /api/v1/snapshot` — Full state bundle across all 4 panels.
-- `GET /api/v1/spec` — Parsed `SPEC.md`, contextual docs, and pending `DecisionHole` items.
-- `POST /api/v1/spec/resolve` — Resolve a decision with rationale and optional follow-up questions.
-- `GET /api/v1/spec/preview-contract?contract_name=<name>` — Dado polyglot preview (Rust, TS, Zod).
-- `GET /api/v1/dag` — Storypole task graph, topological layers, and bottlenecks.
-- `POST /api/v1/dag/claim` — Claim a task for an agent.
-- `POST /api/v1/dag/handoff` — Handoff a task with briefing notes.
-- `GET /api/v1/xray/patterns` — Dado pattern definitions and holes.
-- `GET /api/v1/xray/grammar?pattern_name=<name>` — Batten compiled CFG rules for pattern holes.
-- `POST /api/v1/xray/synthesize` — Trigger Joiner synthesis (in-process or external daemon).
-- `GET /api/v1/hub/models` — Active Sawhorse provider roles and health status.
-- `POST /api/v1/hub/ping` — Run live ping diagnostic on a model role.
-- `GET /api/v1/hub/spool` — Rabbet DPO training telemetry traces.
-- `DELETE /api/v1/hub/spool` — Purge outbox telemetry spool.
-
-### Streaming Endpoints
-- `GET /api/v1/ws` — WebSocket bi-directional link for live task updates and synthesis logs.
-- `GET /api/v1/events` — Server-Sent Events (SSE) stream broadcasting live workspace events.
+`benchwork` adheres strictly to the canonical **9-Document Architecture**:
+* **[`CONTRIBUTING.md`](./CONTRIBUTING.md):** Local toolchain prerequisites, frontend build (`pnpm build`), and test execution.
+* **[`ARCHITECTURE.md`](./ARCHITECTURE.md):** Daemon architecture, WebSocket hub, and React 19 component hierarchy.
+* **[`SPEC.md`](./SPEC.md):** REST and WebSocket wire schemas, state synchronizers, and error contracts.
+* **[`AGENTS.md`](./AGENTS.md):** Autonomous systems directives, <=250 LOC limits, and zero-unwrap rules.
+* **[`CHANGELOG.md`](./CHANGELOG.md):** Chronological historical release entries and unreleased changes.
 
 ---
 
-## License
+## 6. Verification & Development Directives
 
-Apache-2.0
+* **File Size Ceiling:** All `.rs`, `.ts`, and `.tsx` source files must strictly remain under 250 LOC.
+* **Tiered Verification Matrix:**
+  * Tier 1: `cargo check -p benchwork-core` (<2s).
+  * Tier 2: `cargo fmt --check -p benchwork-core && cargo clippy -p benchwork-core && cargo test -p benchwork-core`.
+  * Tier 3: `chalkline docs check -d .` before task verification.
+
+---
+
+## 7. License
+
+Licensed under the [Apache License, Version 2.0](LICENSE).
+Part of the [`gaugeblock`](https://gaugeblock.dev) suite.
