@@ -171,6 +171,7 @@ pub async fn ping_inference(
             grammar_format: None,
             max_tokens: 4096,
             temperature: 0.2,
+            reasoning_effort: None,
         };
 
         match router.complete(&infer_req).await {
