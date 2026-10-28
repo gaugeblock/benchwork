@@ -16,8 +16,8 @@ path = "src/main.rs"
 workspace = true
 
 [dependencies]
-benchwork-core = { path = "../benchwork-core", version = "0.1.0-beta.6" }
-benchwork-mcp = { path = "../benchwork-mcp", version = "0.1.0-beta.6" }
+benchwork-core = { path = "../benchwork-core", version = "0.1.0-beta.7" }
+benchwork-mcp = { path = "../benchwork-mcp", version = "0.1.0-beta.7" }
 sawhorse-core = "0.1.0-beta.3"
 axum = { version = "0.8", features = ["ws"] }
 clap = { version = "4.5", features = ["derive"] }

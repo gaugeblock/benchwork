@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.1.0-beta.7] - 2026-05-09
+
+### Changed
+
+- Elevated the `benchwork` 9-document architecture to gold standard (GB-117).
+
 ### Documentation
 - Elevate all 9 canonical documents to gold standard matching suite specification (`GB-117`).
 - Codify direct library linkage, dual-write decision, and sub-16ms broadcast invariants in `SPEC.md`.
