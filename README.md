@@ -61,6 +61,7 @@ The `benchwork` binary provides complete local daemon, diagnostic, and migration
 | `benchwork up` | `--host`, `--port`, `--dev`, `--static-dir` | Launches the visual workbench server and static UI daemon |
 | `benchwork capabilities` | `--json` | Scans and reports detected workspace tools and enabled panels |
 | `benchwork snapshot` | `--json` | Captures a unified state snapshot across all 4 panels |
+| `benchwork archive-all` | `--status <s>`, `--apply`, `--json` | Archives every task matching a status server-side; a dry run without `--apply` |
 | `benchwork migrate` | `--dry-run`, `--force`, `--json` | Migrates legacy workspace dotfiles into the canonical `.gaugeblock/` layout |
 | `benchwork mcp` | *(none)* | Launches stdio JSON-RPC 2.0 Model Context Protocol server |
 

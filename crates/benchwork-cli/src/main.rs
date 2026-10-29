@@ -8,7 +8,7 @@ use tracing_subscriber::EnvFilter;
 
 use benchwork_cli::args::{Cli, Commands, UpArgs};
 use benchwork_cli::handlers::{
-    handle_capabilities, handle_mcp, handle_migrate, handle_snapshot, handle_up,
+    handle_archive_all, handle_capabilities, handle_mcp, handle_migrate, handle_snapshot, handle_up,
 };
 
 #[tokio::main]
@@ -27,6 +27,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         Some(Commands::Capabilities(args)) => handle_capabilities(root, args)?,
         Some(Commands::Snapshot(args)) => handle_snapshot(root, args)?,
         Some(Commands::Migrate(args)) => handle_migrate(root, args)?,
+        Some(Commands::ArchiveAll(args)) => handle_archive_all(root, args)?,
         Some(Commands::Mcp) => handle_mcp().await?,
         None => {
             // Default to running `benchwork up` with default parameters

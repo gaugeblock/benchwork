@@ -217,3 +217,23 @@ pub async fn post_bulk_archive_handler(
         ),
     }
 }
+
+/// POST /api/v1/dag/archive-all - archives every task the supplied filter selects.
+pub async fn post_archive_all_handler(
+    State(ctx): State<Arc<DaemonContext>>,
+    Query(query): Query<DagQuery>,
+) -> impl IntoResponse {
+    match archive_tasks_by_filter(&ctx.state.root_path, &query) {
+        Ok(res) => (
+            StatusCode::OK,
+            Json(json!({
+                "archived_count": res.archived_count,
+                "errors": res.errors,
+            })),
+        ),
+        Err(e) => (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({ "error": e.to_string() })),
+        ),
+    }
+}

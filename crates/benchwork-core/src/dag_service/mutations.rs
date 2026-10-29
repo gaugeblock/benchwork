@@ -15,6 +15,7 @@ use storypole_core::ops::workflow::claim_task;
 use super::query::get_task_briefing;
 use super::routing::{route_link_tasks, with_governing_store};
 use crate::error::{BenchworkError, Result};
+use crate::model::dag::DagQuery;
 
 /// Claims an agent lease on a task, transitioning state to `InProgress`.
 pub fn claim_task_lease(
@@ -119,4 +120,27 @@ pub fn unarchive_task_service(root_path: &Path, task_id_or_key: &str) -> Result<
             .map(|_| ())
             .map_err(|e| BenchworkError::Storypole(e.to_string()))
     })
+}
+
+/// Archives every task matching `query`, using the same filtering the DAG board shows.
+///
+/// This exists because archiving by an id list makes the *caller* responsible for completeness,
+/// and a caller that sends only the rows it has rendered silently archives a fraction of the
+/// backlog (GB-177). Filtering here means the store decides what "all verified tasks" means.
+pub fn archive_tasks_by_filter(root_path: &Path, query: &DagQuery) -> Result<BulkArchiveResult> {
+    let view = super::query::get_dag_view(root_path, query)?;
+    let keys: Vec<String> = view
+        .nodes
+        .iter()
+        .map(|task| task.ticket_key.clone())
+        .collect();
+
+    let mut result = BulkArchiveResult::default();
+    for key in keys {
+        match archive_task_service(root_path, &key) {
+            Ok(()) => result.archived_count += 1,
+            Err(e) => result.errors.push(format!("{key}: {e}")),
+        }
+    }
+    Ok(result)
 }

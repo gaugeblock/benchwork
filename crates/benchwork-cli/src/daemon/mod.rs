@@ -57,6 +57,10 @@ pub async fn start_daemon(
         )
         .route("/api/v1/dag", get(routes_dag::get_dag))
         .route(
+            "/api/v1/dag/archive-all",
+            post(routes_dag::post_archive_all_handler),
+        )
+        .route(
             "/api/v1/dag/{id}/briefing",
             get(routes_dag::get_task_briefing_handler),
         )

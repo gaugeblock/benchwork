@@ -96,3 +96,104 @@ fn test_task_archive_and_filtering() -> std::result::Result<(), Box<dyn std::err
 
     Ok(())
 }
+
+#[test]
+fn test_archive_by_filter_covers_the_whole_matching_set()
+-> std::result::Result<(), Box<dyn std::error::Error>> {
+    let tmp = tempdir()?;
+    let root = tmp.path();
+
+    let mut store = StorypoleStore::init(
+        root,
+        StorypoleConfig {
+            ticket_prefix: "ALL".to_string(),
+            allowed_repos: vec![],
+            allowed_crates: vec![],
+            claim_ttl_minutes: 30,
+            verification_commands: vec![],
+        },
+    )?;
+
+    // Three verified tasks and one that must be left alone.
+    for n in 1..=3 {
+        store.record_event(&LedgerEvent::TaskCreated {
+            task: TaskNode {
+                id: Uuid::new_v4(),
+                ticket_key: format!("ALL-{n}"),
+                slug: format!("verified-{n}"),
+                title: format!("Verified {n}"),
+                description: String::new(),
+                kind: TaskKind::Feature,
+                status: TaskStatus::Verified,
+                archived_at_epoch_ms: None,
+                priority: 2,
+                scope: TaskScope::default(),
+                edges: vec![],
+                decisions: vec![],
+                acceptance_criteria: vec![],
+                plan: None,
+                active_claim: None,
+                latest_handoff: None,
+                verification_receipt: None,
+                created_at_epoch_ms: 0,
+                updated_at_epoch_ms: 0,
+            },
+        })?;
+    }
+    store.record_event(&LedgerEvent::TaskCreated {
+        task: TaskNode {
+            id: Uuid::new_v4(),
+            ticket_key: "ALL-9".to_string(),
+            slug: "open-work".to_string(),
+            title: "Open work".to_string(),
+            description: String::new(),
+            kind: TaskKind::Feature,
+            status: TaskStatus::Ready,
+            archived_at_epoch_ms: None,
+            priority: 2,
+            scope: TaskScope::default(),
+            edges: vec![],
+            decisions: vec![],
+            acceptance_criteria: vec![],
+            plan: None,
+            active_claim: None,
+            latest_handoff: None,
+            verification_receipt: None,
+            created_at_epoch_ms: 0,
+            updated_at_epoch_ms: 0,
+        },
+    })?;
+    drop(store);
+
+    let query = DagQuery {
+        status: Some("verified".to_string()),
+        ..Default::default()
+    };
+    let result = archive_tasks_by_filter(root, &query)?;
+
+    assert_eq!(result.archived_count, 3, "every verified task is archived");
+    assert!(
+        result.errors.is_empty(),
+        "no per-task failures: {:?}",
+        result.errors
+    );
+
+    // The open task is untouched, and the archived ones keep their status.
+    let view = get_dag_view(
+        root,
+        &DagQuery {
+            include_archived: true,
+            ..Default::default()
+        },
+    )?;
+    assert_eq!(view.stats.archived, 3);
+    let open = view
+        .nodes
+        .iter()
+        .find(|t| t.ticket_key == "ALL-9")
+        .expect("open task still present");
+    assert_eq!(open.status, TaskStatus::Ready);
+    assert!(open.archived_at_epoch_ms.is_none());
+
+    Ok(())
+}

@@ -118,3 +118,54 @@ pub fn handle_migrate(
     }
     Ok(())
 }
+
+/// Archives every task matching a status, reporting progress and surfacing per-task errors.
+pub fn handle_archive_all(
+    root_path: PathBuf,
+    args: crate::args::ArchiveAllArgs,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let query = benchwork_core::model::dag::DagQuery {
+        status: Some(args.status.clone()),
+        ..Default::default()
+    };
+    let selected = benchwork_core::get_dag_view(&root_path, &query)?
+        .nodes
+        .len();
+
+    if !args.apply {
+        if args.json {
+            println!(
+                "{}",
+                serde_json::json!({"status": args.status, "would_archive": selected})
+            );
+        } else {
+            println!(
+                "would archive {selected} task(s) with status '{}' - re-run with --apply",
+                args.status
+            );
+        }
+        return Ok(());
+    }
+
+    let result = benchwork_core::archive_tasks_by_filter(&root_path, &query)?;
+    if args.json {
+        println!(
+            "{}",
+            serde_json::json!({
+                "status": args.status,
+                "selected": selected,
+                "archived_count": result.archived_count,
+                "errors": result.errors,
+            })
+        );
+    } else {
+        println!(
+            "archived {}/{} task(s) with status '{}'",
+            result.archived_count, selected, args.status
+        );
+        for error in &result.errors {
+            eprintln!("  failed: {error}");
+        }
+    }
+    Ok(())
+}

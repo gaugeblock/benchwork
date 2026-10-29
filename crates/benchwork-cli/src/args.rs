@@ -26,6 +26,8 @@ pub enum Commands {
     Snapshot(FormatArgs),
     /// Migrate legacy dotfiles (.storypole, sawhorse.toml, .miter, etc.) to .gaugeblock/.
     Migrate(MigrateArgs),
+    /// Archive every task matching a filter, server-side.
+    ArchiveAll(ArchiveAllArgs),
     /// Launch stdio JSON-RPC 2.0 MCP server for agent integration.
     Mcp,
 }
@@ -71,5 +73,21 @@ pub struct MigrateArgs {
 
     /// Format output as pretty JSON.
     #[arg(long, default_value_t = false)]
+    pub json: bool,
+}
+
+/// Arguments for `benchwork archive-all`.
+#[derive(Debug, Args)]
+pub struct ArchiveAllArgs {
+    /// Only archive tasks with this status (e.g. `verified`). Required, so a bare call is a no-op.
+    #[arg(long)]
+    pub status: String,
+
+    /// Apply the change. Without this the command only reports what would be archived.
+    #[arg(long)]
+    pub apply: bool,
+
+    /// Output as JSON.
+    #[arg(long)]
     pub json: bool,
 }
