@@ -37,6 +37,7 @@ fn test_task_archive_and_filtering() -> std::result::Result<(), Box<dyn std::err
         description: "Test task".to_string(),
         kind: TaskKind::Feature,
         status: TaskStatus::Verified,
+        archived_at_epoch_ms: None,
         priority: 1,
         scope: TaskScope::default(),
         edges: vec![],
@@ -81,7 +82,12 @@ fn test_task_archive_and_filtering() -> std::result::Result<(), Box<dyn std::err
     let view_with_archived = get_dag_view(root, &query_with_archived)?;
     assert_eq!(view_with_archived.nodes.len(), 1);
     assert_eq!(view_with_archived.stats.archived, 1);
-    assert_eq!(view_with_archived.nodes[0].status, TaskStatus::Archived);
+    // Archived is a state: the status the task earned survives, and the archived timestamp is set.
+    assert_eq!(view_with_archived.nodes[0].status, TaskStatus::Verified);
+    assert!(
+        view_with_archived.nodes[0].archived_at_epoch_ms.is_some(),
+        "archiving records when it happened"
+    );
 
     unarchive_task_service(root, "TEST-1")?;
     let view_after_unarchive = get_dag_view(root, &query_default)?;

@@ -54,29 +54,47 @@ fn build_dag_view_from_tasks(all_tasks: BTreeMap<Uuid, TaskNode>, query: &DagQue
             .crate_name
             .as_ref()
             .is_none_or(|c| task.scope.crate_name.as_ref() == Some(c));
-        let matches_status = query.status.as_ref().is_none_or(|s| &status_str == s);
+        // Archived is a state, not a status (GB-179): an archived task keeps the status it earned,
+        // so the archived view is selected by timestamp and the status filter is dropped for it.
+        let wants_archived_only = query.status.as_deref() == Some("archived");
+        let allow_archived = query.include_archived || wants_archived_only;
+        let status_filter = if wants_archived_only {
+            None
+        } else {
+            query.status.clone()
+        };
+
+        let matches_status = status_filter.as_ref().is_none_or(|s| &status_str == s);
         let matches_kind = query.kind.as_ref().is_none_or(|k| &kind_str == k);
         let has_pending = task.decisions.iter().any(|d| d.chosen_option.is_none());
         let matches_decision = query.needs_decision.is_none_or(|nd| nd == has_pending);
 
-        let is_archived = task.status == TaskStatus::Archived;
-        let allow_archived = query.include_archived || query.status.as_deref() == Some("archived");
-        if is_archived && !allow_archived {
+        let is_archived = task.archived_at_epoch_ms.is_some();
+        if wants_archived_only {
+            if !is_archived {
+                continue;
+            }
+        } else if is_archived && !allow_archived {
             continue;
         }
 
         if matches_repo && matches_crate && matches_status && matches_kind && matches_decision {
             stats.total += 1;
-            match task.status {
-                TaskStatus::Ready => stats.ready += 1,
-                TaskStatus::InProgress | TaskStatus::Synthesizing | TaskStatus::Verifying => {
-                    stats.in_progress += 1;
+            // An archived task keeps the status it earned, so it is counted as archived and not
+            // double-counted in its status bucket (GB-179).
+            if is_archived {
+                stats.archived += 1;
+            } else {
+                match task.status {
+                    TaskStatus::Ready => stats.ready += 1,
+                    TaskStatus::InProgress | TaskStatus::Synthesizing | TaskStatus::Verifying => {
+                        stats.in_progress += 1;
+                    }
+                    TaskStatus::Verified => stats.verified += 1,
+                    TaskStatus::Blocked => stats.blocked += 1,
+                    TaskStatus::Deferred => stats.deferred += 1,
+                    _ => {}
                 }
-                TaskStatus::Verified => stats.verified += 1,
-                TaskStatus::Blocked => stats.blocked += 1,
-                TaskStatus::Deferred => stats.deferred += 1,
-                TaskStatus::Archived => stats.archived += 1,
-                _ => {}
             }
             filtered_nodes.push(task.clone());
         }

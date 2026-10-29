@@ -77,6 +77,7 @@ async fn test_spec_studio_and_decision_resolution() {
         description: "Task description".to_string(),
         kind: TaskKind::Feature,
         status: TaskStatus::Ready,
+        archived_at_epoch_ms: None,
         priority: 1,
         scope: TaskScope {
             repo: Some("gaugeblock".to_string()),
