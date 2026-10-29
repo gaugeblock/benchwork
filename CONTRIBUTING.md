@@ -7,7 +7,7 @@ Thank you for contributing to `benchwork`! We welcome contributions across our R
 ## 1. Prerequisites
 
 * **Rust Toolchain:** Rust 2024 edition (stable 1.85+ / nightly for bleeding-edge checks).
-* **Node.js Toolchain:** Node.js 20+ and `pnpm` (or `npm`) for frontend development in `web/`.
+* **Bun Toolchain:** Bun 1.4+ (which bundles its own Node.js runtime) for frontend development in `web/`.
 * **Testing Runners:** `cargo-nextest` (recommended) or native `cargo test`.
 * **Suite Tooling:** Installed `storypole`, `chalkline`, and `miter` available on `PATH`.
 
@@ -29,7 +29,7 @@ Thank you for contributing to `benchwork`! We welcome contributions across our R
      ```
    * **Frontend:**
      ```bash
-     cd web && pnpm install && pnpm dev
+     cd web && bun install && bun run dev
      ```
      Run the daemon with dev proxy:
      ```bash

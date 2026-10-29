@@ -17,6 +17,7 @@
     "vite": "^6.0.7"
   },
   "name": "benchwork-web",
+  "packageManager": "bun@1.4.4",
   "private": true,
   "scripts": {
     "build": "tsc -b && vite build && cp -r dist/* ../crates/benchwork-cli/dist/",
