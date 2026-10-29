@@ -8,6 +8,21 @@ Thank you for contributing to `benchwork`! We welcome contributions across our R
 
 * **Rust Toolchain:** Rust 2024 edition (stable 1.85+ / nightly for bleeding-edge checks).
 * **Bun Toolchain:** Bun 1.4+ (which bundles its own Node.js runtime) for frontend development in `web/`.
+
+### Frontend toolchain benchmark
+
+Measured on macOS (Apple silicon) with Node 24.21.0, npm 12.0.2 and Bun 1.4.4, migrating the same
+lockfile content, `node_modules` removed before each install and the phases run sequentially so they
+do not compete for CPU:
+
+| Phase | npm | Bun | Delta |
+| :--- | ---: | ---: | :--- |
+| Install, empty package cache | 27.89 s | 13.21 s | 2.1x faster |
+| Install, warm package cache | 15.22 s | 1.13 s | 13.5x faster |
+| Build (`tsc -b` + `vite build`) | 27.58 s | 29.32 s | ~6% slower |
+
+The win is dependency resolution and linking, which is what CI pays on every run. The build itself is
+marginally slower because `tsc` and `vite` are still Node programs; Bun does not accelerate them.
 * **Testing Runners:** `cargo-nextest` (recommended) or native `cargo test`.
 * **Suite Tooling:** Installed `storypole`, `chalkline`, and `miter` available on `PATH`.
 
