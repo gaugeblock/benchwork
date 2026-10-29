@@ -722,6 +722,7 @@ version = "0.1.0-beta.1"
 dependencies = [
  "serde",
  "serde_json",
+ "sha2 0.10.9",
  "uuid",
 ]
 
@@ -1146,7 +1147,6 @@ dependencies = [
  "sawhorse-core",
  "serde",
  "serde_json",
- "sha2 0.10.9",
  "storypole-core",
  "thiserror 2.0.21",
  "tokio",
