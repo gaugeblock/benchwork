@@ -136,7 +136,8 @@ fn scan_sawhorse(root_path: &Path) -> bool {
 }
 
 fn scan_telemetry(root_path: &Path) -> usize {
-    let spool_path = root_path.join(".rabbet").join("spool").join("outbox.jsonl");
+    // Same canonical outbox the writers use, not the pre-GB-182 location (GB-209).
+    let spool_path = crate::chat_harness::telemetry_spool::spool_outbox_path(root_path);
     if !spool_path.is_file() {
         return 0;
     }

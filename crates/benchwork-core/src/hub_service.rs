@@ -6,12 +6,13 @@ use std::io::{BufRead, BufReader, Write};
 use std::path::Path;
 use std::time::Instant;
 
-use joiner_core::AnonymizedSynthesisTrace;
+use joiner_core::{AnonymizedSynthesisTrace, SpoolEntry};
 use sawhorse_core::config::schema::SawhorseConfig;
 use sawhorse_core::router::RoleRouter;
 use sawhorse_core::types::{ExecutionMode, InferenceRequest, ModelRole};
 use uuid::Uuid;
 
+use crate::chat_harness::telemetry_spool::spool_outbox_path;
 use crate::error::{BenchworkError, Result};
 use crate::model::{InferencePingRequest, InferencePingResponse, ModelHubStatus};
 
@@ -66,7 +67,9 @@ pub fn get_model_hub_status(root_path: &Path) -> Result<ModelHubStatus> {
         }
     }
 
-    let spool_path = root_path.join(".rabbet").join("spool").join("outbox.jsonl");
+    // One canonical outbox: the one the writers use. `.rabbet/spool/` was the pre-GB-182 location and
+    // nothing has written there since, which is why this panel reported zero (GB-209).
+    let spool_path = spool_outbox_path(root_path);
     let mut spool_traces = Vec::new();
     let mut spool_counts_by_tier = BTreeMap::new();
 
@@ -77,7 +80,12 @@ pub fn get_model_hub_status(root_path: &Path) -> Result<ModelHubStatus> {
             .lines()
             .map_while(std::result::Result::ok)
         {
-            if let Ok(trace) = serde_json::from_str::<AnonymizedSynthesisTrace>(&line) {
+            // Lines are `SpoolEntry` envelopes (GB-182); a bare trace is the legacy shape and is
+            // still accepted so an un-migrated outbox is readable rather than silently empty.
+            let trace = serde_json::from_str::<SpoolEntry>(&line)
+                .map(|entry| entry.trace)
+                .or_else(|_| serde_json::from_str::<AnonymizedSynthesisTrace>(&line));
+            if let Ok(trace) = trace {
                 let tier_name = format!("{:?}", trace.tier).to_lowercase();
                 *spool_counts_by_tier.entry(tier_name).or_insert(0) += 1;
                 spool_traces.push(trace);
@@ -97,7 +105,7 @@ pub fn delete_spool_trace(root_path: &Path, trace_id: &str) -> Result<bool> {
     let target_uuid = Uuid::parse_str(trace_id)
         .map_err(|e| BenchworkError::InvalidRequest(format!("Invalid trace UUID: {e}")))?;
 
-    let spool_path = root_path.join(".rabbet").join("spool").join("outbox.jsonl");
+    let spool_path = spool_outbox_path(root_path);
     if !spool_path.is_file() {
         return Ok(false);
     }
@@ -110,9 +118,12 @@ pub fn delete_spool_trace(root_path: &Path, trace_id: &str) -> Result<bool> {
         .lines()
         .map_while(std::result::Result::ok)
     {
-        if let Ok(trace) = serde_json::from_str::<AnonymizedSynthesisTrace>(&line)
-            && trace.trace_id == target_uuid
-        {
+        let trace_id = serde_json::from_str::<SpoolEntry>(&line)
+            .map(|entry| entry.trace.trace_id)
+            .or_else(|_| {
+                serde_json::from_str::<AnonymizedSynthesisTrace>(&line).map(|t| t.trace_id)
+            });
+        if trace_id.is_ok_and(|id| id == target_uuid) {
             deleted = true;
             continue;
         }
