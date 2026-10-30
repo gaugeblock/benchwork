@@ -31,6 +31,11 @@ pub fn write_sawhorse_config(root_path: &Path, config: &UniversalModelConfig) ->
             dialect: Some(OpenAiDialect::StandardOpenAi),
             headers: None,
             timeout_ms: None,
+            // GB-215 added catalog-overridable limits; benchwork writes configs rather than
+            // resolving limits, so it leaves them unset and inherits the catalog.
+            context_window: None,
+            max_output_tokens: None,
+            reasoning_effort: None,
         },
     );
 
@@ -62,6 +67,9 @@ pub fn write_sawhorse_config(root_path: &Path, config: &UniversalModelConfig) ->
                     dialect: Some(OpenAiDialect::StandardOpenAi),
                     headers: None,
                     timeout_ms: None,
+                    context_window: None,
+                    max_output_tokens: None,
+                    reasoning_effort: None,
                 },
             );
             target_provider = prov_name;
