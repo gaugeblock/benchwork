@@ -151,12 +151,10 @@ version = "0.1.0-beta.4"
 dependencies = [
  "dado-core",
  "gaugeblock-contracts",
- "miter-engine",
  "regex",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
- "tracing",
 ]
 
 [[package]]
@@ -183,10 +181,8 @@ dependencies = [
  "serde_json",
  "storypole-core",
  "tempfile",
- "thiserror 2.0.21",
  "tokio",
  "tokio-stream",
- "tower",
  "tower-http",
  "tracing",
  "tracing-subscriber",
@@ -196,11 +192,9 @@ dependencies = [
 name = "benchwork-core"
 version = "0.1.0-beta.7"
 dependencies = [
- "async-trait",
  "batten-core",
  "chalkline-core",
  "dado-core",
- "futures",
  "joiner-core",
  "miter-engine",
  "reqwest",
@@ -212,7 +206,6 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "toml",
- "tracing",
  "uuid",
 ]
 
@@ -221,10 +214,8 @@ name = "benchwork-mcp"
 version = "0.1.0-beta.7"
 dependencies = [
  "benchwork-core",
- "serde",
  "serde_json",
  "tempfile",
- "thiserror 2.0.21",
  "tokio",
  "tracing",
 ]
@@ -457,14 +448,11 @@ version = "0.1.0-beta.4"
 dependencies = [
  "chalkline-core",
  "gaugeblock-contracts",
- "miter-ast",
  "miter-engine",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
  "toml",
- "tracing",
- "uuid",
 ]
 
 [[package]]
