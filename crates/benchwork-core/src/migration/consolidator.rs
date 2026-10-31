@@ -9,7 +9,8 @@ use toml::Table;
 pub fn consolidate_configs(workspace_root: &Path) -> Result<String> {
     let mut unified = Table::new();
 
-    let unified_path = workspace_root.join(".gaugeblock").join("config.toml");
+    let paths = gaugeblock_workspace::GaugeblockPaths::at(workspace_root);
+    let unified_path = paths.config();
     if unified_path.is_file() {
         let content = fs::read_to_string(&unified_path)?;
         if let Ok(parsed) = content.parse::<Table>() {
@@ -17,7 +18,7 @@ pub fn consolidate_configs(workspace_root: &Path) -> Result<String> {
         }
     }
 
-    let docs_legacy = workspace_root.join(".gaugeblock").join("docs.toml");
+    let docs_legacy = paths.root().join("docs.toml");
     if docs_legacy.is_file()
         && !unified.contains_key("docs")
         && let Ok(content) = fs::read_to_string(&docs_legacy)
