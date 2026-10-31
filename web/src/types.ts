@@ -183,16 +183,18 @@ export interface DagView {
 export interface TypedHole {
   hole_id: string;
   expected_type: string;
-  kind: string;
-  description: string;
+  ast_node_kind: string;
+  max_tokens: number;
+  allow_literals: boolean;
 }
 
 export interface DadoPattern {
   pattern_id: string;
   language: string;
-  domain: string;
   description: string;
   template_source: string;
+  required_imports: string[];
+  canonical_example_fills: Record<string, string>;
   holes: TypedHole[];
 }
 

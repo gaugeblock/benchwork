@@ -33,7 +33,7 @@ export const PatternHolesView: React.FC<PatternHolesViewProps> = ({
             </span>
           </div>
           <span className="text-[10px] px-2 py-0.5 rounded bg-cad-bg border border-cad-border text-cad-cyan font-mono">
-            {pattern.language} • {pattern.domain}
+            {pattern.language}
           </span>
         </div>
         <p className="text-[11px] text-cad-muted leading-tight">{pattern.description}</p>
@@ -61,7 +61,7 @@ export const PatternHolesView: React.FC<PatternHolesViewProps> = ({
               >
                 <span>?[{hole.hole_id}: {hole.expected_type}]</span>
                 <span className="text-[9px] px-1 py-0.2 bg-cad-surface rounded text-cad-muted">
-                  {hole.kind}
+                  {hole.ast_node_kind}
                 </span>
               </button>
             );

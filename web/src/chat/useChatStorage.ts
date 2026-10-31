@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { Conversation, ChatMessage } from './types';
+import type { Conversation, ChatUiMessage } from './types';
 
 const STORAGE_KEY = 'gaugeblock.chat.conversations';
 const ACTIVE_ID_KEY = 'gaugeblock.chat.activeId';
 
-const DEFAULT_WELCOME: ChatMessage = {
+const DEFAULT_WELCOME: ChatUiMessage = {
   id: 'welcome',
   role: 'assistant',
   text: 'Welcome to the Conversational Systems Engineering Studio. I am your Planner and Spec Architect. Ask architecture questions, review specifications, or run /grill-me to resolve ambiguity holes before code generation.',
@@ -65,7 +65,7 @@ export function useChatStorage() {
     conversations.find((c) => c.id === activeId) || conversations[0];
 
   const createConversation = useCallback(
-    (initialMessage?: ChatMessage, taskKey?: string, title?: string) => {
+    (initialMessage?: ChatUiMessage, taskKey?: string, title?: string) => {
       const id = `conv-${Date.now()}`;
       const defaultTitle = title || (taskKey ? `Discussion on ${taskKey}` : 'New Architecture Chat');
       const messages = initialMessage ? [initialMessage] : [DEFAULT_WELCOME];
@@ -104,7 +104,7 @@ export function useChatStorage() {
     [activeId]
   );
 
-  const appendMessage = useCallback((convId: string, message: ChatMessage) => {
+  const appendMessage = useCallback((convId: string, message: ChatUiMessage) => {
     setConversations((prev) =>
       prev.map((c) => {
         if (c.id !== convId) return c;
