@@ -16,25 +16,7 @@ use crate::model::{DagQuery, DagStats, DagView};
 
 /// Queries tasks according to `DagQuery` and computes topological order and summary stats.
 pub fn get_dag_view(root_path: &Path, query: &DagQuery) -> Result<DagView> {
-    if let Ok(ws) = StorypoleWorkspaceStore::open(root_path) {
-        let all_tasks =
-            get_all_tasks(ws.conn()).map_err(|e| BenchworkError::Storypole(e.to_string()))?;
-        return Ok(build_dag_view_from_tasks(all_tasks, query));
-    }
-
-    let store = match StorypoleStore::open(root_path) {
-        Ok(s) => s,
-        Err(_) => {
-            return Ok(DagView {
-                nodes: Vec::new(),
-                topological_order: Vec::new(),
-                stats: DagStats::default(),
-            });
-        }
-    };
-
-    let all_tasks =
-        get_all_tasks(store.conn()).map_err(|e| BenchworkError::Storypole(e.to_string()))?;
+    let all_tasks = load_tasks(root_path)?;
     Ok(build_dag_view_from_tasks(all_tasks, query))
 }
 
@@ -120,6 +102,20 @@ fn build_dag_view_from_tasks(all_tasks: BTreeMap<Uuid, TaskNode>, query: &DagQue
 
 /// Resolves task context briefing including inherited decisions, handoffs, and verification commands.
 pub fn get_task_briefing(root_path: &Path, task_id_or_key: &str) -> Result<TaskContextBriefing> {
+    if let Ok(store) = StorypoleStore::open(root_path)
+        && let Ok(task_id) = resolve_task_id(store.conn(), task_id_or_key)
+        && let Ok(task) = get_task_by_id(store.conn(), task_id)
+    {
+        let all_tasks = load_tasks(root_path)?;
+        let now = StorypoleStore::now_ms();
+        return Ok(build_task_briefing(
+            &task,
+            &all_tasks,
+            &store.config().clone(),
+            now,
+        ));
+    }
+
     if let Ok(mut ws) = StorypoleWorkspaceStore::open(root_path)
         && let Ok(task_id) = resolve_task_id(ws.conn(), task_id_or_key)
         && let Ok(task) = get_task_by_id(ws.conn(), task_id)
@@ -153,4 +149,29 @@ pub fn get_task_briefing(root_path: &Path, task_id_or_key: &str) -> Result<TaskC
 
     let now = StorypoleStore::now_ms();
     Ok(build_task_briefing(&task, &all_tasks, store.config(), now))
+}
+
+/// Tasks to render, with the single store authoritative and the workspace store an overlay.
+///
+/// The workspace store aggregates member ledgers and can lag behind them, so treating a successful
+/// `StorypoleWorkspaceStore::open` as authoritative made the board disagree with the ledger: tasks
+/// verified through `storypole verify` still rendered as ready because the workspace index had not
+/// re-synced since (`GB-240`). A cache must not outvote its source, so the single store wins and the
+/// workspace store contributes only the tasks the single store does not have - which is exactly the
+/// aggregation it exists for.
+fn load_tasks(root_path: &Path) -> Result<BTreeMap<Uuid, TaskNode>> {
+    let mut tasks = match StorypoleStore::open(root_path) {
+        Ok(store) => {
+            get_all_tasks(store.conn()).map_err(|e| BenchworkError::Storypole(e.to_string()))?
+        }
+        Err(_) => BTreeMap::new(),
+    };
+    if let Ok(ws) = StorypoleWorkspaceStore::open(root_path)
+        && let Ok(workspace_tasks) = get_all_tasks(ws.conn())
+    {
+        for (id, task) in workspace_tasks {
+            tasks.entry(id).or_insert(task);
+        }
+    }
+    Ok(tasks)
 }
