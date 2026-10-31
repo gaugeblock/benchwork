@@ -304,6 +304,7 @@ dependencies = [
 name = "chalkline-core"
 version = "0.1.0-beta.4"
 dependencies = [
+ "gaugeblock-workspace",
  "miter-engine",
  "pulldown-cmark",
  "sawhorse-core",
@@ -1299,6 +1300,7 @@ dependencies = [
  "dockerfile-parser",
  "gaugeblock-contracts",
  "gaugeblock-git",
+ "gaugeblock-workspace",
  "globset",
  "hcl-rs",
  "miter-ast",
@@ -1890,6 +1892,7 @@ dependencies = [
  "async-trait",
  "futures-util",
  "gaugeblock-contracts",
+ "gaugeblock-workspace",
  "reqwest",
  "serde",
  "serde_json",
@@ -2149,6 +2152,7 @@ version = "0.1.0-beta.5"
 dependencies = [
  "gaugeblock-contracts",
  "gaugeblock-git",
+ "gaugeblock-workspace",
  "rusqlite",
  "serde",
  "serde_json",
