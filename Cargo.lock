@@ -1156,7 +1156,6 @@ version = "0.1.0-beta.4"
 dependencies = [
  "async-trait",
  "batten-core",
- "chalkline-core",
  "dado-core",
  "futures",
  "gaugeblock-contracts",
