@@ -61,16 +61,20 @@ pub fn list_tools() -> Value {
 }
 
 /// Dispatches a tool invocation to its corresponding handler.
-pub async fn dispatch_tool(tool_name: &str, arguments: &Value) -> Value {
+///
+/// Returns the tool's text or a failure message; the transport builds the MCP `content` envelope
+/// (`GB-234`).
+///
+/// # Errors
+///
+/// The message shown to the caller when the tool fails.
+pub async fn dispatch_tool(tool_name: &str, arguments: &Value) -> Result<String, String> {
     match tool_name {
         "benchwork_capabilities" => handle_capabilities(arguments),
         "benchwork_snapshot" => handle_snapshot(arguments),
         "benchwork_resolve_decision" => handle_resolve_decision(arguments),
         "benchwork_trigger_synthesis" => handle_trigger_synthesis(arguments).await,
-        _ => json!({
-            "content": [{ "type": "text", "text": format!("Unknown tool: {tool_name}") }],
-            "isError": true
-        }),
+        _ => Err(format!("Unknown tool: {tool_name}")),
     }
 }
 
@@ -82,57 +86,41 @@ fn resolve_root(arguments: &Value) -> PathBuf {
         .unwrap_or_else(|| PathBuf::from("."))
 }
 
-fn handle_capabilities(args: &Value) -> Value {
+fn handle_capabilities(args: &Value) -> Result<String, String> {
     let root = resolve_root(args);
     match scan_capabilities(&root) {
-        Ok(caps) => json!({
-            "content": [{
-                "type": "text",
-                "text": serde_json::to_string_pretty(&caps).unwrap_or_default()
-            }]
-        }),
-        Err(e) => json!({
-            "content": [{ "type": "text", "text": format!("Failed scanning capabilities: {e}") }],
-            "isError": true
-        }),
+        Ok(caps) => Ok(serde_json::to_string_pretty(&caps).unwrap_or_default()),
+        Err(e) => Err(format!("Failed scanning capabilities: {e}")),
     }
 }
 
-fn handle_snapshot(args: &Value) -> Value {
+fn handle_snapshot(args: &Value) -> Result<String, String> {
     let root = resolve_root(args);
     let state = BenchworkState::new(root);
     match state.snapshot() {
-        Ok(snap) => json!({
-            "content": [{
-                "type": "text",
-                "text": serde_json::to_string_pretty(&snap).unwrap_or_default()
-            }]
-        }),
-        Err(e) => json!({
-            "content": [{ "type": "text", "text": format!("Failed capturing snapshot: {e}") }],
-            "isError": true
-        }),
+        Ok(snap) => Ok(serde_json::to_string_pretty(&snap).unwrap_or_default()),
+        Err(e) => Err(format!("Failed capturing snapshot: {e}")),
     }
 }
 
-fn handle_resolve_decision(args: &Value) -> Value {
+fn handle_resolve_decision(args: &Value) -> Result<String, String> {
     let root = resolve_root(args);
     let decision_id = match args.get("decision_id").and_then(|v| v.as_str()) {
         Some(d) => d.to_string(),
         None => {
-            return json!({ "content": [{ "type": "text", "text": "Missing decision_id" }], "isError": true });
+            return Err("Missing decision_id".to_string());
         }
     };
     let chosen_option = match args.get("chosen_option").and_then(|v| v.as_str()) {
         Some(c) => c.to_string(),
         None => {
-            return json!({ "content": [{ "type": "text", "text": "Missing chosen_option" }], "isError": true });
+            return Err("Missing chosen_option".to_string());
         }
     };
     let rationale = match args.get("rationale").and_then(|v| v.as_str()) {
         Some(r) => r.to_string(),
         None => {
-            return json!({ "content": [{ "type": "text", "text": "Missing rationale" }], "isError": true });
+            return Err("Missing rationale".to_string());
         }
     };
     let task_id = args
@@ -153,20 +141,12 @@ fn handle_resolve_decision(args: &Value) -> Value {
     };
 
     match resolve_decision(&root, &req) {
-        Ok(receipt) => json!({
-            "content": [{
-                "type": "text",
-                "text": serde_json::to_string_pretty(&receipt).unwrap_or_default()
-            }]
-        }),
-        Err(e) => json!({
-            "content": [{ "type": "text", "text": format!("Failed resolving decision: {e}") }],
-            "isError": true
-        }),
+        Ok(receipt) => Ok(serde_json::to_string_pretty(&receipt).unwrap_or_default()),
+        Err(e) => Err(format!("Failed resolving decision: {e}")),
     }
 }
 
-async fn handle_trigger_synthesis(args: &Value) -> Value {
+async fn handle_trigger_synthesis(args: &Value) -> Result<String, String> {
     let root = resolve_root(args);
     let task_id = args
         .get("task_id")
@@ -184,12 +164,7 @@ async fn handle_trigger_synthesis(args: &Value) -> Value {
 
     let (tx, _) = broadcast::channel(16);
     match trigger_synthesis(&root, &req, tx).await {
-        Ok(()) => json!({
-            "content": [{ "type": "text", "text": "Synthesis run triggered successfully." }]
-        }),
-        Err(e) => json!({
-            "content": [{ "type": "text", "text": format!("Failed triggering synthesis: {e}") }],
-            "isError": true
-        }),
+        Ok(()) => Ok("Synthesis run triggered successfully.".to_string()),
+        Err(e) => Err(format!("Failed triggering synthesis: {e}")),
     }
 }
