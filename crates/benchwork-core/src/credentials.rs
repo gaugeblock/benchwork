@@ -13,7 +13,7 @@ pub fn resolve_credential(root_path: &Path, key: &str) -> Option<String> {
     {
         return Some(val);
     }
-    let env_path = root_path.join(".gaugeblock").join(".env");
+    let env_path = gaugeblock_workspace::GaugeblockPaths::at(root_path).env_file();
     if let Ok(content) = fs::read_to_string(&env_path) {
         for line in content.lines() {
             let line = line.trim();

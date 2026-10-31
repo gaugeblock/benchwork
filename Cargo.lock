@@ -195,6 +195,7 @@ dependencies = [
  "batten-core",
  "chalkline-core",
  "dado-core",
+ "gaugeblock-workspace",
  "joiner-core",
  "miter-engine",
  "reqwest",
@@ -716,6 +717,14 @@ dependencies = [
 name = "gaugeblock-git"
 version = "0.1.0-beta.1"
 dependencies = [
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "gaugeblock-workspace"
+version = "0.1.0-beta.1"
+dependencies = [
+ "gaugeblock-git",
  "thiserror 2.0.21",
 ]
 
@@ -3098,10 +3107,6 @@ version = "0.1.0-beta.4"
 
 [[patch.unused]]
 name = "gaugeblock-common"
-version = "0.1.0-beta.1"
-
-[[patch.unused]]
-name = "gaugeblock-workspace"
 version = "0.1.0-beta.1"
 
 [[patch.unused]]

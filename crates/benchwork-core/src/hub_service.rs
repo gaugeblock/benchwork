@@ -18,7 +18,7 @@ use crate::model::{InferencePingRequest, InferencePingResponse, ModelHubStatus};
 
 /// Retrieves active Sawhorse model role bindings and all pending traces in Rabbet spool.
 pub fn get_model_hub_status(root_path: &Path) -> Result<ModelHubStatus> {
-    let gb_config_path = root_path.join(".gaugeblock").join("config.toml");
+    let gb_config_path = gaugeblock_workspace::GaugeblockPaths::at(root_path).config();
     let sawhorse_path = root_path.join("sawhorse.toml");
     let config = if gb_config_path.is_file() {
         SawhorseConfig::load_from_path(&gb_config_path).unwrap_or_default()
@@ -159,7 +159,7 @@ pub async fn ping_inference(
     };
 
     let start = Instant::now();
-    let gb_config_path = root_path.join(".gaugeblock").join("config.toml");
+    let gb_config_path = gaugeblock_workspace::GaugeblockPaths::at(root_path).config();
     let sawhorse_path = root_path.join("sawhorse.toml");
     let config = if gb_config_path.is_file() {
         SawhorseConfig::load_from_path(&gb_config_path)

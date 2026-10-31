@@ -11,6 +11,7 @@ description = "Core domain types, workspace aggregation, and multi-crate service
 workspace = true
 
 [dependencies]
+gaugeblock-workspace = "0.1.0-beta.1"
 batten-core = "0.1.0-beta.2"
 chalkline-core = "0.1.0-beta.2"
 dado-core = "0.1.0-beta.2"
