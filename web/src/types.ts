@@ -17,6 +17,9 @@ export type TaskKind = 'epic' | 'feature' | 'refactor' | 'bug' | 'tech_debt' | '
 export interface TaskEdge {
   kind: 'blocked_by' | 'related_to' | 'discovered_from' | 'parent_epic';
   target_id: string;
+  // Cross-repository edges carry where the target lives; the Rust contract has both as Option.
+  target_ticket_key?: string;
+  target_repo?: string;
 }
 
 export interface TaskScope {
@@ -107,6 +110,8 @@ export interface TaskNode {
   verification_receipt?: VerificationReceipt;
   created_at_epoch_ms: number;
   updated_at_epoch_ms: number;
+  // Set when the task is archived, so a verified task can be filtered by the status it earned.
+  archived_at_epoch_ms?: number;
 }
 
 export interface TaskContextBriefing {
