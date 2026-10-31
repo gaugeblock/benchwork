@@ -54,6 +54,31 @@ export interface AnonymizedSynthesisTrace {
   anonymized_scope_signature: string;
   filled_holes: [string, string][];
   rejected_attempt?: string;
+  /** How the candidate was checked; always present in the Rust contract. */
+  verification: VerificationReport;
+  /** Storypole ticket the trace came from, when `storypole verify` captured it. */
+  task_key?: string;
+  /** HEAD commit captured at; `(task_key, head_commit_sha)` is the idempotency key. */
+  head_commit_sha?: string;
+}
+
+/** Result of compiling and testing a synthesised candidate. */
+export interface VerificationReport {
+  ast_valid: boolean;
+  typecheck_passed: boolean;
+  tests_passed?: boolean;
+  diagnostics: CompilerDiagnostic[];
+  duration_ms: number;
+}
+
+/** One compiler message attached to a verification report. */
+export interface CompilerDiagnostic {
+  file: string;
+  line: number;
+  column: number;
+  code?: string;
+  message: string;
+  suggestion?: string;
 }
 
 export interface ModelHubStatus {
