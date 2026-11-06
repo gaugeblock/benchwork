@@ -101,6 +101,13 @@ pub struct TidyArgs {
     #[arg(long, default_value_t = false)]
     pub dry_run: bool,
 
+    /// Reconcile every repository in the workspace, discovered through `WorkspaceTopology`.
+    ///
+    /// Membership comes from the topology, never a directory glob: a recursive walk would descend into
+    /// target/, node_modules/, worktrees/ and nested repositories that are not suite members (`GB-263`).
+    #[arg(long, default_value_t = false)]
+    pub workspace: bool,
+
     /// Format output as raw JSON for machine consumption.
     #[arg(long, default_value_t = false)]
     pub json: bool,

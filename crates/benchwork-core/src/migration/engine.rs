@@ -181,6 +181,9 @@ pub fn reconcile_tool_configs(gb_root: &Path, dry_run: bool) -> Vec<String> {
     let mut notes = Vec::new();
     let entries = match fs::read_dir(gb_root) {
         Ok(entries) => entries,
+        // A repository with no `.gaugeblock` has nothing to reconcile. Reporting it as unreadable would
+        // make fleet mode noisy about repositories that are not adopted yet (`GB-263`).
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Vec::new(),
         Err(error) => return vec![format!("cannot read {}: {error}", gb_root.display())],
     };
 

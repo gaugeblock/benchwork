@@ -179,6 +179,48 @@ pub fn handle_tidy(
     root_path: PathBuf,
     args: TidyArgs,
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    // Fleet mode (`GB-263`): membership comes from WorkspaceTopology, never a glob, so target/, worktrees/
+    // and nested non-member repositories are excluded by construction. Each repository is isolated - a
+    // finding is recorded and the run continues - because a fleet command that stops at the first problem
+    // leaves the operator guessing how far it got.
+    if args.workspace {
+        let topology = gaugeblock_workspace::WorkspaceTopology::discover(&root_path);
+        let mut conflicts = 0usize;
+        let mut with_findings = 0usize;
+
+        for member in topology.members() {
+            let gb_root = member.path.join(".gaugeblock");
+            let findings =
+                benchwork_core::migration::engine::reconcile_tool_configs(&gb_root, args.dry_run);
+            if findings.is_empty() {
+                continue;
+            }
+            with_findings += 1;
+            if findings.iter().any(|finding| finding.contains("CONFLICT")) {
+                conflicts += 1;
+            }
+            println!("  {}:", member.name);
+            for finding in &findings {
+                println!("    - {finding}");
+            }
+        }
+
+        let total = topology.members().len();
+        if !args.json {
+            println!(
+                "--- Tidy {} (workspace) ---\n  {total} repositories, {} already tidy, {with_findings} with findings",
+                if args.dry_run { "Dry Run" } else { "Receipt" },
+                total - with_findings
+            );
+        }
+        if conflicts > 0 {
+            return Err(
+                format!("{conflicts} repository(ies) reported conflicts; see above").into(),
+            );
+        }
+        return Ok(());
+    }
+
     let gb_root = root_path.join(".gaugeblock");
     let findings =
         benchwork_core::migration::engine::reconcile_tool_configs(&gb_root, args.dry_run);
