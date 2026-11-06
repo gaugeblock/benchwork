@@ -203,6 +203,25 @@ pub fn reconcile_tool_configs(gb_root: &Path, dry_run: bool) -> Vec<String> {
     notes
 }
 
+/// The first thing the per-tool file would lose if it were removed, or `None` when it is redundant.
+///
+/// `None` means: every key in `candidate` is present in `canonical` with the same value, so deleting the
+/// candidate destroys no information. Anything else - a differing value, or a key the unified file never
+/// heard of - must be surfaced rather than resolved by guesswork.
+fn first_lost_key(candidate: &toml::Value, canonical: &toml::Value) -> Option<String> {
+    let candidate = candidate.as_table()?;
+    let canonical = canonical.as_table()?;
+
+    for (key, value) in candidate {
+        match canonical.get(key) {
+            Some(existing) if existing == value => {}
+            Some(_) => return Some(format!("`{key}` (differs from the unified value)")),
+            None => return Some(format!("`{key}` (absent from the unified section)")),
+        }
+    }
+    None
+}
+
 fn reconcile_tool_config(
     tool_dir: &Path,
     section: &str,
@@ -215,31 +234,40 @@ fn reconcile_tool_config(
     }
 
     let unified_path = gb_root.join("config.toml");
-    let unified: toml::Value = fs::read_to_string(&unified_path)
-        .map_err(|error| format!("cannot read {}: {error}", unified_path.display()))?
-        .parse()
+    let unified_text = fs::read_to_string(&unified_path)
+        .map_err(|error| format!("cannot read {}: {error}", unified_path.display()))?;
+    // `toml::from_str` parses a *document*; `Value`'s FromStr parses a single *value*, which reads
+    // `[storypole]` as an array and then chokes on the next line. That is the whole reason this compare
+    // silently found nothing, and the error it produces ("unexpected content, expected nothing" after the
+    // closing bracket) names the parser's confusion rather than the file's contents.
+    let unified: toml::Value = toml::from_str(&unified_text)
         .map_err(|error| format!("{} is not valid TOML: {error}", unified_path.display()))?;
     let Some(canonical) = unified.get(section) else {
         return Ok(None);
     };
 
-    let candidate: toml::Value = fs::read_to_string(&per_tool)
-        .map_err(|error| format!("cannot read {}: {error}", per_tool.display()))?
-        .parse()
+    let candidate_text = fs::read_to_string(&per_tool)
+        .map_err(|error| format!("cannot read {}: {error}", per_tool.display()))?;
+    let candidate: toml::Value = toml::from_str(&candidate_text)
         .map_err(|error| format!("{} is not valid TOML: {error}", per_tool.display()))?;
 
-    if &candidate == canonical {
-        if !dry_run {
-            let _ = fs::remove_file(&per_tool);
+    // Equality is too strict a test. The per-tool file is usually a stale *subset* - same prefix, same
+    // TTL, but predating `verification_commands` - so demanding identical tables leaves the duplicate in
+    // place forever. A file is redundant when every key it holds already exists upstream with the same
+    // value; it becomes informative the moment one key differs or is missing upstream.
+    match first_lost_key(&candidate, canonical) {
+        None => {
+            if !dry_run {
+                let _ = fs::remove_file(&per_tool);
+            }
+            let verb = if dry_run { "would remove" } else { "removed" };
+            Ok(Some(format!(
+                " ({verb} redundant config.toml; unified [{section}] already carries every key)"
+            )))
         }
-        let verb = if dry_run { "would remove" } else { "removed" };
-        Ok(Some(format!(
-            " ({verb} duplicate config.toml; unified [{section}] already carries it)"
-        )))
-    } else {
-        Ok(Some(format!(
-            " (CONFLICT: config.toml differs from unified [{section}]; kept both, resolve by hand)"
-        )))
+        Some(reason) => Ok(Some(format!(
+            " (CONFLICT: config.toml would lose {reason}; kept both, resolve by hand)"
+        ))),
     }
 }
 
