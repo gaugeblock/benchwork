@@ -123,15 +123,22 @@ pub fn execute_migration(
         }
     }
 
-    // Reconcile the duplicate per-tool config that a DirectoryMove creates (`GB-261` D8). Runs after the
-    // consolidated file is written, because before that there is nothing to compare against.
-    for item in &plan.items {
-        if !matches!(item.kind, MigrationItemKind::DirectoryMove) {
-            continue;
-        }
-        let moved_dir = plan.workspace_root.join(&item.destination);
-        if let Some(note) = reconcile_storypole_config(&moved_dir, &gb_root, dry_run) {
-            details.push(format!("{}{note}", item.destination.display()));
+    // Reconcile duplicate per-tool configs (`GB-261` D8). Scans `.gaugeblock/*/config.toml` instead of the
+    // plan's items: an already-migrated repository has nothing to move, so a plan-driven reconcile is
+    // unreachable for exactly the repositories that still carry a duplicate. The directory name is the
+    // section name - `storypole/` is `[storypole]`.
+    if let Ok(entries) = fs::read_dir(&gb_root) {
+        for entry in entries.flatten() {
+            let tool_dir = entry.path();
+            if !tool_dir.is_dir() {
+                continue;
+            }
+            let Some(section) = tool_dir.file_name().and_then(|name| name.to_str()) else {
+                continue;
+            };
+            if let Some(note) = reconcile_tool_config(&tool_dir, section, &gb_root, dry_run) {
+                details.push(format!("{}{note}", tool_dir.display()));
+            }
         }
     }
 
@@ -171,8 +178,13 @@ fn copy_dir_recursive(src: &Path, dst: &Path) -> Result<()> {
 /// first, legacy per-tool files are fallbacks). So: identical values -> the duplicate goes; different
 /// values -> nothing is deleted and the conflict is named, because guessing which the user meant is worse
 /// than asking.
-fn reconcile_storypole_config(moved_dir: &Path, gb_root: &Path, dry_run: bool) -> Option<String> {
-    let per_tool = moved_dir.join("config.toml");
+fn reconcile_tool_config(
+    tool_dir: &Path,
+    section: &str,
+    gb_root: &Path,
+    dry_run: bool,
+) -> Option<String> {
+    let per_tool = tool_dir.join("config.toml");
     if !per_tool.is_file() {
         return None;
     }
@@ -181,7 +193,7 @@ fn reconcile_storypole_config(moved_dir: &Path, gb_root: &Path, dry_run: bool) -
         .ok()?
         .parse()
         .ok()?;
-    let canonical = unified.get("storypole")?;
+    let canonical = unified.get(section)?;
     let candidate: toml::Value = fs::read_to_string(&per_tool).ok()?.parse().ok()?;
 
     if &candidate == canonical {
@@ -190,13 +202,11 @@ fn reconcile_storypole_config(moved_dir: &Path, gb_root: &Path, dry_run: bool) -
         }
         let verb = if dry_run { "would remove" } else { "removed" };
         Some(format!(
-            " ({verb} duplicate {}/config.toml; unified [storypole] already carries it)",
-            moved_dir.display()
+            " ({verb} duplicate config.toml; unified [{section}] already carries it)"
         ))
     } else {
         Some(format!(
-            " (CONFLICT: {}/config.toml differs from unified [storypole]; kept both, resolve by hand)",
-            moved_dir.display()
+            " (CONFLICT: config.toml differs from unified [{section}]; kept both, resolve by hand)"
         ))
     }
 }
