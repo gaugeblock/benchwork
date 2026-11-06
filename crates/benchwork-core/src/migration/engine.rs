@@ -179,8 +179,9 @@ fn copy_dir_recursive(src: &Path, dst: &Path) -> Result<()> {
 /// guessing which the user meant is worse than asking. Returns one line per finding.
 pub fn reconcile_tool_configs(gb_root: &Path, dry_run: bool) -> Vec<String> {
     let mut notes = Vec::new();
-    let Ok(entries) = fs::read_dir(gb_root) else {
-        return notes;
+    let entries = match fs::read_dir(gb_root) {
+        Ok(entries) => entries,
+        Err(error) => return vec![format!("cannot read {}: {error}", gb_root.display())],
     };
 
     for entry in entries.flatten() {
@@ -191,8 +192,12 @@ pub fn reconcile_tool_configs(gb_root: &Path, dry_run: bool) -> Vec<String> {
         let Some(section) = tool_dir.file_name().and_then(|name| name.to_str()) else {
             continue;
         };
-        if let Some(note) = reconcile_tool_config(&tool_dir, section, gb_root, dry_run) {
-            notes.push(format!("{}{note}", tool_dir.display()));
+        match reconcile_tool_config(&tool_dir, section, gb_root, dry_run) {
+            Ok(Some(note)) => notes.push(format!("{}{note}", tool_dir.display())),
+            Ok(None) => {}
+            // Reported, never swallowed: an unreadable or invalid config must not be indistinguishable
+            // from "there was nothing to do", which is what five `?`-to-`None` paths produced.
+            Err(reason) => notes.push(format!("{}: {reason}", tool_dir.display())),
         }
     }
     notes
@@ -203,31 +208,38 @@ fn reconcile_tool_config(
     section: &str,
     gb_root: &Path,
     dry_run: bool,
-) -> Option<String> {
+) -> std::result::Result<Option<String>, String> {
     let per_tool = tool_dir.join("config.toml");
     if !per_tool.is_file() {
-        return None;
+        return Ok(None);
     }
 
-    let unified: toml::Value = fs::read_to_string(gb_root.join("config.toml"))
-        .ok()?
+    let unified_path = gb_root.join("config.toml");
+    let unified: toml::Value = fs::read_to_string(&unified_path)
+        .map_err(|error| format!("cannot read {}: {error}", unified_path.display()))?
         .parse()
-        .ok()?;
-    let canonical = unified.get(section)?;
-    let candidate: toml::Value = fs::read_to_string(&per_tool).ok()?.parse().ok()?;
+        .map_err(|error| format!("{} is not valid TOML: {error}", unified_path.display()))?;
+    let Some(canonical) = unified.get(section) else {
+        return Ok(None);
+    };
+
+    let candidate: toml::Value = fs::read_to_string(&per_tool)
+        .map_err(|error| format!("cannot read {}: {error}", per_tool.display()))?
+        .parse()
+        .map_err(|error| format!("{} is not valid TOML: {error}", per_tool.display()))?;
 
     if &candidate == canonical {
         if !dry_run {
             let _ = fs::remove_file(&per_tool);
         }
         let verb = if dry_run { "would remove" } else { "removed" };
-        Some(format!(
+        Ok(Some(format!(
             " ({verb} duplicate config.toml; unified [{section}] already carries it)"
-        ))
+        )))
     } else {
-        Some(format!(
+        Ok(Some(format!(
             " (CONFLICT: config.toml differs from unified [{section}]; kept both, resolve by hand)"
-        ))
+        )))
     }
 }
 
