@@ -17,6 +17,11 @@ workspace = true
 
 [dependencies]
 benchwork-core = { path = "../benchwork-core", version = "0.1.0-beta.7" }
+# Canonical .gaugeblock path resolution for the telemetry stream (GB-243 AC4c). Already compiled for
+# this crate transitively through benchwork-core; this only makes the edge direct.
+gaugeblock-workspace = "0.1.0-beta.1"
+# Span shape for the SSE stream (GB-243 AC4c).
+gaugeblock-contracts = "0.1.0-beta.1"
 benchwork-mcp = { path = "../benchwork-mcp", version = "0.1.0-beta.7" }
 sawhorse-core = "0.1.0-beta.3"
 axum = { version = "0.8", features = ["ws"] }

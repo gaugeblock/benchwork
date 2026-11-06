@@ -27,6 +27,8 @@ use crate::args::UpArgs;
 use assets::{ServerConfig, handle_static};
 use routes_state::DaemonContext;
 
+mod routes_telemetry;
+
 /// Spawns the Axum daemon server on the specified host and port.
 pub async fn start_daemon(
     root_path: PathBuf,
@@ -147,6 +149,10 @@ pub async fn start_daemon(
         )
         .route("/api/v1/ws", get(streams::ws_handler))
         .route("/api/v1/events", get(streams::sse_handler))
+        .route(
+            "/api/v1/telemetry/stream",
+            get(routes_telemetry::telemetry_stream),
+        )
         // Chat Copilot & Generative UI routes (GB-46)
         .route("/api/v1/chat/stream", post(routes_chat::handle_chat_stream))
         .route(

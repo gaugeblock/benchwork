@@ -172,6 +172,8 @@ dependencies = [
  "benchwork-mcp",
  "clap",
  "futures",
+ "gaugeblock-contracts",
+ "gaugeblock-workspace",
  "mime_guess",
  "reqwest",
  "rust-embed",
