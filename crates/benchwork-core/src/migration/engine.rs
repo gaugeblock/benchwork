@@ -123,24 +123,9 @@ pub fn execute_migration(
         }
     }
 
-    // Reconcile duplicate per-tool configs (`GB-261` D8). Scans `.gaugeblock/*/config.toml` instead of the
-    // plan's items: an already-migrated repository has nothing to move, so a plan-driven reconcile is
-    // unreachable for exactly the repositories that still carry a duplicate. The directory name is the
-    // section name - `storypole/` is `[storypole]`.
-    if let Ok(entries) = fs::read_dir(&gb_root) {
-        for entry in entries.flatten() {
-            let tool_dir = entry.path();
-            if !tool_dir.is_dir() {
-                continue;
-            }
-            let Some(section) = tool_dir.file_name().and_then(|name| name.to_str()) else {
-                continue;
-            };
-            if let Some(note) = reconcile_tool_config(&tool_dir, section, &gb_root, dry_run) {
-                details.push(format!("{}{note}", tool_dir.display()));
-            }
-        }
-    }
+    // Reconcile duplicate per-tool configs (`GB-261` D8, `GB-267`). Kept as a call into a standalone
+    // function so it can also run when there is nothing to migrate - see `benchwork tidy`.
+    details.extend(reconcile_tool_configs(&gb_root, dry_run));
 
     Ok(MigrationReceipt {
         executed_at_epoch_ms: now,
@@ -178,6 +163,41 @@ fn copy_dir_recursive(src: &Path, dst: &Path) -> Result<()> {
 /// first, legacy per-tool files are fallbacks). So: identical values -> the duplicate goes; different
 /// values -> nothing is deleted and the conflict is named, because guessing which the user meant is worse
 /// than asking.
+/// Reconciles duplicate per-tool configs against the unified file (`GB-261` D8, `GB-267`).
+///
+/// A migrated repository can carry both `.gaugeblock/config.toml` (with a `[storypole]` section) and
+/// `.gaugeblock/storypole/config.toml`. Two files meaning one thing is the config-drift failure mode: they
+/// agree today and diverge the day someone edits the loser.
+///
+/// **This is not migration.** It is a tidy operation over an already-unified workspace, so it must be
+/// callable when there is nothing to move. That distinction is why it lives in its own function: driven by
+/// migration plan items it was unreachable for exactly the repositories that needed it, and living inside
+/// `execute_migration` it was unreachable whenever the CLI short-circuited on "already unified". Both
+/// were observed before this function existed.
+///
+/// Identical values remove the duplicate; differing values delete nothing and name the conflict, because
+/// guessing which the user meant is worse than asking. Returns one line per finding.
+pub fn reconcile_tool_configs(gb_root: &Path, dry_run: bool) -> Vec<String> {
+    let mut notes = Vec::new();
+    let Ok(entries) = fs::read_dir(gb_root) else {
+        return notes;
+    };
+
+    for entry in entries.flatten() {
+        let tool_dir = entry.path();
+        if !tool_dir.is_dir() {
+            continue;
+        }
+        let Some(section) = tool_dir.file_name().and_then(|name| name.to_str()) else {
+            continue;
+        };
+        if let Some(note) = reconcile_tool_config(&tool_dir, section, gb_root, dry_run) {
+            notes.push(format!("{}{note}", tool_dir.display()));
+        }
+    }
+    notes
+}
+
 fn reconcile_tool_config(
     tool_dir: &Path,
     section: &str,

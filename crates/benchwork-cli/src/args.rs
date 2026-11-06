@@ -26,6 +26,8 @@ pub enum Commands {
     Snapshot(FormatArgs),
     /// Migrate legacy dotfiles (.storypole, sawhorse.toml, .miter, etc.) to .gaugeblock/.
     Migrate(MigrateArgs),
+    /// Reconcile an already-unified workspace: drop duplicate per-tool configs the unified file covers.
+    Tidy(TidyArgs),
     /// Archive every task matching a filter, server-side.
     ArchiveAll(ArchiveAllArgs),
     /// Launch stdio JSON-RPC 2.0 MCP server for agent integration.
@@ -89,5 +91,17 @@ pub struct ArchiveAllArgs {
 
     /// Output as JSON.
     #[arg(long)]
+    pub json: bool,
+}
+
+/// Arguments for `benchwork tidy`.
+#[derive(Debug, Args)]
+pub struct TidyArgs {
+    /// Report what would change without modifying the filesystem.
+    #[arg(long, default_value_t = false)]
+    pub dry_run: bool,
+
+    /// Format output as raw JSON for machine consumption.
+    #[arg(long, default_value_t = false)]
     pub json: bool,
 }

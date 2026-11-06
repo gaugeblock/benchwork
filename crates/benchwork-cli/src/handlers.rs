@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use benchwork_core::{BenchworkState, discover_migration, execute_migration, scan_capabilities};
 use benchwork_mcp::run_stdio_server;
 
-use crate::args::{FormatArgs, MigrateArgs, UpArgs};
+use crate::args::{FormatArgs, MigrateArgs, TidyArgs, UpArgs};
 use crate::daemon::start_daemon;
 
 /// Executes the `benchwork capabilities` command.
@@ -167,5 +167,41 @@ pub fn handle_archive_all(
             eprintln!("  failed: {error}");
         }
     }
+    Ok(())
+}
+
+/// Reconciles duplicate per-tool configs against the unified `.gaugeblock/config.toml` (`GB-267`).
+///
+/// Separate from `migrate` on purpose: this is a tidy operation over an already-unified workspace, so it
+/// has to run when there is nothing to migrate. Attached to migration it was unreachable twice over -
+/// driven by plan items, then living inside an engine the CLI never called.
+pub fn handle_tidy(
+    root_path: PathBuf,
+    args: TidyArgs,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let gb_root = root_path.join(".gaugeblock");
+    let findings =
+        benchwork_core::migration::engine::reconcile_tool_configs(&gb_root, args.dry_run);
+
+    if args.json {
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&serde_json::json!({
+                "dry_run": args.dry_run,
+                "findings": findings,
+            }))?
+        );
+    } else if findings.is_empty() {
+        println!("Nothing to reconcile: no duplicate per-tool configs found.");
+    } else {
+        println!(
+            "--- Tidy {} ---",
+            if args.dry_run { "Dry Run" } else { "Receipt" }
+        );
+        for finding in &findings {
+            println!("  - {finding}");
+        }
+    }
+
     Ok(())
 }
