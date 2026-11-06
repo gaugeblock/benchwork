@@ -22,6 +22,8 @@ use gaugeblock_contracts::TelemetrySpan;
 use rusqlite::{Connection, params};
 use uuid::Uuid;
 
+use crate::telemetry_stats::CompletedSpan;
+
 /// Failures from the telemetry index.
 #[derive(Debug, thiserror::Error)]
 pub enum TelemetryIndexError {
@@ -175,6 +177,31 @@ impl TelemetryIndex {
                     started_at_ms as u64,
                     duration_ms.map(|ms| ms as u64),
                 ))
+            })?
+            .collect::<Result<Vec<_>, _>>()?;
+        Ok(rows)
+    }
+    /// Spans that have finished, as input for the Law 12 rollups (`GB-243` AC6).
+    ///
+    /// Filters on `duration_ms IS NOT NULL` in SQL rather than in the caller: a span still running has no
+    /// duration, and including it as zero would drag every percentile low.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`TelemetryIndexError`] when the query fails.
+    pub fn completed_spans(&self) -> Result<Vec<CompletedSpan>, TelemetryIndexError> {
+        let mut statement = self.connection.prepare(
+            "SELECT binary, command, duration_ms FROM spans
+             WHERE duration_ms IS NOT NULL ORDER BY started_at_ms ASC",
+        )?;
+        let rows = statement
+            .query_map([], |row| {
+                let duration_ms: i64 = row.get(2)?;
+                Ok(CompletedSpan {
+                    binary: row.get(0)?,
+                    command: row.get(1)?,
+                    duration_ms: duration_ms as u64,
+                })
             })?
             .collect::<Result<Vec<_>, _>>()?;
         Ok(rows)

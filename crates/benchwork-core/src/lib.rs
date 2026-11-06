@@ -18,6 +18,7 @@ pub mod model_discovery;
 pub mod spec_preview;
 pub mod spec_studio;
 pub mod telemetry_index;
+pub mod telemetry_stats;
 pub mod telemetry_tail;
 pub mod test_inference;
 pub mod xray_service;
