@@ -123,6 +123,18 @@ pub fn execute_migration(
         }
     }
 
+    // Reconcile the duplicate per-tool config that a DirectoryMove creates (`GB-261` D8). Runs after the
+    // consolidated file is written, because before that there is nothing to compare against.
+    for item in &plan.items {
+        if !matches!(item.kind, MigrationItemKind::DirectoryMove) {
+            continue;
+        }
+        let moved_dir = plan.workspace_root.join(&item.destination);
+        if let Some(note) = reconcile_storypole_config(&moved_dir, &gb_root, dry_run) {
+            details.push(format!("{}{note}", item.destination.display()));
+        }
+    }
+
     Ok(MigrationReceipt {
         executed_at_epoch_ms: now,
         migrated_count,
@@ -146,6 +158,47 @@ fn copy_dir_recursive(src: &Path, dst: &Path) -> Result<()> {
         }
     }
     Ok(())
+}
+
+/// Resolves the duplicate storypole config that migration would otherwise leave behind (`GB-261` D8).
+///
+/// A `DirectoryMove` puts the repo's per-tool `config.toml` at `.gaugeblock/storypole/config.toml` while
+/// consolidation writes the same settings into `.gaugeblock/config.toml` under `[storypole]`. Two files
+/// meaning one thing at the same level is the config-drift failure mode: they agree today and diverge the
+/// day someone edits the loser, with no precedence story to say which won.
+///
+/// The unified file is canonical, matching what the loaders already do (`.gaugeblock/config.toml` is tried
+/// first, legacy per-tool files are fallbacks). So: identical values -> the duplicate goes; different
+/// values -> nothing is deleted and the conflict is named, because guessing which the user meant is worse
+/// than asking.
+fn reconcile_storypole_config(moved_dir: &Path, gb_root: &Path, dry_run: bool) -> Option<String> {
+    let per_tool = moved_dir.join("config.toml");
+    if !per_tool.is_file() {
+        return None;
+    }
+
+    let unified: toml::Value = fs::read_to_string(gb_root.join("config.toml"))
+        .ok()?
+        .parse()
+        .ok()?;
+    let canonical = unified.get("storypole")?;
+    let candidate: toml::Value = fs::read_to_string(&per_tool).ok()?.parse().ok()?;
+
+    if &candidate == canonical {
+        if !dry_run {
+            let _ = fs::remove_file(&per_tool);
+        }
+        let verb = if dry_run { "would remove" } else { "removed" };
+        Some(format!(
+            " ({verb} duplicate {}/config.toml; unified [storypole] already carries it)",
+            moved_dir.display()
+        ))
+    } else {
+        Some(format!(
+            " (CONFLICT: {}/config.toml differs from unified [storypole]; kept both, resolve by hand)",
+            moved_dir.display()
+        ))
+    }
 }
 
 /// Files inside a migrated directory that are derived caches and must never travel (`GB-262`).
