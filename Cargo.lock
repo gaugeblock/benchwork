@@ -149,7 +149,6 @@ checksum = "ac07cdecf99051d9a5238b80f35af32cdeba5b336e55d957b318b50137e18da5"
 name = "batten-core"
 version = "0.1.0-beta.4"
 dependencies = [
- "dado-core",
  "gaugeblock-contracts",
  "regex",
  "serde",
@@ -197,7 +196,7 @@ dependencies = [
  "dado-core",
  "gaugeblock-workspace",
  "joiner-core",
- "miter-engine",
+ "miter-inventory",
  "reqwest",
  "sawhorse-core",
  "serde",
@@ -244,16 +243,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d2f6c7dbe95a6ed67ad9f18e57daf93a2f034c524b99fd2b76d18fdfeb6660aa"
 dependencies = [
  "hybrid-array",
-]
-
-[[package]]
-name = "bstr"
-version = "1.13.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6bb31b46c14244e20ee9984b11bf5c992b91fb6939fea616e3512c8baecdbe5f"
-dependencies = [
- "memchr",
- "serde_core",
 ]
 
 [[package]]
@@ -307,7 +296,7 @@ version = "0.1.0-beta.4"
 dependencies = [
  "gaugeblock-contracts",
  "gaugeblock-workspace",
- "miter-engine",
+ "miter-inventory",
  "pulldown-cmark",
  "serde",
  "serde_json",
@@ -448,7 +437,7 @@ name = "dado-core"
 version = "0.1.0-beta.4"
 dependencies = [
  "gaugeblock-contracts",
- "miter-engine",
+ "miter-polyglot",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
@@ -803,19 +792,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "globset"
-version = "0.4.20"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "07c34a9410465b45bd9787443bc7370f37735bad04b0f0cd57ff1a3186c98988"
-dependencies = [
- "aho-corasick",
- "bstr",
- "log",
- "regex-automata",
- "regex-syntax",
-]
-
-[[package]]
 name = "hashbrown"
 version = "0.16.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1160,8 +1136,8 @@ dependencies = [
  "futures",
  "gaugeblock-contracts",
  "gaugeblock-security",
- "miter-engine",
  "miter-harness",
+ "miter-polyglot",
  "sawhorse-core",
  "serde",
  "serde_json",
@@ -1298,24 +1274,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "miter-analysis"
-version = "0.1.0-beta.4"
-dependencies = [
- "dockerfile-parser",
- "gaugeblock-contracts",
- "gaugeblock-security",
- "miter-ast",
- "miter-inventory",
- "miter-polyglot",
- "miter-storage",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "toml",
- "tree-sitter",
-]
-
-[[package]]
 name = "miter-ast"
 version = "0.1.0-beta.4"
 dependencies = [
@@ -1324,26 +1282,6 @@ dependencies = [
  "tree-sitter-python",
  "tree-sitter-rust",
  "tree-sitter-typescript",
-]
-
-[[package]]
-name = "miter-engine"
-version = "0.1.0-beta.4"
-dependencies = [
- "gaugeblock-git",
- "gaugeblock-security",
- "gaugeblock-workspace",
- "globset",
- "miter-analysis",
- "miter-ast",
- "miter-inventory",
- "miter-polyglot",
- "miter-storage",
- "rayon",
- "redb",
- "serde",
- "thiserror 2.0.21",
- "toml",
 ]
 
 [[package]]
@@ -1382,16 +1320,6 @@ dependencies = [
  "serde_yaml",
  "sqlparser",
  "tree-sitter",
-]
-
-[[package]]
-name = "miter-storage"
-version = "0.1.0-beta.4"
-dependencies = [
- "redb",
- "serde",
- "serde_json",
- "tracing",
 ]
 
 [[package]]
@@ -1700,15 +1628,6 @@ checksum = "22e18b0f0062d30d4230b2e85ff77fdfe4326feb054b9783a3460d8435c8ab91"
 dependencies = [
  "crossbeam-deque",
  "crossbeam-utils",
-]
-
-[[package]]
-name = "redb"
-version = "4.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "39178e0a867f9e3eaa6292a4ab1dd3613f2519c5b564341e1e7b29b270736cc4"
-dependencies = [
- "libc",
 ]
 
 [[package]]
@@ -3182,11 +3101,23 @@ name = "joiner-mcp"
 version = "0.1.0-beta.4"
 
 [[patch.unused]]
+name = "miter-analysis"
+version = "0.1.0-beta.4"
+
+[[patch.unused]]
 name = "miter-cli"
 version = "0.1.0-beta.4"
 
 [[patch.unused]]
+name = "miter-engine"
+version = "0.1.0-beta.4"
+
+[[patch.unused]]
 name = "miter-mcp"
+version = "0.1.0-beta.4"
+
+[[patch.unused]]
+name = "miter-storage"
 version = "0.1.0-beta.4"
 
 [[patch.unused]]

@@ -9,7 +9,7 @@ pub use chalkline_core::docs::{
 use chalkline_core::docs::{
     DocMigrationPlan, DocType, DocsConfig, render_template, verify_docs_drift,
 };
-use miter_engine::inspect_workspace;
+use miter_inventory::inspect_workspace;
 
 use crate::error::{BenchworkError, Result};
 
@@ -21,8 +21,8 @@ pub fn audit_docs(root_path: &Path) -> Result<DocAuditReport> {
     Ok(verify_docs_drift(root_path, &config, &inventory))
 }
 
-fn safe_inventory(root_path: &Path) -> miter_engine::WorkspaceInventory {
-    inspect_workspace(root_path).unwrap_or_else(|_| miter_engine::WorkspaceInventory {
+fn safe_inventory(root_path: &Path) -> miter_inventory::WorkspaceInventory {
+    inspect_workspace(root_path).unwrap_or_else(|_| miter_inventory::WorkspaceInventory {
         root_dir: root_path.to_path_buf(),
         workspace_name: root_path
             .file_name()
@@ -31,7 +31,7 @@ fn safe_inventory(root_path: &Path) -> miter_engine::WorkspaceInventory {
         cli_commands: Vec::new(),
         public_types: Vec::new(),
         git: None,
-        toolchain: miter_engine::ToolchainInventory::default(),
+        toolchain: miter_inventory::ToolchainInventory::default(),
     })
 }
 
