@@ -86,6 +86,7 @@ The following 47 types define the complete public and boundary interface for `be
 | **`AdminSubcommand`** | `enum` | `benchwork_cli::args` | Subcommands under admin maintenance |
 | **`ApplyProposalRequest`** | `struct` | `benchwork_core::chat_harness` | Request payload to approve, reject, or edit a staged tool proposal |
 | **`BenchworkError`** | `enum` | `benchwork_core::error` | Strongly-typed error enum for `benchwork-core` |
+| **`TelemetryIndexError`** | `enum` | `benchwork_core::telemetry_index` | Failures from the flight-recorder SQLite index (`GB-243`); module-local rather than a `BenchworkError` variant, because a caller that never touches the index should not have to match on it |
 | **`BenchworkState`** | `struct` | `benchwork_core::lib` | Primary facade for accessing and mutating workspace state across crates |
 | **`BulkArchiveRequest`** | `struct` | `benchwork_core::dag_service` | Request payload for archiving multiple tasks in a batch |
 | **`BulkArchiveResponse`** | `struct` | `benchwork_core::dag_service` | Response payload from a bulk archiving operation |
