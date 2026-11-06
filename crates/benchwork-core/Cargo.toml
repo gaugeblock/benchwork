@@ -12,6 +12,8 @@ workspace = true
 
 [dependencies]
 gaugeblock-workspace = "0.1.0-beta.1"
+# Span records for the flight-recorder tailer (GB-243 AC4).
+gaugeblock-contracts = "0.1.0-beta.1"
 batten-core = "0.1.0-beta.2"
 chalkline-core = "0.1.0-beta.2"
 dado-core = "0.1.0-beta.2"

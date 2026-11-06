@@ -194,6 +194,7 @@ dependencies = [
  "batten-core",
  "chalkline-core",
  "dado-core",
+ "gaugeblock-contracts",
  "gaugeblock-inventory",
  "gaugeblock-workspace",
  "joiner-core",
@@ -739,7 +740,9 @@ version = "0.1.0-beta.1"
 name = "gaugeblock-workspace"
 version = "0.1.0-beta.1"
 dependencies = [
+ "gaugeblock-contracts",
  "gaugeblock-git",
+ "serde_json",
  "thiserror 2.0.21",
  "toml",
 ]
@@ -1875,6 +1878,7 @@ dependencies = [
  "tokio",
  "toml",
  "tracing",
+ "uuid",
 ]
 
 [[package]]
