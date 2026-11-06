@@ -194,9 +194,9 @@ dependencies = [
  "batten-core",
  "chalkline-core",
  "dado-core",
+ "gaugeblock-inventory",
  "gaugeblock-workspace",
  "joiner-core",
- "miter-inventory",
  "reqwest",
  "sawhorse-core",
  "serde",
@@ -295,8 +295,8 @@ name = "chalkline-core"
 version = "0.1.0-beta.4"
 dependencies = [
  "gaugeblock-contracts",
+ "gaugeblock-inventory",
  "gaugeblock-workspace",
- "miter-inventory",
  "pulldown-cmark",
  "serde",
  "serde_json",
@@ -708,6 +708,17 @@ name = "gaugeblock-git"
 version = "0.1.0-beta.1"
 dependencies = [
  "thiserror 2.0.21",
+]
+
+[[package]]
+name = "gaugeblock-inventory"
+version = "0.1.0-beta.1"
+dependencies = [
+ "gaugeblock-git",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "toml",
 ]
 
 [[package]]
@@ -1294,17 +1305,6 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "tracing",
-]
-
-[[package]]
-name = "miter-inventory"
-version = "0.1.0-beta.4"
-dependencies = [
- "gaugeblock-git",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "toml",
 ]
 
 [[package]]

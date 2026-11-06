@@ -16,7 +16,7 @@ batten-core = "0.1.0-beta.2"
 chalkline-core = "0.1.0-beta.2"
 dado-core = "0.1.0-beta.2"
 joiner-core = "0.1.0-beta.2"
-miter-inventory = "0.1.0-beta.4"
+gaugeblock-inventory = "0.1.0-beta.1"
 sawhorse-core = "0.1.0-beta.2"
 storypole-core = "0.1.0-beta.2"
 
