@@ -21,6 +21,9 @@ joiner-core = "0.1.0-beta.2"
 gaugeblock-inventory = "0.1.0-beta.1"
 sawhorse-core = "0.1.0-beta.2"
 storypole-core = "0.1.0-beta.2"
+# Index over the flight-recorder log (GB-243 AC4b). Already in this crate's graph through
+# storypole-core, so this adds no new C compilation - it only makes the existing edge direct.
+rusqlite = { version = "0.40", features = ["bundled"] }
 
 reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
 serde = { version = "1.0", features = ["derive"] }

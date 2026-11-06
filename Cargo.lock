@@ -199,6 +199,7 @@ dependencies = [
  "gaugeblock-workspace",
  "joiner-core",
  "reqwest",
+ "rusqlite",
  "sawhorse-core",
  "serde",
  "serde_json",
@@ -745,6 +746,7 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.21",
  "toml",
+ "uuid",
 ]
 
 [[package]]
