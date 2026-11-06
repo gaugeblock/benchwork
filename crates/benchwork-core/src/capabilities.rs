@@ -7,6 +7,7 @@ use std::path::Path;
 
 use dado_core::PatternRegistry;
 use storypole_core::index::query::get_all_tasks;
+use storypole_core::model::task::TaskNode;
 use storypole_core::{StorypoleStore, StorypoleWorkspaceStore};
 
 use crate::error::Result;
@@ -77,37 +78,19 @@ fn scan_spec_docs(root_path: &Path) -> SpecDocsStatus {
 
 fn scan_storypole(root_path: &Path) -> (bool, BTreeMap<String, usize>, usize) {
     let mut task_counts = BTreeMap::new();
-    let mut pending_decisions = 0;
+    let pending_decisions = 0;
 
     if let Ok(ws) = StorypoleWorkspaceStore::open(root_path)
         && let Ok(tasks) = get_all_tasks(ws.conn())
     {
-        for task in tasks.values() {
-            let status_name = format!("{:?}", task.status).to_lowercase();
-            *task_counts.entry(status_name).or_insert(0) += 1;
-
-            for dec in &task.decisions {
-                if dec.chosen_option.is_none() {
-                    pending_decisions += 1;
-                }
-            }
-        }
+        let pending_decisions = tally_tasks(tasks.values(), &mut task_counts);
         return (true, task_counts, pending_decisions);
     }
 
     if let Ok(store) = StorypoleStore::open(root_path)
         && let Ok(tasks) = get_all_tasks(store.conn())
     {
-        for task in tasks.values() {
-            let status_name = format!("{:?}", task.status).to_lowercase();
-            *task_counts.entry(status_name).or_insert(0) += 1;
-
-            for dec in &task.decisions {
-                if dec.chosen_option.is_none() {
-                    pending_decisions += 1;
-                }
-            }
-        }
+        let pending_decisions = tally_tasks(tasks.values(), &mut task_counts);
         return (true, task_counts, pending_decisions);
     }
 
@@ -115,6 +98,35 @@ fn scan_storypole(root_path: &Path) -> (bool, BTreeMap<String, usize>, usize) {
     let ledger_path = dot_dir.join("ledger.jsonl");
     let active = ledger_path.is_file() || dot_dir.join("config.toml").is_file();
     (active, task_counts, pending_decisions)
+}
+
+/// Tally tasks by status, folding archived tasks into their own bucket.
+///
+/// An archived task keeps the status it earned (`GB-179`), so counting `task.status` without checking
+/// the archive timestamp reported 222 verified when only 163 were live - the workbench claimed 59 more
+/// finished tickets than existed (`GB-211`). Archived tasks are counted under `archived`, and their
+/// pending decisions are not counted at all: an archived task cannot be worked, so surfacing its
+/// decision as actionable would send an operator to a ticket that is already closed.
+fn tally_tasks<'a>(
+    tasks: impl Iterator<Item = &'a TaskNode>,
+    task_counts: &mut BTreeMap<String, usize>,
+) -> usize {
+    let mut pending_decisions = 0;
+    for task in tasks {
+        if task.archived_at_epoch_ms.is_some() {
+            *task_counts.entry("archived".to_string()).or_insert(0) += 1;
+            continue;
+        }
+        let status_name = format!("{:?}", task.status).to_lowercase();
+        *task_counts.entry(status_name).or_insert(0) += 1;
+
+        for decision in &task.decisions {
+            if decision.chosen_option.is_none() {
+                pending_decisions += 1;
+            }
+        }
+    }
+    pending_decisions
 }
 
 fn scan_dado(root_path: &Path) -> usize {

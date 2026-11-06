@@ -82,13 +82,24 @@ fn build_dag_view_from_tasks(all_tasks: BTreeMap<Uuid, TaskNode>, query: &DagQue
         }
     }
 
+    // The topological order must describe the same set as `nodes`. Sorting `all_tasks` (which includes
+    // archived tasks) produced an order of 283 keys against 222 nodes, so a caller walking the order
+    // reached ticket keys the node list had already excluded.
+    let visible_keys: std::collections::BTreeSet<&str> = filtered_nodes
+        .iter()
+        .map(|t| t.ticket_key.as_str())
+        .collect();
     let topological_order = if let Ok(order) = topological_sort(&all_tasks) {
         order
             .into_iter()
             .filter_map(|uid| all_tasks.get(&uid).map(|t| t.ticket_key.clone()))
+            .filter(|key| visible_keys.contains(key.as_str()))
             .collect()
     } else {
-        let mut keys: Vec<String> = all_tasks.values().map(|t| t.ticket_key.clone()).collect();
+        let mut keys: Vec<String> = filtered_nodes
+            .iter()
+            .map(|t| t.ticket_key.clone())
+            .collect();
         keys.sort();
         keys
     };
