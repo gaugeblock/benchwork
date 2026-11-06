@@ -1,36 +1,33 @@
 //! Environment credential persistence and secure lookup.
+//!
+//! Both the path and the parsing come from `gaugeblock-workspace` (`GB-189`). This module used to
+//! carry its own dotenv reader and its own `.gaugeblock` join, which agreed with the foundation
+//! crate's rules only by coincidence - the exact duplicate-parser hazard the crate was extracted to
+//! remove. Replacing them changes no behaviour: both implementations skip blanks and `#` comments,
+//! trim the key, strip surrounding quotes and treat a set-but-empty value as absent.
 
 use std::collections::BTreeMap;
 use std::fs;
 use std::path::Path;
 
+use gaugeblock_workspace::{GaugeblockPaths, env_credentials};
+
 use crate::error::Result;
 
 /// Resolves a credential value first from the process environment, then `.gaugeblock/.env`.
+///
+/// The process environment wins because it is the operator's explicit override. A set-but-empty
+/// variable is not a credential in either source, so an empty environment value falls through to the
+/// file rather than blanking it.
 pub fn resolve_credential(root_path: &Path, key: &str) -> Option<String> {
-    if let Ok(val) = std::env::var(key)
-        && !val.trim().is_empty()
+    if let Ok(value) = std::env::var(key)
+        && !value.trim().is_empty()
     {
-        return Some(val);
+        return Some(value);
     }
-    let env_path = gaugeblock_workspace::GaugeblockPaths::at(root_path).env_file();
-    if let Ok(content) = fs::read_to_string(&env_path) {
-        for line in content.lines() {
-            let line = line.trim();
-            if line.is_empty() || line.starts_with('#') {
-                continue;
-            }
-            if let Some((k, v)) = line.split_once('=')
-                && k.trim() == key
-            {
-                let val = v.trim().trim_matches('"').trim_matches('\'');
-                if !val.is_empty() {
-                    return Some(val.to_string());
-                }
-            }
-        }
-    }
-    None
+    env_credentials(root_path)
+        .remove(key)
+        .filter(|value| !value.trim().is_empty())
 }
 
 /// Compatibility no-op or pre-flight reader for credentials.
@@ -46,11 +43,13 @@ pub fn persist_credential(root_path: &Path, key: &str, val: &str) -> Result<()> 
         return Ok(());
     }
 
-    let gb_dir = root_path.join(".gaugeblock");
-    if !gb_dir.exists() {
-        let _ = fs::create_dir_all(&gb_dir);
+    let paths = GaugeblockPaths::at(root_path);
+    let env_path = paths.env_file();
+    if let Some(parent) = env_path.parent()
+        && !parent.exists()
+    {
+        let _ = fs::create_dir_all(parent);
     }
-    let env_path = gb_dir.join(".env");
     let mut entries = BTreeMap::new();
 
     if let Ok(content) = fs::read_to_string(&env_path) {

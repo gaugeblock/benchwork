@@ -13,6 +13,9 @@ use crate::config_types::UniversalModelConfig;
 use crate::error::{BenchworkError, Result};
 
 /// Safely writes updated `UniversalModelConfig` to `sawhorse.toml` and `.gaugeblock/config.toml`.
+///
+/// The unified config path comes from `gaugeblock-workspace` (`GB-189`) rather than a hand-joined
+/// `.gaugeblock`, so a worktree writes to the same file the main checkout reads.
 pub fn write_sawhorse_config(root_path: &Path, config: &UniversalModelConfig) -> Result<()> {
     let mut providers = HashMap::new();
     let mut roles = HashMap::new();
@@ -94,7 +97,7 @@ pub fn write_sawhorse_config(root_path: &Path, config: &UniversalModelConfig) ->
         .map_err(|e| BenchworkError::InvalidRequest(format!("Failed to serialize TOML: {e}")))?;
 
     // Update .gaugeblock/config.toml if present
-    let gb_config_path = root_path.join(".gaugeblock").join("config.toml");
+    let gb_config_path = gaugeblock_workspace::GaugeblockPaths::at(root_path).config();
     if gb_config_path.is_file()
         && let Ok(raw) = fs::read_to_string(&gb_config_path)
         && let Ok(mut val) = toml::from_str::<toml::Value>(&raw)

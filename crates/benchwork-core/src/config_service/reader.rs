@@ -64,7 +64,9 @@ pub fn read_sawhorse_config(root_path: &Path) -> Result<UniversalModelConfig> {
 }
 
 fn load_raw_sawhorse_config(root_path: &Path) -> Option<SawhorseConfig> {
-    let gb_path = root_path.join(".gaugeblock").join("config.toml");
+    // The unified path comes from gaugeblock-workspace (GB-189); the local `sawhorse.toml` fallback
+    // stays, because it is a legacy per-checkout override rather than a suite-wide file.
+    let gb_path = gaugeblock_workspace::GaugeblockPaths::at(root_path).config();
     if gb_path.is_file()
         && let Ok(cfg) = SawhorseConfig::load_from_path(&gb_path)
     {
