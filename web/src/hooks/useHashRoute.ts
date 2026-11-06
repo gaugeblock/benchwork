@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-export type MainPanelTab = 'spec' | 'dag' | 'xray' | 'hub';
+export type MainPanelTab = 'spec' | 'dag' | 'xray' | 'hub' | 'flight';
 
 interface HashRouteState {
   activeTab: MainPanelTab;

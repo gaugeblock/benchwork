@@ -8,6 +8,7 @@ import { DocsSpecsPanel } from './panels/DocsSpecs/DocsSpecsPanel';
 import { DagBoardPanel } from './panels/DagBoard/DagBoardPanel';
 import { SynthesisXrayPanel } from './panels/SynthesisXray/SynthesisXrayPanel';
 import { ModelHubPanel } from './panels/ModelTelemetryHub/ModelHubPanel';
+import { FlightRecorderPanel } from './panels/FlightRecorder/FlightRecorderPanel';
 import { MigrationBanner } from './panels/MigrationBanner';
 import { BenjiSidebar } from './components/assistant/BenjiSidebar';
 import packageJson from '../package.json';
@@ -23,7 +24,9 @@ import {
 } from 'lucide-react';
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = usePersistentState<'spec' | 'dag' | 'xray' | 'hub'>(
+  const [activeTab, setActiveTab] = usePersistentState<
+    'spec' | 'dag' | 'xray' | 'hub' | 'flight'
+  >(
     'benchwork_active_tab',
     'dag'
   );
@@ -175,6 +178,18 @@ export const App: React.FC = () => {
           <Radio className="w-3.5 h-3.5" />
           Panel 4: Model Router & Telemetry Spool
         </button>
+
+        <button
+          onClick={() => setActiveTab('flight')}
+          className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-t transition-colors ${
+            activeTab === 'flight'
+              ? 'bg-cad-bg text-cad-cyan border-t-2 border-cad-cyan'
+              : 'text-cad-muted hover:text-cad-text'
+          }`}
+        >
+          <Activity className="w-3.5 h-3.5" />
+          Panel 5: Flight Recorder
+        </button>
       </nav>
 
       {/* Active Panel Viewport */}
@@ -184,6 +199,7 @@ export const App: React.FC = () => {
           {activeTab === 'dag' && <DagBoardPanel onDiscussInChat={handleDiscussInChat} />}
           {activeTab === 'xray' && <SynthesisXrayPanel />}
           {activeTab === 'hub' && <ModelHubPanel />}
+          {activeTab === 'flight' && <FlightRecorderPanel />}
         </div>
 
         {/* Unified AI Systems Engineering Assistant (Benji) (GB-60, GB-62) */}
