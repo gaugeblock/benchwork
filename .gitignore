@@ -24,3 +24,7 @@ web/node_modules/
 web/test-results/
 web/playwright-report/
 .storypole/index.sqlite*
+
+# Flight-recorder spans (GB-243): one append-only log plus its index. Machine state, not source;
+# the schema they follow lives in gaugeblock-contracts.
+.gaugeblock/telemetry/
