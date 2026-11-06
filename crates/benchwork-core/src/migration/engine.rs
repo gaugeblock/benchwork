@@ -61,11 +61,13 @@ pub fn execute_migration(
                     }
                 }
 
+                let caches = derived_caches(&full_src);
                 if dry_run {
                     details.push(format!(
-                        "[DRY RUN] Would move {} -> {}",
+                        "[DRY RUN] Would move {} -> {}{}",
                         item.source.display(),
-                        item.destination.display()
+                        item.destination.display(),
+                        cache_note(caches.len(), true)
                     ));
                     migrated_count += 1;
                 } else {
@@ -76,10 +78,12 @@ pub fn execute_migration(
                         copy_dir_recursive(&full_src, &full_dst)?;
                         let _ = fs::remove_dir_all(&full_src);
                     }
+                    let discarded = discard_caches(&full_dst)?;
                     details.push(format!(
-                        "Moved {} -> {}",
+                        "Moved {} -> {}{}",
                         item.source.display(),
-                        item.destination.display()
+                        item.destination.display(),
+                        cache_note(discarded, false)
                     ));
                     migrated_count += 1;
                 }
@@ -142,4 +146,47 @@ fn copy_dir_recursive(src: &Path, dst: &Path) -> Result<()> {
         }
     }
     Ok(())
+}
+
+/// Files inside a migrated directory that are derived caches and must never travel (`GB-262`).
+///
+/// A stale index arriving in `.gaugeblock/storypole/` is worse than no index: it will be opened and it
+/// will answer from a ledger position that no longer exists. Discarding is lossless because the index
+/// rebuilds from the ledger, whereas copying it is lossless-looking and wrong.
+const DERIVED_CACHE_FILES: [&str; 3] = ["index.sqlite", "index.sqlite-shm", "index.sqlite-wal"];
+
+/// Cache files present in `dir`, by name.
+fn derived_caches(dir: &Path) -> Vec<&'static str> {
+    DERIVED_CACHE_FILES
+        .iter()
+        .copied()
+        .filter(|name| dir.join(name).is_file())
+        .collect()
+}
+
+/// Removes derived caches from `dir`, returning how many were discarded.
+fn discard_caches(dir: &Path) -> Result<usize> {
+    let mut discarded = 0;
+    for name in DERIVED_CACHE_FILES {
+        let path = dir.join(name);
+        if path.is_file() {
+            fs::remove_file(&path)?;
+            discarded += 1;
+        }
+    }
+    Ok(discarded)
+}
+
+/// Tail for a detail line, so the report states what happened to caches instead of implying they moved.
+fn cache_note(count: usize, dry_run: bool) -> String {
+    if count == 0 {
+        return String::new();
+    }
+    let verb = if dry_run {
+        "would discard"
+    } else {
+        "discarded"
+    };
+    let plural = if count == 1 { "" } else { "s" };
+    format!(" ({verb} {count} derived cache file{plural})")
 }
