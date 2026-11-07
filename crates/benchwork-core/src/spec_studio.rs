@@ -25,7 +25,7 @@ pub use crate::spec_preview::preview_contract;
 /// both is deliberate rather than reading `.gaugeblock/docs.toml`: benchwork has to work in a repository with
 /// no configuration yet, and a wrong guess here degrades to "not found" rather than to an error - which is
 /// exactly how this broke silently when the documents moved.
-fn resolve_doc(root: &Path, name: &str) -> PathBuf {
+pub(crate) fn resolve_doc(root: &Path, name: &str) -> PathBuf {
     let at_root = root.join(name);
     if at_root.is_file() {
         return at_root;

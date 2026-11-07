@@ -52,7 +52,9 @@ fn scan_spec_docs(root_path: &Path) -> SpecDocsStatus {
     let mut detected_files = Vec::new();
 
     for candidate in SPEC_CANDIDATES {
-        if root_path.join(candidate).is_file() {
+        // Six of the nine documents live under docs/ since GB-275; a root-only probe reported them absent
+        // and made the capabilities endpoint understate the repository.
+        if crate::spec_studio::resolve_doc(root_path, candidate).is_file() {
             detected_files.push((*candidate).to_string());
         }
     }
