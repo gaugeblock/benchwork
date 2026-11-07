@@ -93,8 +93,8 @@ sequenceDiagram
 
 | Crate | Path | Responsibility |
 |:---|:---|:---|
-| [`benchwork`](./src/lib.rs) | `.` | Root facade re-exporting `benchwork_core` domain APIs |
-| [`benchwork-core`](./crates/benchwork-core) | `crates/benchwork-core` | State aggregation, DAG service, Spec studio, X-Ray, Benji orchestrator |
-| [`benchwork-cli`](./crates/benchwork-cli) | `crates/benchwork-cli` | Axum HTTP/WS/SSE daemon, Clap CLI, static bundle embedder |
-| [`benchwork-mcp`](./crates/benchwork-mcp) | `crates/benchwork-mcp` | Stdio Model Context Protocol (MCP) JSON-RPC 2.0 server |
+| [`benchwork`](../src/lib.rs) | `.` | Root facade re-exporting `benchwork_core` domain APIs |
+| [`benchwork-core`](../crates/benchwork-core) | `crates/benchwork-core` | State aggregation, DAG service, Spec studio, X-Ray, Benji orchestrator |
+| [`benchwork-cli`](../crates/benchwork-cli) | `crates/benchwork-cli` | Axum HTTP/WS/SSE daemon, Clap CLI, static bundle embedder |
+| [`benchwork-mcp`](../crates/benchwork-mcp) | `crates/benchwork-mcp` | Stdio Model Context Protocol (MCP) JSON-RPC 2.0 server |
 | **`web/`** | `web/` | Industrial dark CAD UI (React 19, TypeScript, Tailwind, strictly $\le 250$ LOC/file) |
