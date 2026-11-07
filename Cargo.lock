@@ -304,7 +304,6 @@ dependencies = [
  "pulldown-cmark",
  "serde",
  "serde_json",
- "storypole-core",
  "thiserror 2.0.21",
  "toml",
  "uuid",
