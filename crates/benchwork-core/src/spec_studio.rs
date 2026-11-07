@@ -3,7 +3,7 @@
 use std::collections::BTreeMap;
 use std::fs::{self, OpenOptions};
 use std::io::Write;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use chalkline_core::{DecisionHole, SpecParser};
@@ -18,6 +18,24 @@ use crate::model::{
     DecisionResolutionReceipt, PendingDecision, ResolveDecisionRequest, SpecBundle,
 };
 pub use crate::spec_preview::preview_contract;
+
+/// Resolves a document that may sit at the repository root or under `docs/` (`GB-275`).
+///
+/// Six of the nine documents moved into `docs/`; README, CHANGELOG and AGENTS stayed at the root. Checking
+/// both is deliberate rather than reading `.gaugeblock/docs.toml`: benchwork has to work in a repository with
+/// no configuration yet, and a wrong guess here degrades to "not found" rather than to an error - which is
+/// exactly how this broke silently when the documents moved.
+fn resolve_doc(root: &Path, name: &str) -> PathBuf {
+    let at_root = root.join(name);
+    if at_root.is_file() {
+        return at_root;
+    }
+    let in_docs = root.join("docs").join(name);
+    if in_docs.is_file() {
+        return in_docs;
+    }
+    at_root
+}
 
 /// Candidate supporting document filenames.
 const SUPPORTING_CANDIDATES: &[&str] = &[
@@ -34,7 +52,7 @@ const SUPPORTING_CANDIDATES: &[&str] = &[
 
 /// Loads the specification bundle, including primary spec, supporting docs, decisions, and contracts.
 pub fn load_spec_bundle(root_path: &Path) -> Result<SpecBundle> {
-    let spec_path = root_path.join("SPEC.md");
+    let spec_path = resolve_doc(root_path, "SPEC.md");
     let primary_spec = if spec_path.is_file() {
         fs::read_to_string(&spec_path).ok()
     } else {
@@ -191,7 +209,7 @@ pub fn resolve_decision(
 }
 
 fn append_decision_to_spec(root_path: &Path, req: &ResolveDecisionRequest) -> Result<bool> {
-    let spec_path = root_path.join("SPEC.md");
+    let spec_path = resolve_doc(root_path, "SPEC.md");
     if !spec_path.exists() {
         return Ok(false);
     }
@@ -215,7 +233,7 @@ fn append_decision_to_spec(root_path: &Path, req: &ResolveDecisionRequest) -> Re
 fn collect_supporting_docs(root_path: &Path) -> BTreeMap<String, String> {
     let mut docs = BTreeMap::new();
     for name in SUPPORTING_CANDIDATES {
-        let p = root_path.join(name);
+        let p = resolve_doc(root_path, name);
         if p.is_file()
             && let Ok(content) = fs::read_to_string(&p)
         {
