@@ -57,6 +57,8 @@ fn test_task_archive_and_filtering() -> std::result::Result<(), Box<dyn std::err
             base_commit_sha: None,
             head_commit_sha: None,
             commit_shas: vec![],
+            repo: None,
+            chain_key: None,
         }),
         created_at_epoch_ms: 0,
         updated_at_epoch_ms: 0,
