@@ -4,6 +4,7 @@
 //! writes there: a tool writes into the `.gaugeblock` of the repository it ran in. The panel showed nothing,
 //! and with a single repository in scope that behaviour is indistinguishable from correct.
 
+//! multi-repo: two repositories in scope, which is the only way to see cross-repository behaviour.
 #![allow(clippy::unwrap_used, clippy::expect_used)]
 
 use benchwork_core::telemetry_paths::telemetry_event_paths;
