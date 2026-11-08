@@ -122,7 +122,7 @@ benchwork snapshot --json
 * **[`ARCHITECTURE.md`](docs/ARCHITECTURE.md):** Subsystem decomposition, WebSocket/SSE engines, and aggregator flows.
 * **[`DESIGN.md`](docs/DESIGN.md):** Concrete Architectural Decision Records (ADRs).
 * **[`PRODUCT.md`](docs/PRODUCT.md):** Personas, user journeys, JTBD, and visual workbench strategy.
-* **[`CONTRIBUTING.md`](docs/CONTRIBUTING.md):** Rust 2024 and React/Vite toolchain requirements and verification gates.
+* **[`CONTRIBUTING.md`](CONTRIBUTING.md):** Rust 2024 and React/Vite toolchain requirements and verification gates.
 * **[`ROADMAP.md`](docs/ROADMAP.md):** Active milestones and upcoming workbench visualization capabilities.
 * **[`CHANGELOG.md`](./CHANGELOG.md):** Historical version releases and pending changes.
 * **[`AGENTS.md`](./AGENTS.md):** Non-negotiable engineering laws and autonomous execution directives.
