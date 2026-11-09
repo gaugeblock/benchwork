@@ -46,7 +46,9 @@ fn every_member_repository_contributes_its_own_log() {
     let paths = telemetry_event_paths(root);
 
     assert!(
-        paths.iter().any(|path| path.starts_with(root.join("alpha"))),
+        paths
+            .iter()
+            .any(|path| path.starts_with(root.join("alpha"))),
         "alpha's log must be read: {paths:?}"
     );
     assert!(
@@ -54,7 +56,9 @@ fn every_member_repository_contributes_its_own_log() {
         "beta's log must be read: {paths:?}"
     );
     assert!(
-        paths.iter().any(|path| path.starts_with(root.join(".gaugeblock"))),
+        paths
+            .iter()
+            .any(|path| path.starts_with(root.join(".gaugeblock"))),
         "the suite root's own log stays in the set: tools run from the root would write there"
     );
 }
@@ -71,7 +75,9 @@ fn a_member_without_telemetry_still_appears_in_the_set() {
     // Present but empty is different from absent: a caller can report "no spans yet from gamma" only if it
     // knows gamma is supposed to have a log.
     assert!(
-        paths.iter().any(|path| path.starts_with(root.join("gamma"))),
+        paths
+            .iter()
+            .any(|path| path.starts_with(root.join("gamma"))),
         "gamma is a member and must be in the set: {paths:?}"
     );
 }

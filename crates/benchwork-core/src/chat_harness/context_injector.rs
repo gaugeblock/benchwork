@@ -58,19 +58,24 @@ fn summarize_storypole(root_dir: &Path) -> (usize, usize, usize) {
     }
 
     let dot_dir = StorypoleStore::resolve_dot_dir(root_dir);
-    let ledger_path = dot_dir.join("ledger.jsonl");
     let mut ready = 0;
     let mut in_progress = 0;
     let mut blocked = 0;
 
-    if let Ok(content) = fs::read_to_string(ledger_path) {
-        for line in content.lines() {
-            if line.contains(r#""to":"in_progress""#) {
-                in_progress += 1;
-            } else if line.contains(r#""to":"ready""#) {
-                ready += 1;
-            } else if line.contains(r#""to":"blocked""#) {
-                blocked += 1;
+    // Ask the store for its tasks rather than counting lines in the ledger (`GB-349`). Two things were wrong with
+    // the old reading: it counted status-change events instead of current states, so a ticket that moved to
+    // in_progress and back still counted as in progress, and it read `ledger.jsonl`, which a store holding ticket
+    // records does not have - so it reported zero of everything and looked like a quiet project rather than a
+    // broken reader.
+    if let Ok(loaded) = storypole_core::state::load(&dot_dir) {
+        for task in loaded.tasks.values() {
+            match task.status {
+                TaskStatus::Ready => ready += 1,
+                TaskStatus::InProgress | TaskStatus::Synthesizing | TaskStatus::Verifying => {
+                    in_progress += 1;
+                }
+                TaskStatus::Blocked => blocked += 1,
+                _ => {}
             }
         }
     }
