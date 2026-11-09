@@ -1,0 +1,73 @@
+{
+  "ticket": {
+    "id": "e076bda1-7ab0-4493-844e-8f50e2f4bf43",
+    "ticket_key": "GB-183",
+    "slug": "benchwork-no-outbox-migration-verb-for-pre-gb-182-spools-e076bd",
+    "title": "benchwork: no outbox migration verb for pre-GB-182 spools",
+    "description": "benchwork now builds against the shared SpoolEntry, but it has no equivalent of 'storypole spool migrate' for an outbox it wrote before GB-182.",
+    "kind": "feature",
+    "status": "deferred",
+    "priority": 3,
+    "scope": {
+      "repo": "benchwork",
+      "crate_name": "benchwork-core",
+      "module_path": null,
+      "target_files": [],
+      "target_symbols": [],
+      "labels": []
+    },
+    "edges": [
+      {
+        "kind": "discovered_from",
+        "target_id": "fee97a96-45a7-4c0f-ad98-a098e5a00e6d"
+      }
+    ],
+    "decisions": [],
+    "acceptance_criteria": [],
+    "plan": null,
+    "active_claim": null,
+    "latest_handoff": null,
+    "verification_receipt": null,
+    "created_at_epoch_ms": 1793304856201,
+    "updated_at_epoch_ms": 1793304856201
+  },
+  "events": [
+    {
+      "event": "deferred_item_captured",
+      "task": {
+        "id": "e076bda1-7ab0-4493-844e-8f50e2f4bf43",
+        "ticket_key": "GB-183",
+        "slug": "benchwork-no-outbox-migration-verb-for-pre-gb-182-spools-e076bd",
+        "title": "benchwork: no outbox migration verb for pre-GB-182 spools",
+        "description": "benchwork now builds against the shared SpoolEntry, but it has no equivalent of 'storypole spool migrate' for an outbox it wrote before GB-182.",
+        "kind": "feature",
+        "status": "deferred",
+        "priority": 3,
+        "scope": {
+          "repo": "benchwork",
+          "crate_name": "benchwork-core",
+          "module_path": null,
+          "target_files": [],
+          "target_symbols": [],
+          "labels": []
+        },
+        "edges": [
+          {
+            "kind": "discovered_from",
+            "target_id": "fee97a96-45a7-4c0f-ad98-a098e5a00e6d"
+          }
+        ],
+        "decisions": [],
+        "acceptance_criteria": [],
+        "plan": null,
+        "active_claim": null,
+        "latest_handoff": null,
+        "verification_receipt": null,
+        "created_at_epoch_ms": 1793304856201,
+        "updated_at_epoch_ms": 1793304856201
+      },
+      "captured_by_agent": "user",
+      "discovered_from_task_id": "fee97a96-45a7-4c0f-ad98-a098e5a00e6d"
+    }
+  ]
+}

@@ -1,0 +1,140 @@
+{
+  "ticket": {
+    "id": "ec8321ae-a453-4bc5-9bdb-b0ded64fc4c9",
+    "ticket_key": "GB-96",
+    "slug": "embed-static-web-assets-within-benchwork-cli-crate-directory-for-crates-io-packaging-ec8321",
+    "title": "Embed static web assets within benchwork-cli crate directory for crates.io packaging",
+    "description": "",
+    "kind": "bug",
+    "status": "verified",
+    "priority": 1,
+    "scope": {
+      "repo": "benchwork",
+      "crate_name": "benchwork-cli",
+      "module_path": null,
+      "target_files": [],
+      "target_symbols": [],
+      "labels": []
+    },
+    "edges": [],
+    "decisions": [],
+    "acceptance_criteria": [],
+    "plan": {
+      "summary": "GB-96: Embed static web assets within benchwork-cli crate directory for crates.io packaging",
+      "design_markdown": "# GB-96: Embed static web assets within benchwork-cli crate directory for crates.io packaging\n\n## Context & Root Cause\nIn `benchwork-cli` (`crates/benchwork-cli/src/daemon/assets.rs:15`), `rust-embed` was configured with:\n`#[folder = \"../../web/dist\"]`\nWhen running `cargo publish` or `cargo package`, Cargo isolates the packaged crate into `target/package/benchwork-cli-<version>/` and verifies compilation. Because Cargo excludes files outside the package root from the crate tarball, `../../web/dist` evaluated to `target/web/dist` (which does not exist), failing publication with:\n`error: #[derive(RustEmbed)] folder '.../target/package/benchwork-cli-0.1.0-beta.5/../../web/dist' does not exist.`\n\n## Implementation Steps\n1. Create `crates/benchwork-cli/dist` directory and populate it with web assets from `web/dist`.\n2. Update `benchwork/web/package.json` build script to ensure `dist/` is synchronized to `../crates/benchwork-cli/dist/` when `npm run build` runs.\n3. Update `benchwork/crates/benchwork-cli/src/daemon/assets.rs`:\n   - Change `#[folder = \"../../web/dist\"]` to `#[folder = \"dist\"]`.\n4. Update `benchwork/crates/benchwork-cli/Cargo.toml` if necessary to explicitly include `dist/**`.\n5. Verify:\n   - Run `cargo fmt --check -p benchwork-cli`\n   - Run `cargo clippy -p benchwork-cli --all-targets -- -D warnings`\n   - Run `cargo test -p benchwork-cli`\n   - Run `cargo publish --dry-run -p benchwork-cli` to certify that packaging and isolated compilation succeed.\n6. Commit atomically and merge to `main`.\n",
+      "steps": [],
+      "plan_file_path": ".gaugeblock/storypole/plans/GB-96.md",
+      "updated_at_epoch_ms": 1793125618135
+    },
+    "active_claim": null,
+    "latest_handoff": null,
+    "verification_receipt": {
+      "verifier": "agent-antigravity",
+      "command": "n/a",
+      "exit_code": 0,
+      "diagnostic_count": null,
+      "summary": "Relocated embedded assets inside crates/benchwork-cli/dist, updated package.json build script, and verified cargo publish --dry-run succeeds",
+      "verified_at_epoch_ms": 1793125737667,
+      "git_branch": "fix/gb-96-benchwork-cli-embed-assets",
+      "base_commit_sha": "e36a22d112ca52bf7604c695dcee19e55093d5e7",
+      "head_commit_sha": "e36a22d112ca52bf7604c695dcee19e55093d5e7",
+      "commit_shas": [
+        "e36a22d112ca52bf7604c695dcee19e55093d5e7"
+      ],
+      "repo": null,
+      "chain_key": null
+    },
+    "created_at_epoch_ms": 1793125589503,
+    "updated_at_epoch_ms": 1794037975148,
+    "archived_at_epoch_ms": 1794037975148
+  },
+  "events": [
+    {
+      "event": "task_created",
+      "task": {
+        "id": "ec8321ae-a453-4bc5-9bdb-b0ded64fc4c9",
+        "ticket_key": "GB-96",
+        "slug": "embed-static-web-assets-within-benchwork-cli-crate-directory-for-crates-io-packaging-ec8321",
+        "title": "Embed static web assets within benchwork-cli crate directory for crates.io packaging",
+        "description": "",
+        "kind": "bug",
+        "status": "ready",
+        "priority": 1,
+        "scope": {
+          "repo": "benchwork",
+          "crate_name": "benchwork-cli",
+          "module_path": null,
+          "target_files": [],
+          "target_symbols": [],
+          "labels": []
+        },
+        "edges": [],
+        "decisions": [],
+        "acceptance_criteria": [],
+        "plan": null,
+        "active_claim": null,
+        "latest_handoff": null,
+        "verification_receipt": null,
+        "created_at_epoch_ms": 1793125589503,
+        "updated_at_epoch_ms": 1793125589503
+      }
+    },
+    {
+      "event": "task_claimed",
+      "task_id": "ec8321ae-a453-4bc5-9bdb-b0ded64fc4c9",
+      "claim": {
+        "agent_id": "agent-antigravity",
+        "claimed_at_epoch_ms": 1793125598099,
+        "lease_expires_at_epoch_ms": 1793129198099,
+        "git_branch": "fix/gb-96-benchwork-cli-embed-assets",
+        "base_commit_sha": "e36a22d112ca52bf7604c695dcee19e55093d5e7"
+      }
+    },
+    {
+      "event": "status_changed",
+      "task_id": "ec8321ae-a453-4bc5-9bdb-b0ded64fc4c9",
+      "from": "ready",
+      "to": "in_progress",
+      "reason": "Claimed by agent-antigravity",
+      "timestamp_ms": 1793125598099
+    },
+    {
+      "event": "plan_updated",
+      "task_id": "ec8321ae-a453-4bc5-9bdb-b0ded64fc4c9",
+      "plan": {
+        "summary": "GB-96: Embed static web assets within benchwork-cli crate directory for crates.io packaging",
+        "design_markdown": "# GB-96: Embed static web assets within benchwork-cli crate directory for crates.io packaging\n\n## Context & Root Cause\nIn `benchwork-cli` (`crates/benchwork-cli/src/daemon/assets.rs:15`), `rust-embed` was configured with:\n`#[folder = \"../../web/dist\"]`\nWhen running `cargo publish` or `cargo package`, Cargo isolates the packaged crate into `target/package/benchwork-cli-<version>/` and verifies compilation. Because Cargo excludes files outside the package root from the crate tarball, `../../web/dist` evaluated to `target/web/dist` (which does not exist), failing publication with:\n`error: #[derive(RustEmbed)] folder '.../target/package/benchwork-cli-0.1.0-beta.5/../../web/dist' does not exist.`\n\n## Implementation Steps\n1. Create `crates/benchwork-cli/dist` directory and populate it with web assets from `web/dist`.\n2. Update `benchwork/web/package.json` build script to ensure `dist/` is synchronized to `../crates/benchwork-cli/dist/` when `npm run build` runs.\n3. Update `benchwork/crates/benchwork-cli/src/daemon/assets.rs`:\n   - Change `#[folder = \"../../web/dist\"]` to `#[folder = \"dist\"]`.\n4. Update `benchwork/crates/benchwork-cli/Cargo.toml` if necessary to explicitly include `dist/**`.\n5. Verify:\n   - Run `cargo fmt --check -p benchwork-cli`\n   - Run `cargo clippy -p benchwork-cli --all-targets -- -D warnings`\n   - Run `cargo test -p benchwork-cli`\n   - Run `cargo publish --dry-run -p benchwork-cli` to certify that packaging and isolated compilation succeed.\n6. Commit atomically and merge to `main`.\n",
+        "steps": [],
+        "plan_file_path": ".gaugeblock/storypole/plans/GB-96.md",
+        "updated_at_epoch_ms": 1793125618135
+      },
+      "timestamp_ms": 1793125618135
+    },
+    {
+      "event": "task_verified",
+      "task_id": "ec8321ae-a453-4bc5-9bdb-b0ded64fc4c9",
+      "receipt": {
+        "verifier": "agent-antigravity",
+        "command": "n/a",
+        "exit_code": 0,
+        "diagnostic_count": null,
+        "summary": "Relocated embedded assets inside crates/benchwork-cli/dist, updated package.json build script, and verified cargo publish --dry-run succeeds",
+        "verified_at_epoch_ms": 1793125737667,
+        "git_branch": "fix/gb-96-benchwork-cli-embed-assets",
+        "base_commit_sha": "e36a22d112ca52bf7604c695dcee19e55093d5e7",
+        "head_commit_sha": "e36a22d112ca52bf7604c695dcee19e55093d5e7",
+        "commit_shas": [
+          "e36a22d112ca52bf7604c695dcee19e55093d5e7"
+        ],
+        "repo": null,
+        "chain_key": null
+      }
+    },
+    {
+      "event": "task_archived",
+      "task_id": "ec8321ae-a453-4bc5-9bdb-b0ded64fc4c9",
+      "status": "verified",
+      "timestamp_ms": 1794037975148
+    }
+  ]
+}

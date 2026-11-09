@@ -1,0 +1,65 @@
+{
+  "ticket": {
+    "id": "4cc79e98-88f0-4a2b-9f14-baad4a5d9e29",
+    "ticket_key": "GB-340",
+    "slug": "test-runs-write-into-the-production-telemetry-log-4cc79e",
+    "title": "Test runs write into the production telemetry log",
+    "description": "The only two spans in sawhorse's telemetry log are unit-test artifacts: a provider at 127.0.0.1:59999 and DEFINITELY_NON_EXISTENT_KEY_VAR_12345. Emission fails open, so a test that exercises a failing completion appends to the real log of whatever repository it ran in. Harmless as observability noise, poison as training data: synthetic failures teach a model that a clean run is an error, and stripping them later is guesswork once the test names are gone. Suppress emission under test with an environment guard, or tag the span so downstream filters can drop it.",
+    "kind": "bug",
+    "status": "ready",
+    "priority": 3,
+    "scope": {
+      "repo": "benchwork",
+      "crate_name": "sawhorse-core",
+      "module_path": null,
+      "target_files": [],
+      "target_symbols": [],
+      "labels": []
+    },
+    "edges": [],
+    "decisions": [],
+    "acceptance_criteria": [
+      "running the suite tests adds no line to any telemetry log; a real run still records"
+    ],
+    "plan": null,
+    "active_claim": null,
+    "latest_handoff": null,
+    "verification_receipt": null,
+    "created_at_epoch_ms": 1794167027245,
+    "updated_at_epoch_ms": 1794167027245
+  },
+  "events": [
+    {
+      "event": "task_created",
+      "task": {
+        "id": "4cc79e98-88f0-4a2b-9f14-baad4a5d9e29",
+        "ticket_key": "GB-340",
+        "slug": "test-runs-write-into-the-production-telemetry-log-4cc79e",
+        "title": "Test runs write into the production telemetry log",
+        "description": "The only two spans in sawhorse's telemetry log are unit-test artifacts: a provider at 127.0.0.1:59999 and DEFINITELY_NON_EXISTENT_KEY_VAR_12345. Emission fails open, so a test that exercises a failing completion appends to the real log of whatever repository it ran in. Harmless as observability noise, poison as training data: synthetic failures teach a model that a clean run is an error, and stripping them later is guesswork once the test names are gone. Suppress emission under test with an environment guard, or tag the span so downstream filters can drop it.",
+        "kind": "bug",
+        "status": "ready",
+        "priority": 3,
+        "scope": {
+          "repo": "benchwork",
+          "crate_name": "sawhorse-core",
+          "module_path": null,
+          "target_files": [],
+          "target_symbols": [],
+          "labels": []
+        },
+        "edges": [],
+        "decisions": [],
+        "acceptance_criteria": [
+          "running the suite tests adds no line to any telemetry log; a real run still records"
+        ],
+        "plan": null,
+        "active_claim": null,
+        "latest_handoff": null,
+        "verification_receipt": null,
+        "created_at_epoch_ms": 1794167027245,
+        "updated_at_epoch_ms": 1794167027245
+      }
+    }
+  ]
+}

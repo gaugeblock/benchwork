@@ -1,0 +1,202 @@
+{
+  "ticket": {
+    "id": "83b76f3d-c8be-47e5-bf56-d337a2522ade",
+    "ticket_key": "GB-59",
+    "slug": "update-benchwork-for-multi-repository-workspace-rollups-and-store-routing-83b76f",
+    "title": "Update Benchwork for Multi-Repository Workspace Rollups and Store Routing",
+    "description": "Adopt StorypoleWorkspaceStore in Benchwork dag_service, route task mutations to governing member stores, support standalone dot_dir resolution in context_injector, and update capabilities scanner.",
+    "kind": "feature",
+    "status": "verified",
+    "priority": 1,
+    "scope": {
+      "repo": "benchwork",
+      "crate_name": "benchwork-core",
+      "module_path": null,
+      "target_files": [],
+      "target_symbols": [],
+      "labels": [
+        "benchwork,multirepo,dag,chat"
+      ]
+    },
+    "edges": [],
+    "decisions": [],
+    "acceptance_criteria": [],
+    "plan": {
+      "summary": "Adopt StorypoleWorkspaceStore in Benchwork for multi-repo DAG views, mutation routing, and standalone dot_dir resilience",
+      "design_markdown": "# GB-59: Update Benchwork for Multi-Repository Workspace Rollups and Store Routing\n\n> **Status:** Ready  \n> **Target Scope:** `benchwork` (`benchwork-core`, `benchwork-cli`, `benchwork-mcp`)  \n> **Key Invariants:**  \n> 1. Hard 250 LOC rule on all `.rs` files.  \n> 2. Zero-panic safety: no `.unwrap()` / `.expect()` in production library paths (`thiserror`).  \n> 3. Standalone & Multi-Repo Transparency: running `benchwork up` inside a standalone repo clone (`benchwork/`) or in the meta-harness (`neurosymbolic-suite`) must work seamlessly out of the box.  \n> 4. Non-breaking Wire Contracts: TypeScript UI models and WebSocket payloads remain backward-compatible.  \n\n---\n\n## 1. Executive Summary & Problem Statement\n\nWith `GB-57` and `GB-58` having delivered multi-repository workspace discovery, unified SQLite aggregation, and distributed task ledgers to `storypole`, `benchwork` requires updates to consume these capabilities:\n\n1. **Panel 2 (Live DAG Board & Backlog):**\n   * Currently, `benchwork-core::dag_service::get_dag_view` calls `StorypoleStore::open(root_path)`. When running in the meta-harness workspace, it only queries the root store (`GB-*` meta-tasks).\n   * It must adopt `StorypoleWorkspaceStore::open(root_path)`, which rolls up tasks across all member repositories (`benchwork`, `miter`, `sawhorse`, `outfeed`, etc.) while respecting `--repo` filters.\n2. **Task Mutations & Lifecycle Routing:**\n   * Handlers for Claim, Heartbeat, Handoff, Update, Link, and Archive currently open `StorypoleStore::open(root_path)`.\n   * For distributed tickets belonging to member repositories (e.g. `BW-*`, `MTR-*`, `OF-*`), the root store cannot find them. Benchwork must route mutations via `ws.resolve_governing_store_name(key)` to the governing member store (`ws.member_store_mut(repo)`).\n3. **AI Chat Studio Context Injection (`context_injector.rs`):**\n   * Currently hardcodes `.gaugeblock/storypole/ledger.jsonl` and `.gaugeblock/storypole/plans/{key}.md`.\n   * In a standalone clone of `benchwork` (or other sub-repos), these files live under `.storypole/`. Context injection must resolve both `.storypole/` and `.gaugeblock/storypole/` paths.\n4. **Capabilities Scanner (`capabilities.rs`):**\n   * Currently checks `root_path.join(\".storypole/config.toml\")` specifically. Must use `StorypoleStore::open` / `StorypoleWorkspaceStore::open` to accurately detect active Storypole stores and compute task counts.\n\n---\n\n## 2. Architecture & File Layout\n\n```text\nbenchwork/crates/benchwork-core/src/\n├── dag_service.rs            # Adopt StorypoleWorkspaceStore for DAG views and mutation routing (<230 LOC)\n├── capabilities.rs           # Update scan_storypole for dot_dir and workspace rollups (<140 LOC)\n├── chat_harness/\n│   └── context_injector.rs  # Transparent dot_dir and plan path resolution (<150 LOC)\n└── model/\n    └── dag.rs                # Wire types (ensure repo column/tag is exposed)\n```\n\n---\n\n## 3. Execution Plan & Verification Gates\n\n### Step 1: Adopt `StorypoleWorkspaceStore` in `dag_service.rs`\n* Update `get_dag_view` to open `StorypoleWorkspaceStore::open(root_path)` with fallback to `StorypoleStore::open(root_path)`.\n* Update mutation services (`update_task_details`, `claim_task_lease`, `handoff_task_checkpoint`, `archive_task_service`, `link_tasks_service`) to route to the governing member store via `ws.resolve_governing_store_name`.\n* *Verification Gate:* `cargo test -p benchwork-core --test dag_service_tests`\n\n### Step 2: Make `context_injector.rs` Standalone & Workspace Aware\n* Replace hardcoded `.gaugeblock/storypole` paths with `StorypoleStore::resolve_dot_dir(root_dir)`.\n* Search both root plans and member plans when resolving `@task:KEY`.\n* *Verification Gate:* `cargo test -p benchwork-core --lib chat_harness::tests`\n\n### Step 3: Modernize `capabilities.rs` Storypole Scanner\n* Update `scan_storypole` to use `StorypoleStore::find_enclosing_store` or `StorypoleWorkspaceStore::open` to illuminate `caps.storypole_active` and aggregate metrics.\n* *Verification Gate:* `cargo test -p benchwork-core --test integration_tests`\n\n### Step 4: Full Benchwork Workspace Verification\n* Run Tier 2 verification gate across `benchwork`:\n  `cargo fmt --check -p benchwork-core -p benchwork-cli`\n  `cargo clippy -p benchwork-core -p benchwork-cli --all-targets -- -D warnings`\n  `cargo test -p benchwork-core -p benchwork-cli`\n* Verify `benchwork up` surfaces tasks from both the workspace root and member repositories.\n",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "title": "Adopt StorypoleWorkspaceStore in dag_service.rs for rollups and mutation routing",
+          "target_files": [],
+          "verification_gate": "cargo nextest run -p benchwork-core",
+          "completed": false
+        },
+        {
+          "step_id": "step-2",
+          "title": "Make context_injector.rs standalone and workspace aware",
+          "target_files": [],
+          "verification_gate": "cargo nextest run -p benchwork-core --lib chat_harness",
+          "completed": false
+        },
+        {
+          "step_id": "step-3",
+          "title": "Modernize capabilities.rs Storypole scanner for workspace rollups",
+          "target_files": [],
+          "verification_gate": "cargo nextest run -p benchwork-core --test integration_tests",
+          "completed": false
+        },
+        {
+          "step_id": "step-4",
+          "title": "Full Benchwork workspace verification gate",
+          "target_files": [],
+          "verification_gate": "cargo test -p benchwork-core -p benchwork-cli",
+          "completed": false
+        }
+      ],
+      "plan_file_path": ".gaugeblock/storypole/plans/GB-59.md",
+      "updated_at_epoch_ms": 1793030521309
+    },
+    "active_claim": null,
+    "latest_handoff": null,
+    "verification_receipt": {
+      "verifier": "agent-antigravity",
+      "command": "n/a",
+      "exit_code": 0,
+      "diagnostic_count": null,
+      "summary": "Adopted StorypoleWorkspaceStore in Benchwork for multi-repo rollups and store routing",
+      "verified_at_epoch_ms": 1793039078765,
+      "git_branch": "feat/gb-59-benchwork-multirepo",
+      "base_commit_sha": "12ef7e7746df000e207291e14bcd07e64f8cb9d9",
+      "head_commit_sha": "12ef7e7746df000e207291e14bcd07e64f8cb9d9",
+      "commit_shas": [
+        "12ef7e7746df000e207291e14bcd07e64f8cb9d9"
+      ],
+      "repo": null,
+      "chain_key": null
+    },
+    "created_at_epoch_ms": 1793030507008,
+    "updated_at_epoch_ms": 1794037969199,
+    "archived_at_epoch_ms": 1794037969199
+  },
+  "events": [
+    {
+      "event": "task_created",
+      "task": {
+        "id": "83b76f3d-c8be-47e5-bf56-d337a2522ade",
+        "ticket_key": "GB-59",
+        "slug": "update-benchwork-for-multi-repository-workspace-rollups-and-store-routing-83b76f",
+        "title": "Update Benchwork for Multi-Repository Workspace Rollups and Store Routing",
+        "description": "Adopt StorypoleWorkspaceStore in Benchwork dag_service, route task mutations to governing member stores, support standalone dot_dir resolution in context_injector, and update capabilities scanner.",
+        "kind": "feature",
+        "status": "ready",
+        "priority": 1,
+        "scope": {
+          "repo": "benchwork",
+          "crate_name": "benchwork-core",
+          "module_path": null,
+          "target_files": [],
+          "target_symbols": [],
+          "labels": [
+            "benchwork,multirepo,dag,chat"
+          ]
+        },
+        "edges": [],
+        "decisions": [],
+        "acceptance_criteria": [],
+        "plan": null,
+        "active_claim": null,
+        "latest_handoff": null,
+        "verification_receipt": null,
+        "created_at_epoch_ms": 1793030507008,
+        "updated_at_epoch_ms": 1793030507008
+      }
+    },
+    {
+      "event": "plan_updated",
+      "task_id": "83b76f3d-c8be-47e5-bf56-d337a2522ade",
+      "plan": {
+        "summary": "Adopt StorypoleWorkspaceStore in Benchwork for multi-repo DAG views, mutation routing, and standalone dot_dir resilience",
+        "design_markdown": "# GB-59: Update Benchwork for Multi-Repository Workspace Rollups and Store Routing\n\n> **Status:** Ready  \n> **Target Scope:** `benchwork` (`benchwork-core`, `benchwork-cli`, `benchwork-mcp`)  \n> **Key Invariants:**  \n> 1. Hard 250 LOC rule on all `.rs` files.  \n> 2. Zero-panic safety: no `.unwrap()` / `.expect()` in production library paths (`thiserror`).  \n> 3. Standalone & Multi-Repo Transparency: running `benchwork up` inside a standalone repo clone (`benchwork/`) or in the meta-harness (`neurosymbolic-suite`) must work seamlessly out of the box.  \n> 4. Non-breaking Wire Contracts: TypeScript UI models and WebSocket payloads remain backward-compatible.  \n\n---\n\n## 1. Executive Summary & Problem Statement\n\nWith `GB-57` and `GB-58` having delivered multi-repository workspace discovery, unified SQLite aggregation, and distributed task ledgers to `storypole`, `benchwork` requires updates to consume these capabilities:\n\n1. **Panel 2 (Live DAG Board & Backlog):**\n   * Currently, `benchwork-core::dag_service::get_dag_view` calls `StorypoleStore::open(root_path)`. When running in the meta-harness workspace, it only queries the root store (`GB-*` meta-tasks).\n   * It must adopt `StorypoleWorkspaceStore::open(root_path)`, which rolls up tasks across all member repositories (`benchwork`, `miter`, `sawhorse`, `outfeed`, etc.) while respecting `--repo` filters.\n2. **Task Mutations & Lifecycle Routing:**\n   * Handlers for Claim, Heartbeat, Handoff, Update, Link, and Archive currently open `StorypoleStore::open(root_path)`.\n   * For distributed tickets belonging to member repositories (e.g. `BW-*`, `MTR-*`, `OF-*`), the root store cannot find them. Benchwork must route mutations via `ws.resolve_governing_store_name(key)` to the governing member store (`ws.member_store_mut(repo)`).\n3. **AI Chat Studio Context Injection (`context_injector.rs`):**\n   * Currently hardcodes `.gaugeblock/storypole/ledger.jsonl` and `.gaugeblock/storypole/plans/{key}.md`.\n   * In a standalone clone of `benchwork` (or other sub-repos), these files live under `.storypole/`. Context injection must resolve both `.storypole/` and `.gaugeblock/storypole/` paths.\n4. **Capabilities Scanner (`capabilities.rs`):**\n   * Currently checks `root_path.join(\".storypole/config.toml\")` specifically. Must use `StorypoleStore::open` / `StorypoleWorkspaceStore::open` to accurately detect active Storypole stores and compute task counts.\n\n---\n\n## 2. Architecture & File Layout\n\n```text\nbenchwork/crates/benchwork-core/src/\n├── dag_service.rs            # Adopt StorypoleWorkspaceStore for DAG views and mutation routing (<230 LOC)\n├── capabilities.rs           # Update scan_storypole for dot_dir and workspace rollups (<140 LOC)\n├── chat_harness/\n│   └── context_injector.rs  # Transparent dot_dir and plan path resolution (<150 LOC)\n└── model/\n    └── dag.rs                # Wire types (ensure repo column/tag is exposed)\n```\n\n---\n\n## 3. Execution Plan & Verification Gates\n\n### Step 1: Adopt `StorypoleWorkspaceStore` in `dag_service.rs`\n* Update `get_dag_view` to open `StorypoleWorkspaceStore::open(root_path)` with fallback to `StorypoleStore::open(root_path)`.\n* Update mutation services (`update_task_details`, `claim_task_lease`, `handoff_task_checkpoint`, `archive_task_service`, `link_tasks_service`) to route to the governing member store via `ws.resolve_governing_store_name`.\n* *Verification Gate:* `cargo test -p benchwork-core --test dag_service_tests`\n\n### Step 2: Make `context_injector.rs` Standalone & Workspace Aware\n* Replace hardcoded `.gaugeblock/storypole` paths with `StorypoleStore::resolve_dot_dir(root_dir)`.\n* Search both root plans and member plans when resolving `@task:KEY`.\n* *Verification Gate:* `cargo test -p benchwork-core --lib chat_harness::tests`\n\n### Step 3: Modernize `capabilities.rs` Storypole Scanner\n* Update `scan_storypole` to use `StorypoleStore::find_enclosing_store` or `StorypoleWorkspaceStore::open` to illuminate `caps.storypole_active` and aggregate metrics.\n* *Verification Gate:* `cargo test -p benchwork-core --test integration_tests`\n\n### Step 4: Full Benchwork Workspace Verification\n* Run Tier 2 verification gate across `benchwork`:\n  `cargo fmt --check -p benchwork-core -p benchwork-cli`\n  `cargo clippy -p benchwork-core -p benchwork-cli --all-targets -- -D warnings`\n  `cargo test -p benchwork-core -p benchwork-cli`\n* Verify `benchwork up` surfaces tasks from both the workspace root and member repositories.\n",
+        "steps": [
+          {
+            "step_id": "step-1",
+            "title": "Adopt StorypoleWorkspaceStore in dag_service.rs for rollups and mutation routing",
+            "target_files": [],
+            "verification_gate": "cargo nextest run -p benchwork-core",
+            "completed": false
+          },
+          {
+            "step_id": "step-2",
+            "title": "Make context_injector.rs standalone and workspace aware",
+            "target_files": [],
+            "verification_gate": "cargo nextest run -p benchwork-core --lib chat_harness",
+            "completed": false
+          },
+          {
+            "step_id": "step-3",
+            "title": "Modernize capabilities.rs Storypole scanner for workspace rollups",
+            "target_files": [],
+            "verification_gate": "cargo nextest run -p benchwork-core --test integration_tests",
+            "completed": false
+          },
+          {
+            "step_id": "step-4",
+            "title": "Full Benchwork workspace verification gate",
+            "target_files": [],
+            "verification_gate": "cargo test -p benchwork-core -p benchwork-cli",
+            "completed": false
+          }
+        ],
+        "plan_file_path": ".gaugeblock/storypole/plans/GB-59.md",
+        "updated_at_epoch_ms": 1793030521309
+      },
+      "timestamp_ms": 1793030521309
+    },
+    {
+      "event": "task_claimed",
+      "task_id": "83b76f3d-c8be-47e5-bf56-d337a2522ade",
+      "claim": {
+        "agent_id": "agent-antigravity",
+        "claimed_at_epoch_ms": 1793037889108,
+        "lease_expires_at_epoch_ms": 1793041489108,
+        "git_branch": "feat/gb-59-benchwork-multirepo",
+        "base_commit_sha": "12ef7e7746df000e207291e14bcd07e64f8cb9d9"
+      }
+    },
+    {
+      "event": "status_changed",
+      "task_id": "83b76f3d-c8be-47e5-bf56-d337a2522ade",
+      "from": "ready",
+      "to": "in_progress",
+      "reason": "Claimed by agent-antigravity",
+      "timestamp_ms": 1793037889108
+    },
+    {
+      "event": "task_verified",
+      "task_id": "83b76f3d-c8be-47e5-bf56-d337a2522ade",
+      "receipt": {
+        "verifier": "agent-antigravity",
+        "command": "n/a",
+        "exit_code": 0,
+        "diagnostic_count": null,
+        "summary": "Adopted StorypoleWorkspaceStore in Benchwork for multi-repo rollups and store routing",
+        "verified_at_epoch_ms": 1793039078765,
+        "git_branch": "feat/gb-59-benchwork-multirepo",
+        "base_commit_sha": "12ef7e7746df000e207291e14bcd07e64f8cb9d9",
+        "head_commit_sha": "12ef7e7746df000e207291e14bcd07e64f8cb9d9",
+        "commit_shas": [
+          "12ef7e7746df000e207291e14bcd07e64f8cb9d9"
+        ],
+        "repo": null,
+        "chain_key": null
+      }
+    },
+    {
+      "event": "task_archived",
+      "task_id": "83b76f3d-c8be-47e5-bf56-d337a2522ade",
+      "status": "verified",
+      "timestamp_ms": 1794037969199
+    }
+  ]
+}

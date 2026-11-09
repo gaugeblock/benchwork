@@ -1,0 +1,263 @@
+{
+  "ticket": {
+    "id": "e5d7aac9-3894-4860-9b1c-35edd3283d4d",
+    "ticket_key": "GB-65",
+    "slug": "localstorage-and-url-hash-persistence-for-panel-navigation-sub-view-modes-and-sidebar-state-e5d7aa",
+    "title": "LocalStorage and URL hash persistence for panel navigation, sub-view modes, and sidebar state",
+    "description": "Implement usePersistentState hook storing activeTab, viewMode (dag/kanban/list), filters, and Benji state in localStorage synchronized with URL hash (#docs, #dag/kanban, #dag/list).",
+    "kind": "feature",
+    "status": "verified",
+    "priority": 1,
+    "scope": {
+      "repo": "benchwork",
+      "crate_name": "benchwork-cli",
+      "module_path": null,
+      "target_files": [],
+      "target_symbols": [],
+      "labels": [
+        "benchwork,persistence,localstorage"
+      ]
+    },
+    "edges": [
+      {
+        "kind": "parent_epic",
+        "target_id": "cfd59331-3b6c-4a82-a569-81bc3be0fd96",
+        "target_ticket_key": "GB-64",
+        "target_repo": "benchwork"
+      }
+    ],
+    "decisions": [
+      {
+        "decision_id": "f0e0af57-e6f0-47d5-991a-6dc47409a555",
+        "parent_decision_id": null,
+        "status": "resolved",
+        "category": "state_persistence",
+        "question": "How should panel, sub-view mode, and sidebar states persist across browser reloads?",
+        "proposed_options": [
+          "LocalStorage + URL hash deep-linking",
+          "Server-side SQLite user state table"
+        ],
+        "chosen_option": "LocalStorage + URL hash deep-linking",
+        "rationale": "Zero latency, fully client-isolated so multiple users don't overwrite each other's views, and shareable/bookmarkable via URL hash.",
+        "resolved_by": "user",
+        "updated_at_epoch_ms": 1793032255299
+      }
+    ],
+    "acceptance_criteria": [
+      "Active panel tab is restored on page reload",
+      "DAG sub-view mode (DAG/Kanban/List) is restored on page reload",
+      "Benji sidebar open state, width, docked side, and selected role are restored on reload"
+    ],
+    "plan": {
+      "summary": "LocalStorage and URL hash persistence for panel navigation, sub-view modes, and sidebar state",
+      "design_markdown": "# GB-65: LocalStorage and URL Hash Persistence for Panel Navigation and Sub-Views\n\n> **Status:** Ready  \n> **Parent Epic:** `GB-64`  \n> **Target Scope:** `benchwork` (`benchwork/web`)  \n> **Key Invariants:**  \n> 1. Hard 250 LOC rule on all `.ts` and `.tsx` files.  \n> 2. Client-isolated storage: zero backend database writes for ephemeral user viewport state.  \n> 3. Seamless deep-linking: URL hashes (`#dag/kanban`, `#docs`, `#hub`) override or sync bidirectionally with `localStorage`.  \n\n---\n\n## 1. Overview & Objectives\n\nRefreshing Benchwork currently causes disorientation because `App.tsx` and `DagBoardPanel.tsx` reset to default initial state (`activeTab = 'dag'`, `viewMode = 'dag'`).\n\nGB-65 accomplishes:\n1. Implements a robust `usePersistentState<T>` custom hook that syncs memory, `localStorage`, and optionally `window.location.hash`.\n2. Persists active panel tab (`docs`, `dag`, `xray`, `hub`).\n3. Persists sub-view mode inside `DagBoardPanel` (`dag`, `kanban`, `list`).\n4. Persists filter selections (`statusFilter`, `kindFilter`, `includeArchived`, `repoFilter`).\n5. Persists Benji assistant layout state (`isOpen`, `width`, `dockSide`, `selectedRole`).\n\n---\n\n## 2. Component Structure\n\n```text\nbenchwork/web/src/\n├── hooks/\n│   ├── usePersistentState.ts  # Generic typed hook for localStorage + hash sync (<130 LOC)\n│   └── useHashRoute.ts        # URL hash parser and dispatcher (<90 LOC)\n├── App.tsx                    # Adopts usePersistentState for panel tabs (<220 LOC)\n└── components/\n    └── dag/\n        └── DagBoardPanel.tsx  # Adopts usePersistentState for view modes and filters (<240 LOC)\n```\n\n---\n\n## 3. Verification Steps\n\n1. Select Panel 1 (Docs & Specs) -> refresh browser -> verify Docs & Specs remains active.\n2. Select Panel 2 (Backlog & DAG) -> switch sub-view to Kanban -> refresh browser -> verify Kanban view remains active.\n3. Switch sub-view to List -> filter by status \"Ready\" -> refresh browser -> verify List view and \"Ready\" filter remain active.\n4. Open Benji sidebar -> set width to 500px -> switch dock to right -> refresh browser -> verify sidebar remains 500px on the right.\n",
+      "steps": [
+        {
+          "step_id": "1",
+          "title": "Implement usePersistentState and useHashRoute hooks",
+          "target_files": [],
+          "verification_gate": "npm run build in benchwork/web",
+          "completed": false
+        },
+        {
+          "step_id": "2",
+          "title": "Wire persistence into App.tsx and DagBoardPanel.tsx",
+          "target_files": [],
+          "verification_gate": "Manual reload verification",
+          "completed": false
+        }
+      ],
+      "plan_file_path": ".gaugeblock/storypole/plans/GB-65.md",
+      "updated_at_epoch_ms": 1793032396983
+    },
+    "active_claim": null,
+    "latest_handoff": null,
+    "verification_receipt": {
+      "verifier": "agent-antigravity",
+      "command": "n/a",
+      "exit_code": 0,
+      "diagnostic_count": null,
+      "summary": "Implemented localStorage and URL hash persistence for panel navigation and DagBoard sub-views",
+      "verified_at_epoch_ms": 1793040007816,
+      "git_branch": "feat/gb-65-state-persistence",
+      "base_commit_sha": "fb3708a9357c21adbf3d47d5671a775b77c8740d",
+      "head_commit_sha": "fb3708a9357c21adbf3d47d5671a775b77c8740d",
+      "commit_shas": [
+        "fb3708a9357c21adbf3d47d5671a775b77c8740d"
+      ],
+      "repo": null,
+      "chain_key": null
+    },
+    "created_at_epoch_ms": 1793032160753,
+    "updated_at_epoch_ms": 1794037971555,
+    "archived_at_epoch_ms": 1794037971555
+  },
+  "events": [
+    {
+      "event": "task_created",
+      "task": {
+        "id": "e5d7aac9-3894-4860-9b1c-35edd3283d4d",
+        "ticket_key": "GB-65",
+        "slug": "localstorage-and-url-hash-persistence-for-panel-navigation-sub-view-modes-and-sidebar-state-e5d7aa",
+        "title": "LocalStorage and URL hash persistence for panel navigation, sub-view modes, and sidebar state",
+        "description": "Implement usePersistentState hook storing activeTab, viewMode (dag/kanban/list), filters, and Benji state in localStorage synchronized with URL hash (#docs, #dag/kanban, #dag/list).",
+        "kind": "feature",
+        "status": "ready",
+        "priority": 1,
+        "scope": {
+          "repo": "benchwork",
+          "crate_name": "benchwork-cli",
+          "module_path": null,
+          "target_files": [],
+          "target_symbols": [],
+          "labels": [
+            "benchwork,persistence,localstorage"
+          ]
+        },
+        "edges": [],
+        "decisions": [],
+        "acceptance_criteria": [
+          "Active panel tab is restored on page reload",
+          "DAG sub-view mode (DAG/Kanban/List) is restored on page reload",
+          "Benji sidebar open state, width, docked side, and selected role are restored on reload"
+        ],
+        "plan": null,
+        "active_claim": null,
+        "latest_handoff": null,
+        "verification_receipt": null,
+        "created_at_epoch_ms": 1793032160753,
+        "updated_at_epoch_ms": 1793032160753
+      }
+    },
+    {
+      "event": "edge_added",
+      "task_id": "e5d7aac9-3894-4860-9b1c-35edd3283d4d",
+      "edge": {
+        "kind": "parent_epic",
+        "target_id": "cfd59331-3b6c-4a82-a569-81bc3be0fd96",
+        "target_ticket_key": "GB-64",
+        "target_repo": "benchwork"
+      },
+      "timestamp_ms": 1793032210274
+    },
+    {
+      "event": "decision_raised",
+      "task_id": "e5d7aac9-3894-4860-9b1c-35edd3283d4d",
+      "decision": {
+        "decision_id": "f0e0af57-e6f0-47d5-991a-6dc47409a555",
+        "parent_decision_id": null,
+        "status": "pending",
+        "category": "state_persistence",
+        "question": "How should panel, sub-view mode, and sidebar states persist across browser reloads?",
+        "proposed_options": [
+          "LocalStorage + URL hash deep-linking",
+          "Server-side SQLite user state table"
+        ],
+        "chosen_option": null,
+        "rationale": null,
+        "resolved_by": null,
+        "updated_at_epoch_ms": 1793032252208
+      },
+      "timestamp_ms": 1793032252208
+    },
+    {
+      "event": "status_changed",
+      "task_id": "e5d7aac9-3894-4860-9b1c-35edd3283d4d",
+      "from": "ready",
+      "to": "blocked",
+      "reason": "Pending architectural decision required",
+      "timestamp_ms": 1793032252208
+    },
+    {
+      "event": "decision_resolved",
+      "task_id": "e5d7aac9-3894-4860-9b1c-35edd3283d4d",
+      "decision_id": "f0e0af57-e6f0-47d5-991a-6dc47409a555",
+      "chosen_option": "LocalStorage + URL hash deep-linking",
+      "rationale": "Zero latency, fully client-isolated so multiple users don't overwrite each other's views, and shareable/bookmarkable via URL hash.",
+      "resolved_by": "user",
+      "spawned_followup": null,
+      "appended_criterion": null,
+      "timestamp_ms": 1793032255299
+    },
+    {
+      "event": "status_changed",
+      "task_id": "e5d7aac9-3894-4860-9b1c-35edd3283d4d",
+      "from": "blocked",
+      "to": "ready",
+      "reason": "All pending decisions and dependencies satisfied",
+      "timestamp_ms": 1793032255299
+    },
+    {
+      "event": "plan_updated",
+      "task_id": "e5d7aac9-3894-4860-9b1c-35edd3283d4d",
+      "plan": {
+        "summary": "LocalStorage and URL hash persistence for panel navigation, sub-view modes, and sidebar state",
+        "design_markdown": "# GB-65: LocalStorage and URL Hash Persistence for Panel Navigation and Sub-Views\n\n> **Status:** Ready  \n> **Parent Epic:** `GB-64`  \n> **Target Scope:** `benchwork` (`benchwork/web`)  \n> **Key Invariants:**  \n> 1. Hard 250 LOC rule on all `.ts` and `.tsx` files.  \n> 2. Client-isolated storage: zero backend database writes for ephemeral user viewport state.  \n> 3. Seamless deep-linking: URL hashes (`#dag/kanban`, `#docs`, `#hub`) override or sync bidirectionally with `localStorage`.  \n\n---\n\n## 1. Overview & Objectives\n\nRefreshing Benchwork currently causes disorientation because `App.tsx` and `DagBoardPanel.tsx` reset to default initial state (`activeTab = 'dag'`, `viewMode = 'dag'`).\n\nGB-65 accomplishes:\n1. Implements a robust `usePersistentState<T>` custom hook that syncs memory, `localStorage`, and optionally `window.location.hash`.\n2. Persists active panel tab (`docs`, `dag`, `xray`, `hub`).\n3. Persists sub-view mode inside `DagBoardPanel` (`dag`, `kanban`, `list`).\n4. Persists filter selections (`statusFilter`, `kindFilter`, `includeArchived`, `repoFilter`).\n5. Persists Benji assistant layout state (`isOpen`, `width`, `dockSide`, `selectedRole`).\n\n---\n\n## 2. Component Structure\n\n```text\nbenchwork/web/src/\n├── hooks/\n│   ├── usePersistentState.ts  # Generic typed hook for localStorage + hash sync (<130 LOC)\n│   └── useHashRoute.ts        # URL hash parser and dispatcher (<90 LOC)\n├── App.tsx                    # Adopts usePersistentState for panel tabs (<220 LOC)\n└── components/\n    └── dag/\n        └── DagBoardPanel.tsx  # Adopts usePersistentState for view modes and filters (<240 LOC)\n```\n\n---\n\n## 3. Verification Steps\n\n1. Select Panel 1 (Docs & Specs) -> refresh browser -> verify Docs & Specs remains active.\n2. Select Panel 2 (Backlog & DAG) -> switch sub-view to Kanban -> refresh browser -> verify Kanban view remains active.\n3. Switch sub-view to List -> filter by status \"Ready\" -> refresh browser -> verify List view and \"Ready\" filter remain active.\n4. Open Benji sidebar -> set width to 500px -> switch dock to right -> refresh browser -> verify sidebar remains 500px on the right.\n",
+        "steps": [
+          {
+            "step_id": "1",
+            "title": "Implement usePersistentState and useHashRoute hooks",
+            "target_files": [],
+            "verification_gate": "npm run build in benchwork/web",
+            "completed": false
+          },
+          {
+            "step_id": "2",
+            "title": "Wire persistence into App.tsx and DagBoardPanel.tsx",
+            "target_files": [],
+            "verification_gate": "Manual reload verification",
+            "completed": false
+          }
+        ],
+        "plan_file_path": ".gaugeblock/storypole/plans/GB-65.md",
+        "updated_at_epoch_ms": 1793032396983
+      },
+      "timestamp_ms": 1793032396983
+    },
+    {
+      "event": "task_claimed",
+      "task_id": "e5d7aac9-3894-4860-9b1c-35edd3283d4d",
+      "claim": {
+        "agent_id": "agent-antigravity",
+        "claimed_at_epoch_ms": 1793039906459,
+        "lease_expires_at_epoch_ms": 1793043506459,
+        "git_branch": "feat/gb-65-state-persistence",
+        "base_commit_sha": "fb3708a9357c21adbf3d47d5671a775b77c8740d"
+      }
+    },
+    {
+      "event": "status_changed",
+      "task_id": "e5d7aac9-3894-4860-9b1c-35edd3283d4d",
+      "from": "ready",
+      "to": "in_progress",
+      "reason": "Claimed by agent-antigravity",
+      "timestamp_ms": 1793039906459
+    },
+    {
+      "event": "task_verified",
+      "task_id": "e5d7aac9-3894-4860-9b1c-35edd3283d4d",
+      "receipt": {
+        "verifier": "agent-antigravity",
+        "command": "n/a",
+        "exit_code": 0,
+        "diagnostic_count": null,
+        "summary": "Implemented localStorage and URL hash persistence for panel navigation and DagBoard sub-views",
+        "verified_at_epoch_ms": 1793040007816,
+        "git_branch": "feat/gb-65-state-persistence",
+        "base_commit_sha": "fb3708a9357c21adbf3d47d5671a775b77c8740d",
+        "head_commit_sha": "fb3708a9357c21adbf3d47d5671a775b77c8740d",
+        "commit_shas": [
+          "fb3708a9357c21adbf3d47d5671a775b77c8740d"
+        ],
+        "repo": null,
+        "chain_key": null
+      }
+    },
+    {
+      "event": "task_archived",
+      "task_id": "e5d7aac9-3894-4860-9b1c-35edd3283d4d",
+      "status": "verified",
+      "timestamp_ms": 1794037971555
+    }
+  ]
+}

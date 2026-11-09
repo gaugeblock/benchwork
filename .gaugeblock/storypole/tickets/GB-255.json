@@ -1,0 +1,71 @@
+{
+  "ticket": {
+    "id": "56be844a-bfbe-4965-b1c5-3cd0e54203d7",
+    "ticket_key": "GB-255",
+    "slug": "migration-alert-should-name-what-would-migrate-and-where-the-conflict-is-and-must-clear-once-applied-56be84",
+    "title": "Migration alert should name what would migrate and where the conflict is, and must clear once applied",
+    "description": "Owner request 2026-11-06: the workbench reports 'migration needed for configs' without saying what or where. Today discover_migration (benchwork-core/src/migration/discovery.rs) only tests whether a legacy artifact EXISTS, so the banner is undismissable and uninformative.\\n\\nREPRODUCED CONCRETELY: the harness root has .gaugeblock/docs.toml AND .gaugeblock/config.toml already contains the consolidated tables - so the migration has effectively been applied, yet the file was never removed and the alert still fires. Worse, the consolidated shape is nested one level too deep: config.toml carries [docs.docs.readme], [docs.docs.agents], [docs.policies] while the source docs.toml carried [docs.readme], [docs.agents], [policies]. Anything reading [docs.*] finds nothing, so the docs policy in config.toml is currently inert. That is filed separately; this ticket is the alert.\\n\\nShape: (1) for each pending item report source path, destination path, and the key-level diff - which tables or files would move and which keys already match; (2) mark an item ALREADY APPLIED when the destination already contains its content, and offer to drop the stale source; (3) surface conflicts explicitly, e.g. a key present in both with different values, naming both values; (4) make the state inspectable from the CLI ('benchwork migrate --dry-run --json') so an operator and an agent see the same thing the UI does.",
+    "kind": "feature",
+    "status": "deferred",
+    "priority": 3,
+    "scope": {
+      "repo": "benchwork",
+      "crate_name": "benchwork-core",
+      "module_path": null,
+      "target_files": [],
+      "target_symbols": [
+        "benchwork_core::migration::discovery::discover_migration"
+      ],
+      "labels": [
+        "benchwork,migration,observability,ux"
+      ]
+    },
+    "edges": [],
+    "decisions": [],
+    "acceptance_criteria": [],
+    "plan": null,
+    "active_claim": null,
+    "latest_handoff": null,
+    "verification_receipt": null,
+    "created_at_epoch_ms": 1793952057958,
+    "updated_at_epoch_ms": 1793952057958
+  },
+  "events": [
+    {
+      "event": "deferred_item_captured",
+      "task": {
+        "id": "56be844a-bfbe-4965-b1c5-3cd0e54203d7",
+        "ticket_key": "GB-255",
+        "slug": "migration-alert-should-name-what-would-migrate-and-where-the-conflict-is-and-must-clear-once-applied-56be84",
+        "title": "Migration alert should name what would migrate and where the conflict is, and must clear once applied",
+        "description": "Owner request 2026-11-06: the workbench reports 'migration needed for configs' without saying what or where. Today discover_migration (benchwork-core/src/migration/discovery.rs) only tests whether a legacy artifact EXISTS, so the banner is undismissable and uninformative.\\n\\nREPRODUCED CONCRETELY: the harness root has .gaugeblock/docs.toml AND .gaugeblock/config.toml already contains the consolidated tables - so the migration has effectively been applied, yet the file was never removed and the alert still fires. Worse, the consolidated shape is nested one level too deep: config.toml carries [docs.docs.readme], [docs.docs.agents], [docs.policies] while the source docs.toml carried [docs.readme], [docs.agents], [policies]. Anything reading [docs.*] finds nothing, so the docs policy in config.toml is currently inert. That is filed separately; this ticket is the alert.\\n\\nShape: (1) for each pending item report source path, destination path, and the key-level diff - which tables or files would move and which keys already match; (2) mark an item ALREADY APPLIED when the destination already contains its content, and offer to drop the stale source; (3) surface conflicts explicitly, e.g. a key present in both with different values, naming both values; (4) make the state inspectable from the CLI ('benchwork migrate --dry-run --json') so an operator and an agent see the same thing the UI does.",
+        "kind": "feature",
+        "status": "deferred",
+        "priority": 3,
+        "scope": {
+          "repo": "benchwork",
+          "crate_name": "benchwork-core",
+          "module_path": null,
+          "target_files": [],
+          "target_symbols": [
+            "benchwork_core::migration::discovery::discover_migration"
+          ],
+          "labels": [
+            "benchwork,migration,observability,ux"
+          ]
+        },
+        "edges": [],
+        "decisions": [],
+        "acceptance_criteria": [],
+        "plan": null,
+        "active_claim": null,
+        "latest_handoff": null,
+        "verification_receipt": null,
+        "created_at_epoch_ms": 1793952057958,
+        "updated_at_epoch_ms": 1793952057958
+      },
+      "captured_by_agent": "cline",
+      "discovered_from_task_id": null
+    }
+  ]
+}

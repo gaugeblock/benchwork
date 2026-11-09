@@ -1,0 +1,67 @@
+{
+  "ticket": {
+    "id": "2e7cc48c-fa51-4574-a340-824e15311f59",
+    "ticket_key": "GB-97",
+    "slug": "harmonize-typescript-wire-contracts-with-rust-domain-models-in-benchwork-2e7cc4",
+    "title": "Harmonize TypeScript wire contracts with Rust domain models in benchwork",
+    "description": "Polyglot contract drift detected by miter contracts across Rust models and TypeScript interfaces for AnonymizedSynthesisTrace, DadoPattern, TypedHole, TaskEdge, ChatMessage, and RoleOverrideConfig.",
+    "kind": "bug",
+    "status": "triage",
+    "priority": 3,
+    "scope": {
+      "repo": "benchwork",
+      "crate_name": "benchwork-cli",
+      "module_path": null,
+      "target_files": [
+        "benchwork/web/src/types.ts,benchwork/web/src/types/hub.ts,benchwork/web/src/chat/types.ts"
+      ],
+      "target_symbols": [],
+      "labels": []
+    },
+    "edges": [],
+    "decisions": [],
+    "acceptance_criteria": [],
+    "plan": null,
+    "active_claim": null,
+    "latest_handoff": null,
+    "verification_receipt": null,
+    "created_at_epoch_ms": 1793126158828,
+    "updated_at_epoch_ms": 1793126158828
+  },
+  "events": [
+    {
+      "event": "deferred_item_captured",
+      "task": {
+        "id": "2e7cc48c-fa51-4574-a340-824e15311f59",
+        "ticket_key": "GB-97",
+        "slug": "harmonize-typescript-wire-contracts-with-rust-domain-models-in-benchwork-2e7cc4",
+        "title": "Harmonize TypeScript wire contracts with Rust domain models in benchwork",
+        "description": "Polyglot contract drift detected by miter contracts across Rust models and TypeScript interfaces for AnonymizedSynthesisTrace, DadoPattern, TypedHole, TaskEdge, ChatMessage, and RoleOverrideConfig.",
+        "kind": "bug",
+        "status": "triage",
+        "priority": 3,
+        "scope": {
+          "repo": "benchwork",
+          "crate_name": "benchwork-cli",
+          "module_path": null,
+          "target_files": [
+            "benchwork/web/src/types.ts,benchwork/web/src/types/hub.ts,benchwork/web/src/chat/types.ts"
+          ],
+          "target_symbols": [],
+          "labels": []
+        },
+        "edges": [],
+        "decisions": [],
+        "acceptance_criteria": [],
+        "plan": null,
+        "active_claim": null,
+        "latest_handoff": null,
+        "verification_receipt": null,
+        "created_at_epoch_ms": 1793126158828,
+        "updated_at_epoch_ms": 1793126158828
+      },
+      "captured_by_agent": "user",
+      "discovered_from_task_id": null
+    }
+  ]
+}

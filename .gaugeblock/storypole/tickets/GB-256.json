@@ -1,0 +1,113 @@
+{
+  "ticket": {
+    "id": "c2c18b7e-e5e1-4fc6-89dd-5f0a97cf3635",
+    "ticket_key": "GB-256",
+    "slug": "config-consolidation-wrote-docs-tables-one-level-too-deep-so-docs-docs-makes-the-docs-policy-in-config-toml-inert-c2c18b",
+    "title": "Config consolidation wrote docs tables one level too deep, so [docs.docs.*] makes the docs policy in config.toml inert",
+    "description": "Found 2026-11-06 while investigating the permanent migration banner (GB-255). .gaugeblock/config.toml contains [docs.docs.readme], [docs.docs.agents], [docs.docs.contributing], [docs.docs.architecture], [docs.docs.spec], [docs.docs.design], [docs.docs.roadmap], [docs.docs.changelog], [docs.docs.product] and [docs.policies]. The source .gaugeblock/docs.toml it came from contained [docs.readme], [docs.agents], ... and [policies] - one level shallower. So the consolidator nested the whole document under a 'docs' key instead of merging it into the existing [docs] table.\\n\\nConsequence: anything reading [docs.readme] from config.toml finds nothing and falls back to defaults, silently. The docs audit still passes only because it falls back to the file, and the file is what the migration banner wants removed - so acting on that banner would delete the only copy the readers can see. Verified by inspection of both files; the fix should also assert the round trip (consolidate, then read back the same values the source held) which is the test that would have caught it.",
+    "kind": "bug",
+    "status": "verified",
+    "priority": 3,
+    "scope": {
+      "repo": "benchwork",
+      "crate_name": "benchwork-core",
+      "module_path": null,
+      "target_files": [],
+      "target_symbols": [
+        "benchwork_core::migration::consolidator::consolidate_configs"
+      ],
+      "labels": [
+        "benchwork,migration,config,docs"
+      ]
+    },
+    "edges": [],
+    "decisions": [],
+    "acceptance_criteria": [],
+    "plan": null,
+    "active_claim": null,
+    "latest_handoff": null,
+    "verification_receipt": {
+      "verifier": "manual",
+      "command": "n/a",
+      "exit_code": 0,
+      "diagnostic_count": null,
+      "summary": "Fixed in benchwork 07825e7 and the live config repaired in 057a2e7. consolidate_configs nested the whole docs.toml under the key 'docs' though its root already carried [docs.*] and [policies], producing [docs.docs.readme]; readers of [docs.readme] fell back to defaults silently and the policy in config.toml was inert. It now merges the legacy top-level tables in place with the destination winning, and sawhorse/.storypole keep their namespacing as tool-local documents. Three tests added, including the round trip (depth preserved, existing value wins, tool-local still namespaced). The live .gaugeblock/config.toml was renamed in place from [docs.docs.*] to [docs.*] and [docs.policies] to [policies], verified by parsing before and after; harness docs audit now 9 present, 0 missing, 0 drifted.",
+      "verified_at_epoch_ms": 1793953534575,
+      "git_branch": "main",
+      "base_commit_sha": "07825e7fcc7cd3b6eed1519b5b3ef6d9ac1fbf2c",
+      "head_commit_sha": "07825e7fcc7cd3b6eed1519b5b3ef6d9ac1fbf2c",
+      "commit_shas": [
+        "07825e7fcc7cd3b6eed1519b5b3ef6d9ac1fbf2c"
+      ],
+      "repo": null,
+      "chain_key": null
+    },
+    "created_at_epoch_ms": 1793952068027,
+    "updated_at_epoch_ms": 1794038024521,
+    "archived_at_epoch_ms": 1794038024521
+  },
+  "events": [
+    {
+      "event": "deferred_item_captured",
+      "task": {
+        "id": "c2c18b7e-e5e1-4fc6-89dd-5f0a97cf3635",
+        "ticket_key": "GB-256",
+        "slug": "config-consolidation-wrote-docs-tables-one-level-too-deep-so-docs-docs-makes-the-docs-policy-in-config-toml-inert-c2c18b",
+        "title": "Config consolidation wrote docs tables one level too deep, so [docs.docs.*] makes the docs policy in config.toml inert",
+        "description": "Found 2026-11-06 while investigating the permanent migration banner (GB-255). .gaugeblock/config.toml contains [docs.docs.readme], [docs.docs.agents], [docs.docs.contributing], [docs.docs.architecture], [docs.docs.spec], [docs.docs.design], [docs.docs.roadmap], [docs.docs.changelog], [docs.docs.product] and [docs.policies]. The source .gaugeblock/docs.toml it came from contained [docs.readme], [docs.agents], ... and [policies] - one level shallower. So the consolidator nested the whole document under a 'docs' key instead of merging it into the existing [docs] table.\\n\\nConsequence: anything reading [docs.readme] from config.toml finds nothing and falls back to defaults, silently. The docs audit still passes only because it falls back to the file, and the file is what the migration banner wants removed - so acting on that banner would delete the only copy the readers can see. Verified by inspection of both files; the fix should also assert the round trip (consolidate, then read back the same values the source held) which is the test that would have caught it.",
+        "kind": "bug",
+        "status": "triage",
+        "priority": 3,
+        "scope": {
+          "repo": "benchwork",
+          "crate_name": "benchwork-core",
+          "module_path": null,
+          "target_files": [],
+          "target_symbols": [
+            "benchwork_core::migration::consolidator::consolidate_configs"
+          ],
+          "labels": [
+            "benchwork,migration,config,docs"
+          ]
+        },
+        "edges": [],
+        "decisions": [],
+        "acceptance_criteria": [],
+        "plan": null,
+        "active_claim": null,
+        "latest_handoff": null,
+        "verification_receipt": null,
+        "created_at_epoch_ms": 1793952068027,
+        "updated_at_epoch_ms": 1793952068027
+      },
+      "captured_by_agent": "cline",
+      "discovered_from_task_id": null
+    },
+    {
+      "event": "task_verified",
+      "task_id": "c2c18b7e-e5e1-4fc6-89dd-5f0a97cf3635",
+      "receipt": {
+        "verifier": "manual",
+        "command": "n/a",
+        "exit_code": 0,
+        "diagnostic_count": null,
+        "summary": "Fixed in benchwork 07825e7 and the live config repaired in 057a2e7. consolidate_configs nested the whole docs.toml under the key 'docs' though its root already carried [docs.*] and [policies], producing [docs.docs.readme]; readers of [docs.readme] fell back to defaults silently and the policy in config.toml was inert. It now merges the legacy top-level tables in place with the destination winning, and sawhorse/.storypole keep their namespacing as tool-local documents. Three tests added, including the round trip (depth preserved, existing value wins, tool-local still namespaced). The live .gaugeblock/config.toml was renamed in place from [docs.docs.*] to [docs.*] and [docs.policies] to [policies], verified by parsing before and after; harness docs audit now 9 present, 0 missing, 0 drifted.",
+        "verified_at_epoch_ms": 1793953534575,
+        "git_branch": "main",
+        "base_commit_sha": "07825e7fcc7cd3b6eed1519b5b3ef6d9ac1fbf2c",
+        "head_commit_sha": "07825e7fcc7cd3b6eed1519b5b3ef6d9ac1fbf2c",
+        "commit_shas": [
+          "07825e7fcc7cd3b6eed1519b5b3ef6d9ac1fbf2c"
+        ],
+        "repo": null,
+        "chain_key": null
+      }
+    },
+    {
+      "event": "task_archived",
+      "task_id": "c2c18b7e-e5e1-4fc6-89dd-5f0a97cf3635",
+      "status": "verified",
+      "timestamp_ms": 1794038024521
+    }
+  ]
+}

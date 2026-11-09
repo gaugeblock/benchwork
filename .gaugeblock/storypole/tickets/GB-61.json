@@ -1,0 +1,198 @@
+{
+  "ticket": {
+    "id": "2ec951db-36d5-47e1-a651-d5e73dd7b295",
+    "ticket_key": "GB-61",
+    "slug": "realign-panel-1-to-docs-specs-and-remove-duplicate-engineerchat-2ec951",
+    "title": "Realign Panel 1 to Docs & Specs and remove duplicate EngineerChat",
+    "description": "Remove EngineerChat from GrillStudioPanel, update tab headers and titles to 'Panel 1: Docs & Specs', and focus Panel 1 on the 9+ architecture documentation hierarchy, decision cards, and contract reviews.",
+    "kind": "feature",
+    "status": "verified",
+    "priority": 1,
+    "scope": {
+      "repo": "benchwork",
+      "crate_name": "benchwork-cli",
+      "module_path": null,
+      "target_files": [],
+      "target_symbols": [],
+      "labels": [
+        "benchwork,docs,specs"
+      ]
+    },
+    "edges": [
+      {
+        "kind": "parent_epic",
+        "target_id": "c8a59734-b7c2-45fb-ad1e-f15bf240c5d2",
+        "target_ticket_key": "GB-60",
+        "target_repo": "benchwork"
+      }
+    ],
+    "decisions": [],
+    "acceptance_criteria": [
+      "GrillStudioPanel is renamed or styled as Docs & Specs without embedded chat",
+      "App header tab button displays 'Panel 1: Docs & Specs'"
+    ],
+    "plan": {
+      "summary": "Realign Panel 1 to Docs & Specs and remove duplicate EngineerChat",
+      "design_markdown": "# GB-61: Realign Panel 1 to Docs & Specs and Remove Duplicate EngineerChat\n\n> **Status:** Ready  \n> **Parent Epic:** `GB-60`  \n> **Target Scope:** `benchwork` (`benchwork/web`)  \n> **Key Invariants:**  \n> 1. Hard 250 LOC rule on all `.ts` and `.tsx` files.  \n> 2. Zero dead code: completely remove `EngineerChat.tsx` and obsolete chat hooks from Panel 1.  \n> 3. Full architectural documentation fidelity: preserve multi-file markdown rendering, Chalkline doc generator links, and decision viewer.  \n\n---\n\n## 1. Overview & Objectives\n\nCurrently, Panel 1 is labeled \"Panel 1: Spec Planner & /grill-me Chat\" and embeds `EngineerChat.tsx` alongside `DocumentViewer.tsx`.\nThis creates massive redundancy with the sidebar chat rail and breaks brand conventions.\n\nGB-61 accomplishes:\n1. Replaces `GrillStudioPanel.tsx` with `DocsSpecsPanel.tsx`.\n2. Updates primary navigation tabs in `App.tsx` from \"Panel 1: Spec Planner\" to \"Panel 1: Docs & Specs\".\n3. Removes `EngineerChat.tsx` and unused chat state from Panel 1.\n4. Expands the document viewer to occupy the full panel viewport with a clean sidebar file tree / tab strip for all 9 Chalkline architectural documents.\n\n---\n\n## 2. Component Layout & Refactoring\n\n```text\nbenchwork/web/src/\n├── App.tsx                     # Update panel tab definitions (<220 LOC)\n└── components/\n    └── panels/\n        ├── DocsSpecsPanel.tsx  # Pure docs viewer and spec generator UI (<210 LOC)\n        ├── DocumentViewer.tsx  # Markdown renderer with syntax highlighting (<240 LOC)\n        ├── DecisionMatrix.tsx  # Storypole architectural decision table (<180 LOC)\n        └── EngineerChat.tsx    # DELETED\n```\n\n---\n\n## 3. Verification Steps\n\n1. Verify Panel 1 renders cleanly without any chat input box or duplicate ping calls.\n2. Verify switching between documentation tabs (`SPEC.md`, `ARCHITECTURE.md`, `CONTRACTS.md`) functions smoothly.\n3. Run `npm run build` in `benchwork/web` to ensure zero compilation or TypeScript errors.\n",
+      "steps": [
+        {
+          "step_id": "1",
+          "title": "Remove EngineerChat and duplicate chat state",
+          "target_files": [],
+          "verification_gate": "npm run build in benchwork/web",
+          "completed": false
+        },
+        {
+          "step_id": "2",
+          "title": "Implement DocsSpecsPanel and update App navigation",
+          "target_files": [],
+          "verification_gate": "npm run build in benchwork/web",
+          "completed": false
+        }
+      ],
+      "plan_file_path": ".gaugeblock/storypole/plans/GB-61.md",
+      "updated_at_epoch_ms": 1793032382339
+    },
+    "active_claim": null,
+    "latest_handoff": null,
+    "verification_receipt": {
+      "verifier": "agent-antigravity",
+      "command": "n/a",
+      "exit_code": 0,
+      "diagnostic_count": null,
+      "summary": "Realigned Panel 1 to Docs & Specs and removed duplicate EngineerChat",
+      "verified_at_epoch_ms": 1793039301831,
+      "git_branch": "feat/gb-61-docs-specs-panel",
+      "base_commit_sha": "fa876e83e968b26144212a7d80cc74380534ce62",
+      "head_commit_sha": "fa876e83e968b26144212a7d80cc74380534ce62",
+      "commit_shas": [
+        "fa876e83e968b26144212a7d80cc74380534ce62"
+      ],
+      "repo": null,
+      "chain_key": null
+    },
+    "created_at_epoch_ms": 1793032150538,
+    "updated_at_epoch_ms": 1794037969724,
+    "archived_at_epoch_ms": 1794037969724
+  },
+  "events": [
+    {
+      "event": "task_created",
+      "task": {
+        "id": "2ec951db-36d5-47e1-a651-d5e73dd7b295",
+        "ticket_key": "GB-61",
+        "slug": "realign-panel-1-to-docs-specs-and-remove-duplicate-engineerchat-2ec951",
+        "title": "Realign Panel 1 to Docs & Specs and remove duplicate EngineerChat",
+        "description": "Remove EngineerChat from GrillStudioPanel, update tab headers and titles to 'Panel 1: Docs & Specs', and focus Panel 1 on the 9+ architecture documentation hierarchy, decision cards, and contract reviews.",
+        "kind": "feature",
+        "status": "ready",
+        "priority": 1,
+        "scope": {
+          "repo": "benchwork",
+          "crate_name": "benchwork-cli",
+          "module_path": null,
+          "target_files": [],
+          "target_symbols": [],
+          "labels": [
+            "benchwork,docs,specs"
+          ]
+        },
+        "edges": [],
+        "decisions": [],
+        "acceptance_criteria": [
+          "GrillStudioPanel is renamed or styled as Docs & Specs without embedded chat",
+          "App header tab button displays 'Panel 1: Docs & Specs'"
+        ],
+        "plan": null,
+        "active_claim": null,
+        "latest_handoff": null,
+        "verification_receipt": null,
+        "created_at_epoch_ms": 1793032150538,
+        "updated_at_epoch_ms": 1793032150538
+      }
+    },
+    {
+      "event": "edge_added",
+      "task_id": "2ec951db-36d5-47e1-a651-d5e73dd7b295",
+      "edge": {
+        "kind": "parent_epic",
+        "target_id": "c8a59734-b7c2-45fb-ad1e-f15bf240c5d2",
+        "target_ticket_key": "GB-60",
+        "target_repo": "benchwork"
+      },
+      "timestamp_ms": 1793032154201
+    },
+    {
+      "event": "plan_updated",
+      "task_id": "2ec951db-36d5-47e1-a651-d5e73dd7b295",
+      "plan": {
+        "summary": "Realign Panel 1 to Docs & Specs and remove duplicate EngineerChat",
+        "design_markdown": "# GB-61: Realign Panel 1 to Docs & Specs and Remove Duplicate EngineerChat\n\n> **Status:** Ready  \n> **Parent Epic:** `GB-60`  \n> **Target Scope:** `benchwork` (`benchwork/web`)  \n> **Key Invariants:**  \n> 1. Hard 250 LOC rule on all `.ts` and `.tsx` files.  \n> 2. Zero dead code: completely remove `EngineerChat.tsx` and obsolete chat hooks from Panel 1.  \n> 3. Full architectural documentation fidelity: preserve multi-file markdown rendering, Chalkline doc generator links, and decision viewer.  \n\n---\n\n## 1. Overview & Objectives\n\nCurrently, Panel 1 is labeled \"Panel 1: Spec Planner & /grill-me Chat\" and embeds `EngineerChat.tsx` alongside `DocumentViewer.tsx`.\nThis creates massive redundancy with the sidebar chat rail and breaks brand conventions.\n\nGB-61 accomplishes:\n1. Replaces `GrillStudioPanel.tsx` with `DocsSpecsPanel.tsx`.\n2. Updates primary navigation tabs in `App.tsx` from \"Panel 1: Spec Planner\" to \"Panel 1: Docs & Specs\".\n3. Removes `EngineerChat.tsx` and unused chat state from Panel 1.\n4. Expands the document viewer to occupy the full panel viewport with a clean sidebar file tree / tab strip for all 9 Chalkline architectural documents.\n\n---\n\n## 2. Component Layout & Refactoring\n\n```text\nbenchwork/web/src/\n├── App.tsx                     # Update panel tab definitions (<220 LOC)\n└── components/\n    └── panels/\n        ├── DocsSpecsPanel.tsx  # Pure docs viewer and spec generator UI (<210 LOC)\n        ├── DocumentViewer.tsx  # Markdown renderer with syntax highlighting (<240 LOC)\n        ├── DecisionMatrix.tsx  # Storypole architectural decision table (<180 LOC)\n        └── EngineerChat.tsx    # DELETED\n```\n\n---\n\n## 3. Verification Steps\n\n1. Verify Panel 1 renders cleanly without any chat input box or duplicate ping calls.\n2. Verify switching between documentation tabs (`SPEC.md`, `ARCHITECTURE.md`, `CONTRACTS.md`) functions smoothly.\n3. Run `npm run build` in `benchwork/web` to ensure zero compilation or TypeScript errors.\n",
+        "steps": [
+          {
+            "step_id": "1",
+            "title": "Remove EngineerChat and duplicate chat state",
+            "target_files": [],
+            "verification_gate": "npm run build in benchwork/web",
+            "completed": false
+          },
+          {
+            "step_id": "2",
+            "title": "Implement DocsSpecsPanel and update App navigation",
+            "target_files": [],
+            "verification_gate": "npm run build in benchwork/web",
+            "completed": false
+          }
+        ],
+        "plan_file_path": ".gaugeblock/storypole/plans/GB-61.md",
+        "updated_at_epoch_ms": 1793032382339
+      },
+      "timestamp_ms": 1793032382339
+    },
+    {
+      "event": "task_claimed",
+      "task_id": "2ec951db-36d5-47e1-a651-d5e73dd7b295",
+      "claim": {
+        "agent_id": "agent-antigravity",
+        "claimed_at_epoch_ms": 1793039112236,
+        "lease_expires_at_epoch_ms": 1793042712236,
+        "git_branch": "feat/gb-61-docs-specs-panel",
+        "base_commit_sha": "fa876e83e968b26144212a7d80cc74380534ce62"
+      }
+    },
+    {
+      "event": "status_changed",
+      "task_id": "2ec951db-36d5-47e1-a651-d5e73dd7b295",
+      "from": "ready",
+      "to": "in_progress",
+      "reason": "Claimed by agent-antigravity",
+      "timestamp_ms": 1793039112236
+    },
+    {
+      "event": "task_verified",
+      "task_id": "2ec951db-36d5-47e1-a651-d5e73dd7b295",
+      "receipt": {
+        "verifier": "agent-antigravity",
+        "command": "n/a",
+        "exit_code": 0,
+        "diagnostic_count": null,
+        "summary": "Realigned Panel 1 to Docs & Specs and removed duplicate EngineerChat",
+        "verified_at_epoch_ms": 1793039301831,
+        "git_branch": "feat/gb-61-docs-specs-panel",
+        "base_commit_sha": "fa876e83e968b26144212a7d80cc74380534ce62",
+        "head_commit_sha": "fa876e83e968b26144212a7d80cc74380534ce62",
+        "commit_shas": [
+          "fa876e83e968b26144212a7d80cc74380534ce62"
+        ],
+        "repo": null,
+        "chain_key": null
+      }
+    },
+    {
+      "event": "task_archived",
+      "task_id": "2ec951db-36d5-47e1-a651-d5e73dd7b295",
+      "status": "verified",
+      "timestamp_ms": 1794037969724
+    }
+  ]
+}
