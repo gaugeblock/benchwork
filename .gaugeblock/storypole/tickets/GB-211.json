@@ -1,0 +1,127 @@
+{
+  "ticket": {
+    "id": "ec149753-065c-4370-861d-1e58cd206b9d",
+    "ticket_key": "GB-211",
+    "slug": "benchwork-status-counts-fold-archived-tasks-into-their-pre-archive-status-ec1497",
+    "title": "benchwork status counts fold archived tasks into their pre-archive status",
+    "description": "benchwork capabilities reports blocked 4, deferred 16, ready 26, triage 11, verified 180 with no archived key, while storypole ledger-reconcile reports archived 59, verified 123, ready 26, deferred 16, triage 9, blocked 4 and says index and ledger agree. Totals match at 237, and the deltas are exactly the archived population: 180 - 123 = 57 and 11 - 9 = 2, which sums to 59. So archived was made a state orthogonal to status in GB-179 and benchwork is still presenting the pre-archive status, which overstates verified work by 57 tasks. The capability and status views should surface archived separately, or at least exclude both the status count and the archived count from each other.",
+    "kind": "bug",
+    "status": "verified",
+    "priority": 3,
+    "scope": {
+      "repo": null,
+      "crate_name": "benchwork-core",
+      "module_path": null,
+      "target_files": [
+        "benchwork/crates/benchwork-core/src/capabilities.rs"
+      ],
+      "target_symbols": [],
+      "labels": []
+    },
+    "edges": [
+      {
+        "kind": "discovered_from",
+        "target_id": "6103aa7e-777b-4f44-94ce-4443c479b0c0"
+      }
+    ],
+    "decisions": [],
+    "acceptance_criteria": [],
+    "plan": null,
+    "active_claim": null,
+    "latest_handoff": null,
+    "verification_receipt": {
+      "verifier": "manual",
+      "command": "n/a",
+      "exit_code": 0,
+      "diagnostic_count": null,
+      "summary": "Fixed in benchwork ab438c7. Two places folded archived tasks into their pre-archive status: capabilities tallied every task by task.status, and the DAG built its topological order from all_tasks while filtering nodes. Measured before/after on this workspace: counts {blocked 4, deferred 25, inprogress 2, ready 16, triage 14, verified 222} -> {archived 61, blocked 4, deferred 25, inprogress 2, ready 16, triage 12, verified 163}, now identical to storypole ledger-reconcile; DAG 283 order keys against 222 nodes with 61 leaked -> 222 against 222, none leaked. Pending decisions on archived tasks are no longer counted. Tier 2 fmt/clippy clean, nextest 43/43.",
+      "verified_at_epoch_ms": 1793952212871,
+      "git_branch": "main",
+      "base_commit_sha": "ab438c73e48547d3ac1c9272404158134d3db630",
+      "head_commit_sha": "ab438c73e48547d3ac1c9272404158134d3db630",
+      "commit_shas": [
+        "ab438c73e48547d3ac1c9272404158134d3db630"
+      ],
+      "repo": null,
+      "chain_key": null
+    },
+    "created_at_epoch_ms": 1793359009750,
+    "updated_at_epoch_ms": 1794038018038,
+    "archived_at_epoch_ms": 1794038018038
+  },
+  "events": [
+    {
+      "event": "deferred_item_captured",
+      "task": {
+        "id": "ec149753-065c-4370-861d-1e58cd206b9d",
+        "ticket_key": "GB-211",
+        "slug": "benchwork-status-counts-fold-archived-tasks-into-their-pre-archive-status-ec1497",
+        "title": "benchwork status counts fold archived tasks into their pre-archive status",
+        "description": "benchwork capabilities reports blocked 4, deferred 16, ready 26, triage 11, verified 180 with no archived key, while storypole ledger-reconcile reports archived 59, verified 123, ready 26, deferred 16, triage 9, blocked 4 and says index and ledger agree. Totals match at 237, and the deltas are exactly the archived population: 180 - 123 = 57 and 11 - 9 = 2, which sums to 59. So archived was made a state orthogonal to status in GB-179 and benchwork is still presenting the pre-archive status, which overstates verified work by 57 tasks. The capability and status views should surface archived separately, or at least exclude both the status count and the archived count from each other.",
+        "kind": "bug",
+        "status": "triage",
+        "priority": 3,
+        "scope": {
+          "repo": null,
+          "crate_name": "benchwork-core",
+          "module_path": null,
+          "target_files": [
+            "benchwork/crates/benchwork-core/src/capabilities.rs"
+          ],
+          "target_symbols": [],
+          "labels": []
+        },
+        "edges": [
+          {
+            "kind": "discovered_from",
+            "target_id": "6103aa7e-777b-4f44-94ce-4443c479b0c0"
+          }
+        ],
+        "decisions": [],
+        "acceptance_criteria": [],
+        "plan": null,
+        "active_claim": null,
+        "latest_handoff": null,
+        "verification_receipt": null,
+        "created_at_epoch_ms": 1793359009750,
+        "updated_at_epoch_ms": 1793359009750
+      },
+      "captured_by_agent": "user",
+      "discovered_from_task_id": "6103aa7e-777b-4f44-94ce-4443c479b0c0"
+    },
+    {
+      "event": "task_verified",
+      "task_id": "ec149753-065c-4370-861d-1e58cd206b9d",
+      "receipt": {
+        "verifier": "manual",
+        "command": "n/a",
+        "exit_code": 0,
+        "diagnostic_count": null,
+        "summary": "Fixed in benchwork ab438c7. Two places folded archived tasks into their pre-archive status: capabilities tallied every task by task.status, and the DAG built its topological order from all_tasks while filtering nodes. Measured before/after on this workspace: counts {blocked 4, deferred 25, inprogress 2, ready 16, triage 14, verified 222} -> {archived 61, blocked 4, deferred 25, inprogress 2, ready 16, triage 12, verified 163}, now identical to storypole ledger-reconcile; DAG 283 order keys against 222 nodes with 61 leaked -> 222 against 222, none leaked. Pending decisions on archived tasks are no longer counted. Tier 2 fmt/clippy clean, nextest 43/43.",
+        "verified_at_epoch_ms": 1793952212871,
+        "git_branch": "main",
+        "base_commit_sha": "ab438c73e48547d3ac1c9272404158134d3db630",
+        "head_commit_sha": "ab438c73e48547d3ac1c9272404158134d3db630",
+        "commit_shas": [
+          "ab438c73e48547d3ac1c9272404158134d3db630"
+        ],
+        "repo": null,
+        "chain_key": null
+      }
+    },
+    {
+      "event": "status_changed",
+      "task_id": "ec149753-065c-4370-861d-1e58cd206b9d",
+      "from": "verified",
+      "to": "archived",
+      "reason": "Archived out of active backlog",
+      "timestamp_ms": 1793953247088
+    },
+    {
+      "event": "task_archived",
+      "task_id": "ec149753-065c-4370-861d-1e58cd206b9d",
+      "status": "verified",
+      "timestamp_ms": 1794038018038
+    }
+  ]
+}
