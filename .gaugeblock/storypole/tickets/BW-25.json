@@ -1,0 +1,108 @@
+{
+  "events": [
+    {
+      "captured_by_agent": "cline",
+      "discovered_from_task_id": null,
+      "event": "deferred_item_captured",
+      "task": {
+        "acceptance_criteria": [],
+        "active_claim": null,
+        "created_at_epoch_ms": 1793252031766,
+        "decisions": [],
+        "description": "Elevate benchwork into the full autonomous lifecycle hub, after GB-169 makes worktrees safe. WorktreeAgentPool in benchwork-core dispatches 1..N background agent workers from Panel 2 (a Dispatch Worker action on any Ready task plus an auto-drain queue toggle over storypole next), each isolated in its own .gaugeblock/worktrees/<KEY>, streaming live progress, PlanStep checkboxes, gate output and diff previews into Panel 3 X-Ray and Benji. benchwork-cli remains the single daemon at :4242 so a future thin VS Code plugin attaches to it instead of reimplementing the loop. Blocked by GB-169: dispatching into worktrees before canonical .gaugeblock resolution exists would hand every worker its own ledger.",
+        "edges": [],
+        "id": "df1dbe6c-cb77-4da1-8db7-f91ae4659648",
+        "kind": "feature",
+        "latest_handoff": null,
+        "plan": null,
+        "priority": 3,
+        "scope": {
+          "crate_name": "benchwork-core",
+          "labels": [],
+          "module_path": null,
+          "repo": null,
+          "target_files": [
+            "benchwork/crates/benchwork-core/src,benchwork/crates/benchwork-cli/src"
+          ],
+          "target_symbols": []
+        },
+        "slug": "benchwork-worktreeagentpool-dispatch-and-observe-n-isolated-agent-workers-from-the-daemon-df1dbe",
+        "status": "deferred",
+        "ticket_key": "BW-25",
+        "title": "benchwork WorktreeAgentPool: dispatch and observe N isolated agent workers from the daemon",
+        "updated_at_epoch_ms": 1793252031766,
+        "verification_receipt": null
+      }
+    },
+    {
+      "edge": {
+        "kind": "blocked_by",
+        "target_id": "631868e3-21b8-4981-8045-62f5e77eafce",
+        "target_ticket_key": "GB-169"
+      },
+      "event": "edge_added",
+      "task_id": "df1dbe6c-cb77-4da1-8db7-f91ae4659648",
+      "timestamp_ms": 1793252049069
+    },
+    {
+      "event": "status_changed",
+      "from": "deferred",
+      "reason": "Blocked by unverified task GB-169",
+      "task_id": "df1dbe6c-cb77-4da1-8db7-f91ae4659648",
+      "timestamp_ms": 1793252049069,
+      "to": "blocked"
+    },
+    {
+      "edge": {
+        "kind": "related_to",
+        "target_id": "6c1accad-8fc7-4281-91de-5e417dc9ad7d",
+        "target_repo": "workspace",
+        "target_ticket_key": "GB-131"
+      },
+      "event": "edge_added",
+      "task_id": "df1dbe6c-cb77-4da1-8db7-f91ae4659648",
+      "timestamp_ms": 1793306997580
+    }
+  ],
+  "ticket": {
+    "acceptance_criteria": [],
+    "active_claim": null,
+    "created_at_epoch_ms": 1793252031766,
+    "decisions": [],
+    "description": "Elevate benchwork into the full autonomous lifecycle hub, after GB-169 makes worktrees safe. WorktreeAgentPool in benchwork-core dispatches 1..N background agent workers from Panel 2 (a Dispatch Worker action on any Ready task plus an auto-drain queue toggle over storypole next), each isolated in its own .gaugeblock/worktrees/<KEY>, streaming live progress, PlanStep checkboxes, gate output and diff previews into Panel 3 X-Ray and Benji. benchwork-cli remains the single daemon at :4242 so a future thin VS Code plugin attaches to it instead of reimplementing the loop. Blocked by GB-169: dispatching into worktrees before canonical .gaugeblock resolution exists would hand every worker its own ledger.",
+    "edges": [
+      {
+        "kind": "blocked_by",
+        "target_id": "631868e3-21b8-4981-8045-62f5e77eafce",
+        "target_ticket_key": "GB-169"
+      },
+      {
+        "kind": "related_to",
+        "target_id": "6c1accad-8fc7-4281-91de-5e417dc9ad7d",
+        "target_repo": "workspace",
+        "target_ticket_key": "GB-131"
+      }
+    ],
+    "id": "df1dbe6c-cb77-4da1-8db7-f91ae4659648",
+    "kind": "feature",
+    "latest_handoff": null,
+    "plan": null,
+    "priority": 3,
+    "scope": {
+      "crate_name": "benchwork-core",
+      "labels": [],
+      "module_path": null,
+      "repo": null,
+      "target_files": [
+        "benchwork/crates/benchwork-core/src,benchwork/crates/benchwork-cli/src"
+      ],
+      "target_symbols": []
+    },
+    "slug": "benchwork-worktreeagentpool-dispatch-and-observe-n-isolated-agent-workers-from-the-daemon-df1dbe",
+    "status": "blocked",
+    "ticket_key": "BW-25",
+    "title": "benchwork WorktreeAgentPool: dispatch and observe N isolated agent workers from the daemon",
+    "updated_at_epoch_ms": 1793306997580,
+    "verification_receipt": null
+  }
+}

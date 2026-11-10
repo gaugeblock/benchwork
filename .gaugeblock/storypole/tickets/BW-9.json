@@ -1,0 +1,130 @@
+{
+  "events": [
+    {
+      "event": "task_created",
+      "task": {
+        "acceptance_criteria": [],
+        "active_claim": null,
+        "created_at_epoch_ms": 1792901701514,
+        "decisions": [],
+        "description": "",
+        "edges": [],
+        "id": "edcee420-a02b-47cd-9597-fcd76b002187",
+        "kind": "feature",
+        "latest_handoff": null,
+        "plan": null,
+        "priority": 1,
+        "scope": {
+          "crate_name": "benchwork-core",
+          "labels": [],
+          "module_path": null,
+          "repo": null,
+          "target_files": [],
+          "target_symbols": []
+        },
+        "slug": "add-clinepass-provider-preset-secret-fallback-in-inference-tester-and-provider-filtering-in-model-configurator-edcee4",
+        "status": "ready",
+        "ticket_key": "BW-9",
+        "title": "Add ClinePass provider preset, secret fallback in inference tester, and provider filtering in model configurator",
+        "updated_at_epoch_ms": 1792901701514,
+        "verification_receipt": null
+      }
+    },
+    {
+      "claim": {
+        "agent_id": "antigravity",
+        "base_commit_sha": "eb334f2b5d74d398302ae78c62aa07056484564c",
+        "claimed_at_epoch_ms": 1792901704392,
+        "git_branch": "feat/gb-44-clinepass-and-inference-fix",
+        "lease_expires_at_epoch_ms": 1792905304392
+      },
+      "event": "task_claimed",
+      "task_id": "edcee420-a02b-47cd-9597-fcd76b002187"
+    },
+    {
+      "event": "status_changed",
+      "from": "ready",
+      "reason": "Claimed by antigravity",
+      "task_id": "edcee420-a02b-47cd-9597-fcd76b002187",
+      "timestamp_ms": 1792901704392,
+      "to": "in_progress"
+    },
+    {
+      "event": "task_verified",
+      "receipt": {
+        "base_commit_sha": "eb334f2b5d74d398302ae78c62aa07056484564c",
+        "chain_key": null,
+        "command": "n/a",
+        "commit_shas": [
+          "eb334f2b5d74d398302ae78c62aa07056484564c"
+        ],
+        "diagnostic_count": null,
+        "exit_code": 0,
+        "git_branch": "feat/gb-44-clinepass-and-inference-fix",
+        "head_commit_sha": "eb334f2b5d74d398302ae78c62aa07056484564c",
+        "repo": null,
+        "summary": "Manual verification confirmed",
+        "verified_at_epoch_ms": 1792902365364,
+        "verifier": "manual"
+      },
+      "task_id": "edcee420-a02b-47cd-9597-fcd76b002187"
+    },
+    {
+      "event": "status_changed",
+      "from": "verified",
+      "reason": "Archived out of active backlog",
+      "task_id": "edcee420-a02b-47cd-9597-fcd76b002187",
+      "timestamp_ms": 1793289335632,
+      "to": "archived"
+    },
+    {
+      "event": "task_archived",
+      "status": "verified",
+      "task_id": "edcee420-a02b-47cd-9597-fcd76b002187",
+      "timestamp_ms": 1794037959542
+    }
+  ],
+  "ticket": {
+    "acceptance_criteria": [],
+    "active_claim": null,
+    "archived_at_epoch_ms": 1794037959542,
+    "created_at_epoch_ms": 1792901701514,
+    "decisions": [],
+    "description": "",
+    "edges": [],
+    "id": "edcee420-a02b-47cd-9597-fcd76b002187",
+    "kind": "feature",
+    "latest_handoff": null,
+    "plan": null,
+    "priority": 1,
+    "scope": {
+      "crate_name": "benchwork-core",
+      "labels": [],
+      "module_path": null,
+      "repo": null,
+      "target_files": [],
+      "target_symbols": []
+    },
+    "slug": "add-clinepass-provider-preset-secret-fallback-in-inference-tester-and-provider-filtering-in-model-configurator-edcee4",
+    "status": "verified",
+    "ticket_key": "BW-9",
+    "title": "Add ClinePass provider preset, secret fallback in inference tester, and provider filtering in model configurator",
+    "updated_at_epoch_ms": 1794037959542,
+    "verification_receipt": {
+      "base_commit_sha": "eb334f2b5d74d398302ae78c62aa07056484564c",
+      "chain_key": null,
+      "command": "n/a",
+      "commit_shas": [
+        "eb334f2b5d74d398302ae78c62aa07056484564c"
+      ],
+      "diagnostic_count": null,
+      "exit_code": 0,
+      "git_branch": "feat/gb-44-clinepass-and-inference-fix",
+      "head_commit_sha": "eb334f2b5d74d398302ae78c62aa07056484564c",
+      "repo": null,
+      "summary": "Manual verification confirmed",
+      "verified_at_epoch_ms": 1792902365364,
+      "verifier": "manual"
+    }
+  }
+}

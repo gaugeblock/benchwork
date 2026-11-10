@@ -1,0 +1,242 @@
+{
+  "events": [
+    {
+      "event": "task_created",
+      "task": {
+        "acceptance_criteria": [
+          "Panel 1 is renamed to Docs & Specs with no embedded duplicate chat",
+          "Benji sidebar is resizable (320-720px) and dockable on left (default) or right",
+          "Real Sawhorse SSE streaming inference with Planner/Oracle/Universal role picker",
+          "Context injection expands @task: and @doc: tokens correctly"
+        ],
+        "active_claim": null,
+        "created_at_epoch_ms": 1793032144287,
+        "decisions": [],
+        "description": "Consolidate chat capabilities into a single unified resizable sidebar (Benji), remove duplicate chat from Panel 1 and rename to Docs & Specs, wire real Sawhorse streaming inference with dynamic role selection, and fix context injection.",
+        "edges": [],
+        "id": "c8a59734-b7c2-45fb-ad1e-f15bf240c5d2",
+        "kind": "epic",
+        "latest_handoff": null,
+        "plan": null,
+        "priority": 1,
+        "scope": {
+          "crate_name": "benchwork-cli",
+          "labels": [
+            "benchwork,chat,assistant,sawhorse,docs"
+          ],
+          "module_path": null,
+          "repo": "benchwork",
+          "target_files": [],
+          "target_symbols": []
+        },
+        "slug": "unified-ai-assistant-benji-dynamic-model-role-selector-docs-panel-realignment-c8a597",
+        "status": "ready",
+        "ticket_key": "BW-12",
+        "title": "Unified AI Assistant (Benji), Dynamic Model Role Selector & Docs Panel Realignment",
+        "updated_at_epoch_ms": 1793032144287,
+        "verification_receipt": null
+      }
+    },
+    {
+      "decision": {
+        "category": "architecture",
+        "chosen_option": null,
+        "decision_id": "7cbdc106-dc51-4e08-92a1-d2790c662f8f",
+        "parent_decision_id": null,
+        "proposed_options": [
+          "Unify into 'Benji' persistent sidebar; repurpose Panel 1 as Docs & Specs",
+          "Keep Panel 1 as chat and drop sidebar"
+        ],
+        "question": "How should the duplicated chat systems be unified and branded?",
+        "rationale": null,
+        "resolved_by": null,
+        "status": "pending",
+        "updated_at_epoch_ms": 1793032235572
+      },
+      "event": "decision_raised",
+      "task_id": "c8a59734-b7c2-45fb-ad1e-f15bf240c5d2",
+      "timestamp_ms": 1793032235572
+    },
+    {
+      "event": "status_changed",
+      "from": "ready",
+      "reason": "Pending architectural decision required",
+      "task_id": "c8a59734-b7c2-45fb-ad1e-f15bf240c5d2",
+      "timestamp_ms": 1793032235572,
+      "to": "blocked"
+    },
+    {
+      "appended_criterion": null,
+      "chosen_option": "Unify into 'Benji' persistent sidebar; repurpose Panel 1 as Docs & Specs",
+      "decision_id": "7cbdc106-dc51-4e08-92a1-d2790c662f8f",
+      "event": "decision_resolved",
+      "rationale": "Eliminates duplication, fixes mock streaming, renames away from Copilot and /grill-me to Benji, and repurposes Panel 1 for Docs & Specs.",
+      "resolved_by": "user",
+      "spawned_followup": null,
+      "task_id": "c8a59734-b7c2-45fb-ad1e-f15bf240c5d2",
+      "timestamp_ms": 1793032239785
+    },
+    {
+      "event": "status_changed",
+      "from": "blocked",
+      "reason": "All pending decisions and dependencies satisfied",
+      "task_id": "c8a59734-b7c2-45fb-ad1e-f15bf240c5d2",
+      "timestamp_ms": 1793032239785,
+      "to": "ready"
+    },
+    {
+      "event": "plan_updated",
+      "plan": {
+        "design_markdown": "# BW-12: Unified AI Assistant (Benji), Dynamic Model Role Selector & Docs Panel Realignment\n\n> **Status:** Ready  \n> **Target Scope:** `benchwork` (`benchwork-core`, `benchwork-cli`, `benchwork/web`)  \n> **Key Invariants:**  \n> 1. Hard 250 LOC rule on all `.rs`, `.ts`, and `.tsx` files.  \n> 2. Zero Copilot / /grill-me naming: complete deprecation of trademarked and skill names in favor of \"Benji\" assistant and \"Panel 1: Docs & Specs\".  \n> 3. Zero-mock SSE streaming: chat responses stream live deltas from `sawhorse` `RoleRouter`.  \n> 4. Left-docking default with smooth 320px–720px resize and right-dock toggle in settings.  \n\n---\n\n## 1. Executive Summary & Root Cause Analysis\n\n### Identified Drift & Code Duplication\n1. **Chat Duplication & Drift:**\n   * Panel 1 embedded `EngineerChat.tsx`, which bypassed the chat harness and context injection engine entirely, making a direct call to `api.pingModel('Planner', textToSend)`.\n   * Meanwhile, `App.tsx` mounted a persistent `CopilotRail.tsx` on the right side calling `/api/v1/chat/stream`.\n   * In the backend (`benchwork-cli/src/daemon/routes_chat.rs`), `/api/v1/chat/stream` was never wired to real Sawhorse inference—it returned a hardcoded mock delta string: `\"Context initialized for ... on panel ...\"`.\n2. **Naming & Trademark Conflicts:**\n   * \"Copilot\" is a Microsoft trademark.\n   * \"/grill-me\" is an Antigravity CLI skill rather than a standalone product name.\n3. **Broken Context Injection:**\n   * Selecting `@task:KEY` or `@doc:ARCHETYPE` pills was supposed to inject live markdown plans, document previews, and AST signatures into the prompt before passing to Sawhorse, but because the backend endpoint was mocked, injection never took effect.\n\n---\n\n## 2. Architecture & File Layout\n\n```text\nbenchwork/crates/\n├── benchwork-cli/src/daemon/\n│   └── routes_chat.rs        # Wire Sawhorse SSE streaming inference (<220 LOC)\n└── benchwork-core/src/\n    └── chat_harness/\n        └── context_injector.rs # Standalone dot_dir & multi-repo plan resolution (<180 LOC)\n\nbenchwork/web/src/\n├── App.tsx                   # Mount Benji sidebar (left/right configurable) (<220 LOC)\n├── components/\n│   ├── assistant/\n│   │   ├── BenjiSidebar.tsx  # Resizable, dockable assistant container (<240 LOC)\n│   │   ├── BenjiHeader.tsx   # Role selector, dock toggle, clear, close (<140 LOC)\n│   │   ├── BenjiMessages.tsx # Message bubble list with markdown & XML radar (<220 LOC)\n│   │   ├── BenjiInput.tsx    # Textarea with @ autocomplete popover (<180 LOC)\n│   │   └── useBenjiChat.ts   # SSE streaming hook with abort controller (<210 LOC)\n│   └── panels/\n│       ├── DocsSpecsPanel.tsx # Replaces GrillStudioPanel as pure Docs & Specs viewer (<220 LOC)\n│       └── GrillStudioPanel.tsx # DEPRECATED / REMOVED\n```\n\n---\n\n## 3. Subtasks & Breakdown\n\n* **BW-13 (Feature, P1):** Realign Panel 1 to Docs & Specs and remove duplicate EngineerChat.\n* **BW-14 (Feature, P1):** Resizable, left/right dockable Benji sidebar with dynamic Sawhorse role selector.\n* **BW-15 (Bug, P1):** Wire real Sawhorse SSE streaming inference and fix @task: and @doc: context injection.\n\n---\n\n## 4. Execution Plan & Verification Gates\n\n### Step 1: Subtask BW-13 (Docs & Specs Panel)\n* Remove `EngineerChat.tsx` and duplicate chat views.\n* Rebrand Panel 1 as `Docs & Specs` with tabs for repository architectural blueprints (`SPEC.md`, `PRODUCT.md`, `ARCHITECTURE.md`, `DESIGN.md`), decision matrices, and contract previews.\n* *Verification Gate:* `npm run build` in `benchwork/web`\n\n### Step 2: Subtask BW-14 (Benji Sidebar Component)\n* Implement `BenjiSidebar.tsx` with left-docking default, right-dock toggle, and 320px–720px drag-to-resize handle.\n* Add dynamic model role selector in header reading configured roles (`Planner`, `Oracle`, `Universal`) from Sawhorse.\n* *Verification Gate:* `npm run build` in `benchwork/web`\n\n### Step 3: Subtask BW-15 (Sawhorse Streaming SSE & Context Injection)\n* Wire `routes_chat.rs` in `benchwork-cli` to `sawhorse::RoleRouter::stream_role`.\n* Validate `@task:KEY` and `@doc:ARCHETYPE` context resolution in `context_injector.rs`.\n* *Verification Gate:* `cargo test -p benchwork-cli --lib daemon::routes_chat::tests`\n",
+        "plan_file_path": ".gaugeblock/storypole/plans/BW-12.md",
+        "steps": [
+          {
+            "completed": false,
+            "step_id": "1",
+            "target_files": [],
+            "title": "Docs & Specs Realignment",
+            "verification_gate": "npm run build in benchwork/web"
+          },
+          {
+            "completed": false,
+            "step_id": "2",
+            "target_files": [],
+            "title": "Benji Resizable Sidebar",
+            "verification_gate": "npm run build in benchwork/web"
+          },
+          {
+            "completed": false,
+            "step_id": "3",
+            "target_files": [],
+            "title": "Sawhorse Streaming & Context Injection",
+            "verification_gate": "cargo test -p benchwork-cli"
+          }
+        ],
+        "summary": "Unified AI Assistant (Benji), Dynamic Model Role Selector & Docs Panel Realignment",
+        "updated_at_epoch_ms": 1793032378499
+      },
+      "task_id": "c8a59734-b7c2-45fb-ad1e-f15bf240c5d2",
+      "timestamp_ms": 1793032378499
+    },
+    {
+      "event": "task_verified",
+      "receipt": {
+        "base_commit_sha": "1a8bde27739aa49bf31ac6ba9bd5b906c66af813",
+        "chain_key": null,
+        "command": "n/a",
+        "commit_shas": [
+          "1a8bde27739aa49bf31ac6ba9bd5b906c66af813"
+        ],
+        "diagnostic_count": null,
+        "exit_code": 0,
+        "git_branch": "feat/gb-62-benji-sidebar",
+        "head_commit_sha": "1a8bde27739aa49bf31ac6ba9bd5b906c66af813",
+        "repo": null,
+        "summary": "Completed epic: Unified AI Assistant (Benji), dynamic role selector, and Docs & Specs panel realignment",
+        "verified_at_epoch_ms": 1793039884166,
+        "verifier": "agent-antigravity"
+      },
+      "task_id": "c8a59734-b7c2-45fb-ad1e-f15bf240c5d2"
+    },
+    {
+      "event": "task_archived",
+      "status": "verified",
+      "task_id": "c8a59734-b7c2-45fb-ad1e-f15bf240c5d2",
+      "timestamp_ms": 1794037969451
+    }
+  ],
+  "ticket": {
+    "acceptance_criteria": [
+      "Panel 1 is renamed to Docs & Specs with no embedded duplicate chat",
+      "Benji sidebar is resizable (320-720px) and dockable on left (default) or right",
+      "Real Sawhorse SSE streaming inference with Planner/Oracle/Universal role picker",
+      "Context injection expands @task: and @doc: tokens correctly"
+    ],
+    "active_claim": null,
+    "archived_at_epoch_ms": 1794037969451,
+    "created_at_epoch_ms": 1793032144287,
+    "decisions": [
+      {
+        "category": "architecture",
+        "chosen_option": "Unify into 'Benji' persistent sidebar; repurpose Panel 1 as Docs & Specs",
+        "decision_id": "7cbdc106-dc51-4e08-92a1-d2790c662f8f",
+        "parent_decision_id": null,
+        "proposed_options": [
+          "Unify into 'Benji' persistent sidebar; repurpose Panel 1 as Docs & Specs",
+          "Keep Panel 1 as chat and drop sidebar"
+        ],
+        "question": "How should the duplicated chat systems be unified and branded?",
+        "rationale": "Eliminates duplication, fixes mock streaming, renames away from Copilot and /grill-me to Benji, and repurposes Panel 1 for Docs & Specs.",
+        "resolved_by": "user",
+        "status": "resolved",
+        "updated_at_epoch_ms": 1793032239785
+      }
+    ],
+    "description": "Consolidate chat capabilities into a single unified resizable sidebar (Benji), remove duplicate chat from Panel 1 and rename to Docs & Specs, wire real Sawhorse streaming inference with dynamic role selection, and fix context injection.",
+    "edges": [],
+    "id": "c8a59734-b7c2-45fb-ad1e-f15bf240c5d2",
+    "kind": "epic",
+    "latest_handoff": null,
+    "plan": {
+      "design_markdown": "# BW-12: Unified AI Assistant (Benji), Dynamic Model Role Selector & Docs Panel Realignment\n\n> **Status:** Ready  \n> **Target Scope:** `benchwork` (`benchwork-core`, `benchwork-cli`, `benchwork/web`)  \n> **Key Invariants:**  \n> 1. Hard 250 LOC rule on all `.rs`, `.ts`, and `.tsx` files.  \n> 2. Zero Copilot / /grill-me naming: complete deprecation of trademarked and skill names in favor of \"Benji\" assistant and \"Panel 1: Docs & Specs\".  \n> 3. Zero-mock SSE streaming: chat responses stream live deltas from `sawhorse` `RoleRouter`.  \n> 4. Left-docking default with smooth 320px–720px resize and right-dock toggle in settings.  \n\n---\n\n## 1. Executive Summary & Root Cause Analysis\n\n### Identified Drift & Code Duplication\n1. **Chat Duplication & Drift:**\n   * Panel 1 embedded `EngineerChat.tsx`, which bypassed the chat harness and context injection engine entirely, making a direct call to `api.pingModel('Planner', textToSend)`.\n   * Meanwhile, `App.tsx` mounted a persistent `CopilotRail.tsx` on the right side calling `/api/v1/chat/stream`.\n   * In the backend (`benchwork-cli/src/daemon/routes_chat.rs`), `/api/v1/chat/stream` was never wired to real Sawhorse inference—it returned a hardcoded mock delta string: `\"Context initialized for ... on panel ...\"`.\n2. **Naming & Trademark Conflicts:**\n   * \"Copilot\" is a Microsoft trademark.\n   * \"/grill-me\" is an Antigravity CLI skill rather than a standalone product name.\n3. **Broken Context Injection:**\n   * Selecting `@task:KEY` or `@doc:ARCHETYPE` pills was supposed to inject live markdown plans, document previews, and AST signatures into the prompt before passing to Sawhorse, but because the backend endpoint was mocked, injection never took effect.\n\n---\n\n## 2. Architecture & File Layout\n\n```text\nbenchwork/crates/\n├── benchwork-cli/src/daemon/\n│   └── routes_chat.rs        # Wire Sawhorse SSE streaming inference (<220 LOC)\n└── benchwork-core/src/\n    └── chat_harness/\n        └── context_injector.rs # Standalone dot_dir & multi-repo plan resolution (<180 LOC)\n\nbenchwork/web/src/\n├── App.tsx                   # Mount Benji sidebar (left/right configurable) (<220 LOC)\n├── components/\n│   ├── assistant/\n│   │   ├── BenjiSidebar.tsx  # Resizable, dockable assistant container (<240 LOC)\n│   │   ├── BenjiHeader.tsx   # Role selector, dock toggle, clear, close (<140 LOC)\n│   │   ├── BenjiMessages.tsx # Message bubble list with markdown & XML radar (<220 LOC)\n│   │   ├── BenjiInput.tsx    # Textarea with @ autocomplete popover (<180 LOC)\n│   │   └── useBenjiChat.ts   # SSE streaming hook with abort controller (<210 LOC)\n│   └── panels/\n│       ├── DocsSpecsPanel.tsx # Replaces GrillStudioPanel as pure Docs & Specs viewer (<220 LOC)\n│       └── GrillStudioPanel.tsx # DEPRECATED / REMOVED\n```\n\n---\n\n## 3. Subtasks & Breakdown\n\n* **BW-13 (Feature, P1):** Realign Panel 1 to Docs & Specs and remove duplicate EngineerChat.\n* **BW-14 (Feature, P1):** Resizable, left/right dockable Benji sidebar with dynamic Sawhorse role selector.\n* **BW-15 (Bug, P1):** Wire real Sawhorse SSE streaming inference and fix @task: and @doc: context injection.\n\n---\n\n## 4. Execution Plan & Verification Gates\n\n### Step 1: Subtask BW-13 (Docs & Specs Panel)\n* Remove `EngineerChat.tsx` and duplicate chat views.\n* Rebrand Panel 1 as `Docs & Specs` with tabs for repository architectural blueprints (`SPEC.md`, `PRODUCT.md`, `ARCHITECTURE.md`, `DESIGN.md`), decision matrices, and contract previews.\n* *Verification Gate:* `npm run build` in `benchwork/web`\n\n### Step 2: Subtask BW-14 (Benji Sidebar Component)\n* Implement `BenjiSidebar.tsx` with left-docking default, right-dock toggle, and 320px–720px drag-to-resize handle.\n* Add dynamic model role selector in header reading configured roles (`Planner`, `Oracle`, `Universal`) from Sawhorse.\n* *Verification Gate:* `npm run build` in `benchwork/web`\n\n### Step 3: Subtask BW-15 (Sawhorse Streaming SSE & Context Injection)\n* Wire `routes_chat.rs` in `benchwork-cli` to `sawhorse::RoleRouter::stream_role`.\n* Validate `@task:KEY` and `@doc:ARCHETYPE` context resolution in `context_injector.rs`.\n* *Verification Gate:* `cargo test -p benchwork-cli --lib daemon::routes_chat::tests`\n",
+      "plan_file_path": ".gaugeblock/storypole/plans/BW-12.md",
+      "steps": [
+        {
+          "completed": false,
+          "step_id": "1",
+          "target_files": [],
+          "title": "Docs & Specs Realignment",
+          "verification_gate": "npm run build in benchwork/web"
+        },
+        {
+          "completed": false,
+          "step_id": "2",
+          "target_files": [],
+          "title": "Benji Resizable Sidebar",
+          "verification_gate": "npm run build in benchwork/web"
+        },
+        {
+          "completed": false,
+          "step_id": "3",
+          "target_files": [],
+          "title": "Sawhorse Streaming & Context Injection",
+          "verification_gate": "cargo test -p benchwork-cli"
+        }
+      ],
+      "summary": "Unified AI Assistant (Benji), Dynamic Model Role Selector & Docs Panel Realignment",
+      "updated_at_epoch_ms": 1793032378499
+    },
+    "priority": 1,
+    "scope": {
+      "crate_name": "benchwork-cli",
+      "labels": [
+        "benchwork,chat,assistant,sawhorse,docs"
+      ],
+      "module_path": null,
+      "repo": "benchwork",
+      "target_files": [],
+      "target_symbols": []
+    },
+    "slug": "unified-ai-assistant-benji-dynamic-model-role-selector-docs-panel-realignment-c8a597",
+    "status": "verified",
+    "ticket_key": "BW-12",
+    "title": "Unified AI Assistant (Benji), Dynamic Model Role Selector & Docs Panel Realignment",
+    "updated_at_epoch_ms": 1794037969451,
+    "verification_receipt": {
+      "base_commit_sha": "1a8bde27739aa49bf31ac6ba9bd5b906c66af813",
+      "chain_key": null,
+      "command": "n/a",
+      "commit_shas": [
+        "1a8bde27739aa49bf31ac6ba9bd5b906c66af813"
+      ],
+      "diagnostic_count": null,
+      "exit_code": 0,
+      "git_branch": "feat/gb-62-benji-sidebar",
+      "head_commit_sha": "1a8bde27739aa49bf31ac6ba9bd5b906c66af813",
+      "repo": null,
+      "summary": "Completed epic: Unified AI Assistant (Benji), dynamic role selector, and Docs & Specs panel realignment",
+      "verified_at_epoch_ms": 1793039884166,
+      "verifier": "agent-antigravity"
+    }
+  }
+}

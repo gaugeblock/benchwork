@@ -1,0 +1,140 @@
+{
+  "events": [
+    {
+      "event": "task_created",
+      "task": {
+        "acceptance_criteria": [],
+        "active_claim": null,
+        "created_at_epoch_ms": 1793149859097,
+        "decisions": [],
+        "description": "Document CAD console UI (React/Vite/Tailwind), Benji autonomous AI engineer, multi-repo workspace aggregation, Playwright E2E testing, ADRs, and domain AGENTS.md laws",
+        "edges": [],
+        "id": "d5ea713d-c8ec-4951-8044-588ab8e35575",
+        "kind": "feature",
+        "latest_handoff": null,
+        "plan": null,
+        "priority": 1,
+        "scope": {
+          "crate_name": "benchwork-cli",
+          "labels": [],
+          "module_path": null,
+          "repo": "benchwork",
+          "target_files": [],
+          "target_symbols": []
+        },
+        "slug": "elevate-benchwork-documentation-across-all-9-canonical-documents-d5ea71",
+        "status": "ready",
+        "ticket_key": "BW-24",
+        "title": "Elevate benchwork documentation across all 9 canonical documents",
+        "updated_at_epoch_ms": 1793149859097,
+        "verification_receipt": null
+      }
+    },
+    {
+      "edge": {
+        "kind": "parent_epic",
+        "target_id": "150580f0-de24-4825-985d-b5565297c041",
+        "target_repo": "workspace",
+        "target_ticket_key": "GB-114"
+      },
+      "event": "edge_added",
+      "task_id": "d5ea713d-c8ec-4951-8044-588ab8e35575",
+      "timestamp_ms": 1793149862021
+    },
+    {
+      "claim": {
+        "agent_id": "antigravity-agent",
+        "base_commit_sha": "a71e02c00a58fa5229fe406e5667db9e793b2981",
+        "claimed_at_epoch_ms": 1793160612697,
+        "git_branch": "feat/benchwork-docs-elevation",
+        "lease_expires_at_epoch_ms": 1793164212697
+      },
+      "event": "task_claimed",
+      "task_id": "d5ea713d-c8ec-4951-8044-588ab8e35575"
+    },
+    {
+      "event": "status_changed",
+      "from": "ready",
+      "reason": "Claimed by antigravity-agent",
+      "task_id": "d5ea713d-c8ec-4951-8044-588ab8e35575",
+      "timestamp_ms": 1793160612697,
+      "to": "in_progress"
+    },
+    {
+      "event": "task_verified",
+      "receipt": {
+        "base_commit_sha": "a71e02c00a58fa5229fe406e5667db9e793b2981",
+        "chain_key": null,
+        "command": "n/a",
+        "commit_shas": [
+          "a71e02c00a58fa5229fe406e5667db9e793b2981"
+        ],
+        "diagnostic_count": null,
+        "exit_code": 0,
+        "git_branch": "feat/benchwork-docs-elevation",
+        "head_commit_sha": "a71e02c00a58fa5229fe406e5667db9e793b2981",
+        "repo": null,
+        "summary": "Manual verification confirmed",
+        "verified_at_epoch_ms": 1793160853508,
+        "verifier": "manual"
+      },
+      "task_id": "d5ea713d-c8ec-4951-8044-588ab8e35575"
+    },
+    {
+      "event": "task_archived",
+      "status": "verified",
+      "task_id": "d5ea713d-c8ec-4951-8044-588ab8e35575",
+      "timestamp_ms": 1794037979110
+    }
+  ],
+  "ticket": {
+    "acceptance_criteria": [],
+    "active_claim": null,
+    "archived_at_epoch_ms": 1794037979110,
+    "created_at_epoch_ms": 1793149859097,
+    "decisions": [],
+    "description": "Document CAD console UI (React/Vite/Tailwind), Benji autonomous AI engineer, multi-repo workspace aggregation, Playwright E2E testing, ADRs, and domain AGENTS.md laws",
+    "edges": [
+      {
+        "kind": "parent_epic",
+        "target_id": "150580f0-de24-4825-985d-b5565297c041",
+        "target_repo": "workspace",
+        "target_ticket_key": "GB-114"
+      }
+    ],
+    "id": "d5ea713d-c8ec-4951-8044-588ab8e35575",
+    "kind": "feature",
+    "latest_handoff": null,
+    "plan": null,
+    "priority": 1,
+    "scope": {
+      "crate_name": "benchwork-cli",
+      "labels": [],
+      "module_path": null,
+      "repo": "benchwork",
+      "target_files": [],
+      "target_symbols": []
+    },
+    "slug": "elevate-benchwork-documentation-across-all-9-canonical-documents-d5ea71",
+    "status": "verified",
+    "ticket_key": "BW-24",
+    "title": "Elevate benchwork documentation across all 9 canonical documents",
+    "updated_at_epoch_ms": 1794037979110,
+    "verification_receipt": {
+      "base_commit_sha": "a71e02c00a58fa5229fe406e5667db9e793b2981",
+      "chain_key": null,
+      "command": "n/a",
+      "commit_shas": [
+        "a71e02c00a58fa5229fe406e5667db9e793b2981"
+      ],
+      "diagnostic_count": null,
+      "exit_code": 0,
+      "git_branch": "feat/benchwork-docs-elevation",
+      "head_commit_sha": "a71e02c00a58fa5229fe406e5667db9e793b2981",
+      "repo": null,
+      "summary": "Manual verification confirmed",
+      "verified_at_epoch_ms": 1793160853508,
+      "verifier": "manual"
+    }
+  }
+}

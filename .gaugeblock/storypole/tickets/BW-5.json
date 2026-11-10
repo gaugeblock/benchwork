@@ -1,0 +1,134 @@
+{
+  "events": [
+    {
+      "event": "task_created",
+      "task": {
+        "acceptance_criteria": [],
+        "active_claim": null,
+        "created_at_epoch_ms": 1792896163131,
+        "decisions": [],
+        "description": "",
+        "edges": [],
+        "id": "3864d921-32e4-4edd-be54-3a63ad287d3c",
+        "kind": "bug",
+        "latest_handoff": null,
+        "plan": null,
+        "priority": 1,
+        "scope": {
+          "crate_name": "benchwork-core",
+          "labels": [
+            "benchwork,sawhorse,auth,credentials"
+          ],
+          "module_path": null,
+          "repo": null,
+          "target_files": [],
+          "target_symbols": []
+        },
+        "slug": "fix-api-key-propagation-inline-credential-testing-and-gaugeblock-env-persistence-for-openai-compatible-providers-in-benchwork-3864d9",
+        "status": "ready",
+        "ticket_key": "BW-5",
+        "title": "Fix API key propagation, inline credential testing, and .gaugeblock/.env persistence for OpenAI-compatible providers in Benchwork",
+        "updated_at_epoch_ms": 1792896163131,
+        "verification_receipt": null
+      }
+    },
+    {
+      "claim": {
+        "agent_id": "antigravity",
+        "base_commit_sha": "78dffef9f20c560a1a563fcd3f1ec7be5b20eabe",
+        "claimed_at_epoch_ms": 1792896191490,
+        "git_branch": "fix/gb-39-api-key-propagation",
+        "lease_expires_at_epoch_ms": 1792899791490
+      },
+      "event": "task_claimed",
+      "task_id": "3864d921-32e4-4edd-be54-3a63ad287d3c"
+    },
+    {
+      "event": "status_changed",
+      "from": "ready",
+      "reason": "Claimed by antigravity",
+      "task_id": "3864d921-32e4-4edd-be54-3a63ad287d3c",
+      "timestamp_ms": 1792896191490,
+      "to": "in_progress"
+    },
+    {
+      "event": "task_verified",
+      "receipt": {
+        "base_commit_sha": "78dffef9f20c560a1a563fcd3f1ec7be5b20eabe",
+        "chain_key": null,
+        "command": "n/a",
+        "commit_shas": [
+          "78dffef9f20c560a1a563fcd3f1ec7be5b20eabe"
+        ],
+        "diagnostic_count": null,
+        "exit_code": 0,
+        "git_branch": "fix/gb-39-api-key-propagation",
+        "head_commit_sha": "78dffef9f20c560a1a563fcd3f1ec7be5b20eabe",
+        "repo": null,
+        "summary": "Manual verification confirmed",
+        "verified_at_epoch_ms": 1792896731076,
+        "verifier": "manual"
+      },
+      "task_id": "3864d921-32e4-4edd-be54-3a63ad287d3c"
+    },
+    {
+      "event": "status_changed",
+      "from": "verified",
+      "reason": "Archived out of active backlog",
+      "task_id": "3864d921-32e4-4edd-be54-3a63ad287d3c",
+      "timestamp_ms": 1793289280158,
+      "to": "archived"
+    },
+    {
+      "event": "task_archived",
+      "status": "verified",
+      "task_id": "3864d921-32e4-4edd-be54-3a63ad287d3c",
+      "timestamp_ms": 1794037958293
+    }
+  ],
+  "ticket": {
+    "acceptance_criteria": [],
+    "active_claim": null,
+    "archived_at_epoch_ms": 1794037958293,
+    "created_at_epoch_ms": 1792896163131,
+    "decisions": [],
+    "description": "",
+    "edges": [],
+    "id": "3864d921-32e4-4edd-be54-3a63ad287d3c",
+    "kind": "bug",
+    "latest_handoff": null,
+    "plan": null,
+    "priority": 1,
+    "scope": {
+      "crate_name": "benchwork-core",
+      "labels": [
+        "benchwork,sawhorse,auth,credentials"
+      ],
+      "module_path": null,
+      "repo": null,
+      "target_files": [],
+      "target_symbols": []
+    },
+    "slug": "fix-api-key-propagation-inline-credential-testing-and-gaugeblock-env-persistence-for-openai-compatible-providers-in-benchwork-3864d9",
+    "status": "verified",
+    "ticket_key": "BW-5",
+    "title": "Fix API key propagation, inline credential testing, and .gaugeblock/.env persistence for OpenAI-compatible providers in Benchwork",
+    "updated_at_epoch_ms": 1794037958293,
+    "verification_receipt": {
+      "base_commit_sha": "78dffef9f20c560a1a563fcd3f1ec7be5b20eabe",
+      "chain_key": null,
+      "command": "n/a",
+      "commit_shas": [
+        "78dffef9f20c560a1a563fcd3f1ec7be5b20eabe"
+      ],
+      "diagnostic_count": null,
+      "exit_code": 0,
+      "git_branch": "fix/gb-39-api-key-propagation",
+      "head_commit_sha": "78dffef9f20c560a1a563fcd3f1ec7be5b20eabe",
+      "repo": null,
+      "summary": "Manual verification confirmed",
+      "verified_at_epoch_ms": 1792896731076,
+      "verifier": "manual"
+    }
+  }
+}

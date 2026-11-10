@@ -1,0 +1,134 @@
+{
+  "events": [
+    {
+      "event": "task_created",
+      "task": {
+        "acceptance_criteria": [],
+        "active_claim": null,
+        "created_at_epoch_ms": 1792896166383,
+        "decisions": [],
+        "description": "",
+        "edges": [],
+        "id": "49098a11-8fd4-42fe-94ed-c97a13a26ab2",
+        "kind": "feature",
+        "latest_handoff": null,
+        "plan": null,
+        "priority": 2,
+        "scope": {
+          "crate_name": "benchwork-cli",
+          "labels": [
+            "benchwork,chat,ui,conversations,ux"
+          ],
+          "module_path": null,
+          "repo": null,
+          "target_files": [],
+          "target_symbols": []
+        },
+        "slug": "persistent-multi-conversation-ai-engineer-chat-studio-with-conversation-management-and-unmount-resilience-in-benchwork-49098a",
+        "status": "ready",
+        "ticket_key": "BW-6",
+        "title": "Persistent multi-conversation AI Engineer Chat Studio with conversation management and unmount resilience in Benchwork",
+        "updated_at_epoch_ms": 1792896166383,
+        "verification_receipt": null
+      }
+    },
+    {
+      "claim": {
+        "agent_id": "antigravity",
+        "base_commit_sha": "b1a0008d754d29b3fae85b69c399e047c93cf2a3",
+        "claimed_at_epoch_ms": 1792896760482,
+        "git_branch": "feat/gb-40-persistent-chat-studio",
+        "lease_expires_at_epoch_ms": 1792900360482
+      },
+      "event": "task_claimed",
+      "task_id": "49098a11-8fd4-42fe-94ed-c97a13a26ab2"
+    },
+    {
+      "event": "status_changed",
+      "from": "ready",
+      "reason": "Claimed by antigravity",
+      "task_id": "49098a11-8fd4-42fe-94ed-c97a13a26ab2",
+      "timestamp_ms": 1792896760482,
+      "to": "in_progress"
+    },
+    {
+      "event": "task_verified",
+      "receipt": {
+        "base_commit_sha": "b1a0008d754d29b3fae85b69c399e047c93cf2a3",
+        "chain_key": null,
+        "command": "n/a",
+        "commit_shas": [
+          "b1a0008d754d29b3fae85b69c399e047c93cf2a3"
+        ],
+        "diagnostic_count": null,
+        "exit_code": 0,
+        "git_branch": "feat/gb-40-persistent-chat-studio",
+        "head_commit_sha": "b1a0008d754d29b3fae85b69c399e047c93cf2a3",
+        "repo": null,
+        "summary": "Manual verification confirmed",
+        "verified_at_epoch_ms": 1792896889549,
+        "verifier": "manual"
+      },
+      "task_id": "49098a11-8fd4-42fe-94ed-c97a13a26ab2"
+    },
+    {
+      "event": "status_changed",
+      "from": "verified",
+      "reason": "Archived out of active backlog",
+      "task_id": "49098a11-8fd4-42fe-94ed-c97a13a26ab2",
+      "timestamp_ms": 1793289288737,
+      "to": "archived"
+    },
+    {
+      "event": "task_archived",
+      "status": "verified",
+      "task_id": "49098a11-8fd4-42fe-94ed-c97a13a26ab2",
+      "timestamp_ms": 1794037990527
+    }
+  ],
+  "ticket": {
+    "acceptance_criteria": [],
+    "active_claim": null,
+    "archived_at_epoch_ms": 1794037990527,
+    "created_at_epoch_ms": 1792896166383,
+    "decisions": [],
+    "description": "",
+    "edges": [],
+    "id": "49098a11-8fd4-42fe-94ed-c97a13a26ab2",
+    "kind": "feature",
+    "latest_handoff": null,
+    "plan": null,
+    "priority": 2,
+    "scope": {
+      "crate_name": "benchwork-cli",
+      "labels": [
+        "benchwork,chat,ui,conversations,ux"
+      ],
+      "module_path": null,
+      "repo": null,
+      "target_files": [],
+      "target_symbols": []
+    },
+    "slug": "persistent-multi-conversation-ai-engineer-chat-studio-with-conversation-management-and-unmount-resilience-in-benchwork-49098a",
+    "status": "verified",
+    "ticket_key": "BW-6",
+    "title": "Persistent multi-conversation AI Engineer Chat Studio with conversation management and unmount resilience in Benchwork",
+    "updated_at_epoch_ms": 1794037990527,
+    "verification_receipt": {
+      "base_commit_sha": "b1a0008d754d29b3fae85b69c399e047c93cf2a3",
+      "chain_key": null,
+      "command": "n/a",
+      "commit_shas": [
+        "b1a0008d754d29b3fae85b69c399e047c93cf2a3"
+      ],
+      "diagnostic_count": null,
+      "exit_code": 0,
+      "git_branch": "feat/gb-40-persistent-chat-studio",
+      "head_commit_sha": "b1a0008d754d29b3fae85b69c399e047c93cf2a3",
+      "repo": null,
+      "summary": "Manual verification confirmed",
+      "verified_at_epoch_ms": 1792896889549,
+      "verifier": "manual"
+    }
+  }
+}

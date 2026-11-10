@@ -1,0 +1,67 @@
+{
+  "events": [
+    {
+      "captured_by_agent": "user",
+      "discovered_from_task_id": null,
+      "event": "deferred_item_captured",
+      "task": {
+        "acceptance_criteria": [],
+        "active_claim": null,
+        "created_at_epoch_ms": 1793126158828,
+        "decisions": [],
+        "description": "Polyglot contract drift detected by miter contracts across Rust models and TypeScript interfaces for AnonymizedSynthesisTrace, DadoPattern, TypedHole, TaskEdge, ChatMessage, and RoleOverrideConfig.",
+        "edges": [],
+        "id": "2e7cc48c-fa51-4574-a340-824e15311f59",
+        "kind": "bug",
+        "latest_handoff": null,
+        "plan": null,
+        "priority": 3,
+        "scope": {
+          "crate_name": "benchwork-cli",
+          "labels": [],
+          "module_path": null,
+          "repo": "benchwork",
+          "target_files": [
+            "benchwork/web/src/types.ts,benchwork/web/src/types/hub.ts,benchwork/web/src/chat/types.ts"
+          ],
+          "target_symbols": []
+        },
+        "slug": "harmonize-typescript-wire-contracts-with-rust-domain-models-in-benchwork-2e7cc4",
+        "status": "triage",
+        "ticket_key": "BW-23",
+        "title": "Harmonize TypeScript wire contracts with Rust domain models in benchwork",
+        "updated_at_epoch_ms": 1793126158828,
+        "verification_receipt": null
+      }
+    }
+  ],
+  "ticket": {
+    "acceptance_criteria": [],
+    "active_claim": null,
+    "created_at_epoch_ms": 1793126158828,
+    "decisions": [],
+    "description": "Polyglot contract drift detected by miter contracts across Rust models and TypeScript interfaces for AnonymizedSynthesisTrace, DadoPattern, TypedHole, TaskEdge, ChatMessage, and RoleOverrideConfig.",
+    "edges": [],
+    "id": "2e7cc48c-fa51-4574-a340-824e15311f59",
+    "kind": "bug",
+    "latest_handoff": null,
+    "plan": null,
+    "priority": 3,
+    "scope": {
+      "crate_name": "benchwork-cli",
+      "labels": [],
+      "module_path": null,
+      "repo": "benchwork",
+      "target_files": [
+        "benchwork/web/src/types.ts,benchwork/web/src/types/hub.ts,benchwork/web/src/chat/types.ts"
+      ],
+      "target_symbols": []
+    },
+    "slug": "harmonize-typescript-wire-contracts-with-rust-domain-models-in-benchwork-2e7cc4",
+    "status": "triage",
+    "ticket_key": "BW-23",
+    "title": "Harmonize TypeScript wire contracts with Rust domain models in benchwork",
+    "updated_at_epoch_ms": 1793126158828,
+    "verification_receipt": null
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "events": [
+    {
+      "event": "task_created",
+      "task": {
+        "acceptance_criteria": [
+          "Tier 4 cross-repo verification passes",
+          "Manifest version bumped to 0.1.0-beta.4",
+          "Annotated git tag created"
+        ],
+        "active_claim": null,
+        "created_at_epoch_ms": 1792995611164,
+        "decisions": [],
+        "description": "Automated release ticket for benchwork v0.1.0-beta.4.\n\nRationale: New feature detected; incrementing beta pre-release\nShipped Tasks: GB-46, GB-45, BW-9, BW-8, BW-7",
+        "edges": [],
+        "id": "4e644947-1f08-46ef-ba25-ce1121dcc218",
+        "kind": "refactor",
+        "latest_handoff": null,
+        "plan": null,
+        "priority": 1,
+        "scope": {
+          "crate_name": "benchwork-core",
+          "labels": [
+            "release"
+          ],
+          "module_path": null,
+          "repo": "benchwork",
+          "target_files": [],
+          "target_symbols": []
+        },
+        "slug": "chore-release-release-benchwork-v0-1-0-beta-4-4e6449",
+        "status": "ready",
+        "ticket_key": "BW-10",
+        "title": "chore(release): release benchwork v0.1.0-beta.4",
+        "updated_at_epoch_ms": 1792995611164,
+        "verification_receipt": null
+      }
+    },
+    {
+      "event": "task_verified",
+      "receipt": {
+        "base_commit_sha": null,
+        "chain_key": null,
+        "command": "outfeed apply",
+        "commit_shas": [],
+        "diagnostic_count": 0,
+        "exit_code": 0,
+        "git_branch": null,
+        "head_commit_sha": null,
+        "repo": null,
+        "summary": "Release v0.1.0-beta.4 successfully certified and tagged",
+        "verified_at_epoch_ms": 1792995611186,
+        "verifier": "outfeed"
+      },
+      "task_id": "4e644947-1f08-46ef-ba25-ce1121dcc218"
+    },
+    {
+      "event": "task_archived",
+      "status": "verified",
+      "task_id": "4e644947-1f08-46ef-ba25-ce1121dcc218",
+      "timestamp_ms": 1794037964937
+    }
+  ],
+  "ticket": {
+    "acceptance_criteria": [
+      "Tier 4 cross-repo verification passes",
+      "Manifest version bumped to 0.1.0-beta.4",
+      "Annotated git tag created"
+    ],
+    "active_claim": null,
+    "archived_at_epoch_ms": 1794037964937,
+    "created_at_epoch_ms": 1792995611164,
+    "decisions": [],
+    "description": "Automated release ticket for benchwork v0.1.0-beta.4.\n\nRationale: New feature detected; incrementing beta pre-release\nShipped Tasks: GB-46, GB-45, BW-9, BW-8, BW-7",
+    "edges": [],
+    "id": "4e644947-1f08-46ef-ba25-ce1121dcc218",
+    "kind": "refactor",
+    "latest_handoff": null,
+    "plan": null,
+    "priority": 1,
+    "scope": {
+      "crate_name": "benchwork-core",
+      "labels": [
+        "release"
+      ],
+      "module_path": null,
+      "repo": "benchwork",
+      "target_files": [],
+      "target_symbols": []
+    },
+    "slug": "chore-release-release-benchwork-v0-1-0-beta-4-4e6449",
+    "status": "verified",
+    "ticket_key": "BW-10",
+    "title": "chore(release): release benchwork v0.1.0-beta.4",
+    "updated_at_epoch_ms": 1794037964937,
+    "verification_receipt": {
+      "base_commit_sha": null,
+      "chain_key": null,
+      "command": "outfeed apply",
+      "commit_shas": [],
+      "diagnostic_count": 0,
+      "exit_code": 0,
+      "git_branch": null,
+      "head_commit_sha": null,
+      "repo": null,
+      "summary": "Release v0.1.0-beta.4 successfully certified and tagged",
+      "verified_at_epoch_ms": 1792995611186,
+      "verifier": "outfeed"
+    }
+  }
+}

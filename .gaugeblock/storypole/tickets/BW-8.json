@@ -1,0 +1,130 @@
+{
+  "events": [
+    {
+      "event": "task_created",
+      "task": {
+        "acceptance_criteria": [],
+        "active_claim": null,
+        "created_at_epoch_ms": 1792900307987,
+        "decisions": [],
+        "description": "",
+        "edges": [],
+        "id": "1e225d94-da65-417d-909f-58b090318b02",
+        "kind": "bug",
+        "latest_handoff": null,
+        "plan": null,
+        "priority": 1,
+        "scope": {
+          "crate_name": "benchwork-core",
+          "labels": [],
+          "module_path": null,
+          "repo": null,
+          "target_files": [],
+          "target_symbols": []
+        },
+        "slug": "fix-panel-1-react-hook-crash-and-synchronize-benchwork-config-with-gaugeblock-config-toml-and-env-1e225d",
+        "status": "ready",
+        "ticket_key": "BW-8",
+        "title": "Fix Panel 1 React hook crash and synchronize Benchwork config with .gaugeblock/config.toml and .env",
+        "updated_at_epoch_ms": 1792900307987,
+        "verification_receipt": null
+      }
+    },
+    {
+      "claim": {
+        "agent_id": "antigravity",
+        "base_commit_sha": "6d8d1e50172928e1e02907f07b318caa63a2d258",
+        "claimed_at_epoch_ms": 1792900311196,
+        "git_branch": "fix/gb-43-panel1-crash-and-config-sync",
+        "lease_expires_at_epoch_ms": 1792903911196
+      },
+      "event": "task_claimed",
+      "task_id": "1e225d94-da65-417d-909f-58b090318b02"
+    },
+    {
+      "event": "status_changed",
+      "from": "ready",
+      "reason": "Claimed by antigravity",
+      "task_id": "1e225d94-da65-417d-909f-58b090318b02",
+      "timestamp_ms": 1792900311196,
+      "to": "in_progress"
+    },
+    {
+      "event": "task_verified",
+      "receipt": {
+        "base_commit_sha": "6d8d1e50172928e1e02907f07b318caa63a2d258",
+        "chain_key": null,
+        "command": "n/a",
+        "commit_shas": [
+          "6d8d1e50172928e1e02907f07b318caa63a2d258"
+        ],
+        "diagnostic_count": null,
+        "exit_code": 0,
+        "git_branch": "fix/gb-43-panel1-crash-and-config-sync",
+        "head_commit_sha": "6d8d1e50172928e1e02907f07b318caa63a2d258",
+        "repo": null,
+        "summary": "Manual verification confirmed",
+        "verified_at_epoch_ms": 1792900574459,
+        "verifier": "manual"
+      },
+      "task_id": "1e225d94-da65-417d-909f-58b090318b02"
+    },
+    {
+      "event": "status_changed",
+      "from": "verified",
+      "reason": "Archived out of active backlog",
+      "task_id": "1e225d94-da65-417d-909f-58b090318b02",
+      "timestamp_ms": 1793289278193,
+      "to": "archived"
+    },
+    {
+      "event": "task_archived",
+      "status": "verified",
+      "task_id": "1e225d94-da65-417d-909f-58b090318b02",
+      "timestamp_ms": 1794037959191
+    }
+  ],
+  "ticket": {
+    "acceptance_criteria": [],
+    "active_claim": null,
+    "archived_at_epoch_ms": 1794037959191,
+    "created_at_epoch_ms": 1792900307987,
+    "decisions": [],
+    "description": "",
+    "edges": [],
+    "id": "1e225d94-da65-417d-909f-58b090318b02",
+    "kind": "bug",
+    "latest_handoff": null,
+    "plan": null,
+    "priority": 1,
+    "scope": {
+      "crate_name": "benchwork-core",
+      "labels": [],
+      "module_path": null,
+      "repo": null,
+      "target_files": [],
+      "target_symbols": []
+    },
+    "slug": "fix-panel-1-react-hook-crash-and-synchronize-benchwork-config-with-gaugeblock-config-toml-and-env-1e225d",
+    "status": "verified",
+    "ticket_key": "BW-8",
+    "title": "Fix Panel 1 React hook crash and synchronize Benchwork config with .gaugeblock/config.toml and .env",
+    "updated_at_epoch_ms": 1794037959191,
+    "verification_receipt": {
+      "base_commit_sha": "6d8d1e50172928e1e02907f07b318caa63a2d258",
+      "chain_key": null,
+      "command": "n/a",
+      "commit_shas": [
+        "6d8d1e50172928e1e02907f07b318caa63a2d258"
+      ],
+      "diagnostic_count": null,
+      "exit_code": 0,
+      "git_branch": "fix/gb-43-panel1-crash-and-config-sync",
+      "head_commit_sha": "6d8d1e50172928e1e02907f07b318caa63a2d258",
+      "repo": null,
+      "summary": "Manual verification confirmed",
+      "verified_at_epoch_ms": 1792900574459,
+      "verifier": "manual"
+    }
+  }
+}

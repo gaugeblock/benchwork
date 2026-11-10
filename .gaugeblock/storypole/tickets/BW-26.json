@@ -1,0 +1,151 @@
+{
+  "events": [
+    {
+      "captured_by_agent": "user",
+      "discovered_from_task_id": null,
+      "event": "deferred_item_captured",
+      "task": {
+        "acceptance_criteria": [],
+        "active_claim": null,
+        "created_at_epoch_ms": 1793289672559,
+        "decisions": [],
+        "description": "Bulk archiving verified tasks in benchwork stops after fifty (150 tasks to 101) and re-running does not advance. Investigation so far rules out the backend loop: bulk_archive_tasks_service simply iterates the ids it is given, has no cap, and archive_task is idempotent and has no status guard - it returns Ok immediately when a task is already Archived. That combination explains the stall exactly: re-selecting the same already-archived batch yields zero progress that reports as success. No LIMIT or take() exists in the DAG query or the bulk handler, so the fifty most likely originates in the UI selection or fetch layer - next diagnostic is to log the request body length and compare it with the number of verified tasks the DAG response contains. Two separate defects sit alongside it: BulkArchiveResult already carries an errors vector that nothing surfaces in the UI, and there is no progress indication for a long batch. Proposed fix: archive by filter server-side (archive all Verified) instead of by id list, stream progress counts, surface the errors vector, and guard archive_task to Completed/Verified/Closed so a stray id cannot silently no-op.",
+        "edges": [],
+        "id": "9438c3cd-8d37-4591-a20e-4cf9ce873aac",
+        "kind": "bug",
+        "latest_handoff": null,
+        "plan": null,
+        "priority": 3,
+        "scope": {
+          "crate_name": "benchwork-core",
+          "labels": [],
+          "module_path": null,
+          "repo": null,
+          "target_files": [
+            "benchwork/crates/benchwork-core/src/dag_service/mutations.rs,benchwork/crates/benchwork-cli/src/daemon/routes_dag/handlers.rs,benchwork/web/src/panels/DagBoard/DagBoardPanel.tsx"
+          ],
+          "target_symbols": [
+            "benchwork_core::dag_service::bulk_archive_tasks_service"
+          ]
+        },
+        "slug": "benchwork-bulk-archive-stalls-at-fifty-tasks-with-no-progress-or-error-surfacing-9438c3",
+        "status": "triage",
+        "ticket_key": "BW-26",
+        "title": "benchwork bulk archive stalls at fifty tasks with no progress or error surfacing",
+        "updated_at_epoch_ms": 1793289672559,
+        "verification_receipt": null
+      }
+    },
+    {
+      "acceptance_criteria": null,
+      "description": "Evidence gathered after the first investigation, which had the wrong emphasis. Archiving IS writing: counting Archived transitions per ledger gives 35 in .gaugeblock/storypole/ledger.jsonl and 2-4 in every member ledger (batten 2, benchwork 3, chalkline 2, dado 2, joiner 2, miter 3, outfeed 4, rabbet 2, sawhorse 3, storypole 3), because with_governing_store routes each task to its governing store - member ledger when the task is repo scoped, root ledger otherwise. Meanwhile storypole list still reports 116 Verified, which is the unified SQLite index, not the ledgers. So the operation is not failing to archive; the index does not reflect member-ledger archives, and there is no way to ask it to: storypole workspace offers only list, init and distribute, with no sync. Contributing factors to confirm: StorypoleWorkspaceStore::open calls sync_all_members, which swallows unreadable ledgers inside if-let-Ok and therefore under-reports rather than failing, and the replay-ordering defect recorded in GB-79 concatenates root events before member events instead of merging by timestamp - so a member-scoped archive can be overwritten in the index by an older root snapshot. Second defect stands independently: BulkArchiveResult.errors is never surfaced and there is no progress indicator, so a quiet partial result looks like success. Proposed order: fix the index reflect problem (sync command plus GB-79 ordering), then archive-by-filter with streamed progress, then guard archive_task to Completed/Verified/Closed. Diagnostic to keep: compare the per-ledger Archived count against the status histogram from storypole list.",
+      "event": "task_updated",
+      "priority": null,
+      "scope": null,
+      "task_id": "9438c3cd-8d37-4591-a20e-4cf9ce873aac",
+      "timestamp_ms": 1793289911418,
+      "title": "benchwork bulk archive: writes land in governing ledgers but the unified index never reflects them"
+    },
+    {
+      "acceptance_criteria": null,
+      "description": "MEASURED with the new storypole ledger-reconcile, which corrects the earlier theory on this ticket. Ledger replay: 205 tasks, archived 58, verified 102, ready 19, deferred 14, triage 9, blocked 2, in progress 1. Unified index after re-sync: identical for every status except archived, which the index shows as 0 because archived tasks are deliberately hidden from default backlog queries. So the index is NOT stale and NOT over-reporting: it agrees with the ledger exactly. What is real is the shortfall - the bulk archive reached 58 of roughly 160 verified tasks, and nothing surfaced either the shortfall or any error. Two live defects remain: the caller selects only a slice of the verified set (no limit exists in bulk_archive_tasks_service, so the selection is client-side), and BulkArchiveResult.errors plus progress are never shown in the UI. Proposed: archive by filter server-side (all Verified), stream archived/total progress, surface the errors vector, and guard archive_task to Completed/Verified/Closed. Test procedure: run ledger-reconcile before and after - archived must rise by the number of verified tasks and every other status must stay in agreement.",
+      "event": "task_updated",
+      "priority": null,
+      "scope": null,
+      "task_id": "9438c3cd-8d37-4591-a20e-4cf9ce873aac",
+      "timestamp_ms": 1793291024978,
+      "title": "benchwork bulk archive archived 58 of about 160 verified tasks"
+    },
+    {
+      "acceptance_criteria": null,
+      "description": "MEASURED (ledger-reconcile): replay gives 205 tasks - archived 58, verified 102, ready 19, deferred 14, triage 9, blocked 2, in progress 1 - and the unified index agrees on every status except archived, which it hides by design. So the index is not stale; the bulk archive simply covered 58 of roughly 160 verified tasks and reported nothing. Remaining defects: the caller selects only a slice (no server-side cap exists), and BulkArchiveResult.errors plus progress are never surfaced. WITHDRAWN: the proposed status guard on archive_task. GB-179 establishes that archived is a state orthogonal to status and that a task must be archivable from any status, so a guard would encode the wrong model. Test procedure: ledger-reconcile before and after; archived must rise by the verified count and every other status must stay in agreement.",
+      "event": "task_updated",
+      "priority": null,
+      "scope": null,
+      "task_id": "9438c3cd-8d37-4591-a20e-4cf9ce873aac",
+      "timestamp_ms": 1793291841811,
+      "title": null
+    },
+    {
+      "event": "task_verified",
+      "receipt": {
+        "base_commit_sha": "753537cf66e1e16b48ceefc878fa17b8364dc592",
+        "chain_key": null,
+        "command": "n/a",
+        "commit_shas": [
+          "753537cf66e1e16b48ceefc878fa17b8364dc592"
+        ],
+        "diagnostic_count": null,
+        "exit_code": 0,
+        "git_branch": "main",
+        "head_commit_sha": "753537cf66e1e16b48ceefc878fa17b8364dc592",
+        "repo": null,
+        "summary": "Closed on benchwork main at 753537c, on feat/archive-by-filter. The bulk archive could only archive the ids a caller supplied, which is why a UI rendering fifty rows archived a third of the verified backlog and why re-running never advanced. archive_tasks_by_filter now asks the store which tasks match a DagQuery and archives those, reusing the DAG board filter, so archiving all verified is decided server-side; POST /api/v1/dag/archive-all exposes it and benchwork archive-all --status <s> gives the same path from a terminal, dry-run by default with --apply to write. Per-task failures are collected and printed, and the command reports archived N/M rather than only counting successes. Measured under Law 12 with a read-only dry run against the live 206-task ledger set on this machine: selecting the verified set costs 0.34s cold and 0.09-0.10s warm across three runs and selects 104 tasks, the set the UI flow was partially archiving. No speed-up is claimed - this is a correctness fix and the write path is one ledger append per task. New test builds three verified tasks plus one open task, archives by status, and asserts all three archived, the open one untouched and the archived ones still reporting their original status. Gates: fmt, clippy -D warnings, nextest 31/31, docs 9 present 0 missing 0 drifted.",
+        "verified_at_epoch_ms": 1793298765028,
+        "verifier": "cline"
+      },
+      "task_id": "9438c3cd-8d37-4591-a20e-4cf9ce873aac"
+    },
+    {
+      "event": "status_changed",
+      "from": "verified",
+      "reason": "Archived out of active backlog",
+      "task_id": "9438c3cd-8d37-4591-a20e-4cf9ce873aac",
+      "timestamp_ms": 1793953206606,
+      "to": "archived"
+    },
+    {
+      "event": "task_archived",
+      "status": "verified",
+      "task_id": "9438c3cd-8d37-4591-a20e-4cf9ce873aac",
+      "timestamp_ms": 1794038014445
+    }
+  ],
+  "ticket": {
+    "acceptance_criteria": [],
+    "active_claim": null,
+    "archived_at_epoch_ms": 1794038014445,
+    "created_at_epoch_ms": 1793289672559,
+    "decisions": [],
+    "description": "MEASURED (ledger-reconcile): replay gives 205 tasks - archived 58, verified 102, ready 19, deferred 14, triage 9, blocked 2, in progress 1 - and the unified index agrees on every status except archived, which it hides by design. So the index is not stale; the bulk archive simply covered 58 of roughly 160 verified tasks and reported nothing. Remaining defects: the caller selects only a slice (no server-side cap exists), and BulkArchiveResult.errors plus progress are never surfaced. WITHDRAWN: the proposed status guard on archive_task. GB-179 establishes that archived is a state orthogonal to status and that a task must be archivable from any status, so a guard would encode the wrong model. Test procedure: ledger-reconcile before and after; archived must rise by the verified count and every other status must stay in agreement.",
+    "edges": [],
+    "id": "9438c3cd-8d37-4591-a20e-4cf9ce873aac",
+    "kind": "bug",
+    "latest_handoff": null,
+    "plan": null,
+    "priority": 3,
+    "scope": {
+      "crate_name": "benchwork-core",
+      "labels": [],
+      "module_path": null,
+      "repo": null,
+      "target_files": [
+        "benchwork/crates/benchwork-core/src/dag_service/mutations.rs,benchwork/crates/benchwork-cli/src/daemon/routes_dag/handlers.rs,benchwork/web/src/panels/DagBoard/DagBoardPanel.tsx"
+      ],
+      "target_symbols": [
+        "benchwork_core::dag_service::bulk_archive_tasks_service"
+      ]
+    },
+    "slug": "benchwork-bulk-archive-stalls-at-fifty-tasks-with-no-progress-or-error-surfacing-9438c3",
+    "status": "verified",
+    "ticket_key": "BW-26",
+    "title": "benchwork bulk archive archived 58 of about 160 verified tasks",
+    "updated_at_epoch_ms": 1794038014445,
+    "verification_receipt": {
+      "base_commit_sha": "753537cf66e1e16b48ceefc878fa17b8364dc592",
+      "chain_key": null,
+      "command": "n/a",
+      "commit_shas": [
+        "753537cf66e1e16b48ceefc878fa17b8364dc592"
+      ],
+      "diagnostic_count": null,
+      "exit_code": 0,
+      "git_branch": "main",
+      "head_commit_sha": "753537cf66e1e16b48ceefc878fa17b8364dc592",
+      "repo": null,
+      "summary": "Closed on benchwork main at 753537c, on feat/archive-by-filter. The bulk archive could only archive the ids a caller supplied, which is why a UI rendering fifty rows archived a third of the verified backlog and why re-running never advanced. archive_tasks_by_filter now asks the store which tasks match a DagQuery and archives those, reusing the DAG board filter, so archiving all verified is decided server-side; POST /api/v1/dag/archive-all exposes it and benchwork archive-all --status <s> gives the same path from a terminal, dry-run by default with --apply to write. Per-task failures are collected and printed, and the command reports archived N/M rather than only counting successes. Measured under Law 12 with a read-only dry run against the live 206-task ledger set on this machine: selecting the verified set costs 0.34s cold and 0.09-0.10s warm across three runs and selects 104 tasks, the set the UI flow was partially archiving. No speed-up is claimed - this is a correctness fix and the write path is one ledger append per task. New test builds three verified tasks plus one open task, archives by status, and asserts all three archived, the open one untouched and the archived ones still reporting their original status. Gates: fmt, clippy -D warnings, nextest 31/31, docs 9 present 0 missing 0 drifted.",
+      "verified_at_epoch_ms": 1793298765028,
+      "verifier": "cline"
+    }
+  }
+}

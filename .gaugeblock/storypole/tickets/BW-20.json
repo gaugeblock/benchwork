@@ -1,0 +1,212 @@
+{
+  "events": [
+    {
+      "event": "handoff_recorded",
+      "handoff": {
+        "completed_items": [],
+        "dirty_files": [],
+        "git_ref": null,
+        "last_error_or_blocker": "Requires upgrading local Bun runtime to >=1.2.x",
+        "recorded_by_agent": "agent-antigravity",
+        "remaining_items": [],
+        "timestamp_ms": 1793041331349
+      },
+      "new_status": "ready",
+      "task_id": "0e7e06ab-9c42-4c50-a4b3-47ec63d53708"
+    },
+    {
+      "event": "task_created",
+      "task": {
+        "acceptance_criteria": [
+          "Modern Bun (>=1.2.x) configured in developer environment and CI,bun install generates and locks bun.lock cleanly without npm package-lock.json,bun run build succeeds with zero TypeScript or Vite bundle errors,Playwright E2E test runner launches via bun run test:e2e,CI workflow updated in benchwork/.github/workflows/ci.yml"
+        ],
+        "active_claim": null,
+        "created_at_epoch_ms": 1793040935248,
+        "decisions": [],
+        "description": "Upgrade local Bun to >=1.2.x, replace package-lock.json with bun.lock in benchwork/web, update scripts to bun run build/dev/test:e2e, and configure oven-sh/setup-bun in GitHub Actions CI workflow.",
+        "edges": [],
+        "id": "0e7e06ab-9c42-4c50-a4b3-47ec63d53708",
+        "kind": "refactor",
+        "latest_handoff": null,
+        "plan": null,
+        "priority": 2,
+        "scope": {
+          "crate_name": "benchwork-web",
+          "labels": [
+            "benchwork,web,toolchain,bun,npm,ci"
+          ],
+          "module_path": null,
+          "repo": "benchwork",
+          "target_files": [
+            "benchwork/web/package.json,benchwork/web/bun.lock,benchwork/.github/workflows/ci.yml,benchwork/web/playwright.config.ts"
+          ],
+          "target_symbols": []
+        },
+        "slug": "migrate-benchwork-web-package-management-and-ci-workflows-from-npm-to-bun-0e7e06",
+        "status": "ready",
+        "ticket_key": "BW-20",
+        "title": "Migrate benchwork/web package management and CI workflows from npm to Bun",
+        "updated_at_epoch_ms": 1793040935248,
+        "verification_receipt": null
+      }
+    },
+    {
+      "claim": {
+        "agent_id": "agent-antigravity",
+        "base_commit_sha": "d8b7591b5cd408907d312c44c5d4ed8a5a269cbc",
+        "claimed_at_epoch_ms": 1793041331236,
+        "git_branch": "feat/gb-67-playwright-e2e",
+        "lease_expires_at_epoch_ms": 1793044931236
+      },
+      "event": "task_claimed",
+      "task_id": "0e7e06ab-9c42-4c50-a4b3-47ec63d53708"
+    },
+    {
+      "event": "status_changed",
+      "from": "ready",
+      "reason": "Claimed by agent-antigravity",
+      "task_id": "0e7e06ab-9c42-4c50-a4b3-47ec63d53708",
+      "timestamp_ms": 1793041331236,
+      "to": "in_progress"
+    },
+    {
+      "event": "status_changed",
+      "from": "ready",
+      "reason": "Archived out of active backlog",
+      "task_id": "0e7e06ab-9c42-4c50-a4b3-47ec63d53708",
+      "timestamp_ms": 1793041339529,
+      "to": "archived"
+    },
+    {
+      "event": "status_changed",
+      "from": "archived",
+      "reason": "Unarchived back to active backlog",
+      "task_id": "0e7e06ab-9c42-4c50-a4b3-47ec63d53708",
+      "timestamp_ms": 1793295790614,
+      "to": "ready"
+    },
+    {
+      "claim": {
+        "agent_id": "cline",
+        "base_commit_sha": "a19161653d0126c0395356173be57082182f149f",
+        "claimed_at_epoch_ms": 1793295804641,
+        "git_branch": "feat/bun-migration",
+        "lease_expires_at_epoch_ms": 1793299404641
+      },
+      "event": "task_claimed",
+      "task_id": "0e7e06ab-9c42-4c50-a4b3-47ec63d53708"
+    },
+    {
+      "event": "status_changed",
+      "from": "ready",
+      "reason": "Claimed by cline",
+      "task_id": "0e7e06ab-9c42-4c50-a4b3-47ec63d53708",
+      "timestamp_ms": 1793295804641,
+      "to": "in_progress"
+    },
+    {
+      "claim": {
+        "agent_id": "cline",
+        "base_commit_sha": "a19161653d0126c0395356173be57082182f149f",
+        "claimed_at_epoch_ms": 1793296023628,
+        "git_branch": "main",
+        "lease_expires_at_epoch_ms": 1793299623628
+      },
+      "event": "task_claimed",
+      "task_id": "0e7e06ab-9c42-4c50-a4b3-47ec63d53708"
+    },
+    {
+      "event": "task_verified",
+      "receipt": {
+        "base_commit_sha": "a19161653d0126c0395356173be57082182f149f",
+        "chain_key": null,
+        "command": "n/a",
+        "commit_shas": [
+          "9c41c4f3e13edcfaa6474ce97e6eac159ffad1dd"
+        ],
+        "diagnostic_count": null,
+        "exit_code": 0,
+        "git_branch": "main",
+        "head_commit_sha": "9c41c4f3e13edcfaa6474ce97e6eac159ffad1dd",
+        "repo": null,
+        "summary": "Closed on benchwork main at 9c41c4f, developed on feat/bun-migration after unarchiving the ticket (it was one of the tasks archived by the bulk pass) and claiming it first. web/bun.lock replaces package-lock.json, produced by bun install migrating the npm lock so resolution is identical rather than recomputed; package.json pins packageManager bun@1.4.4; CI installs Bun via oven-sh/setup-bun and runs bun install --frozen-lockfile then bun run build so a stale lock fails instead of silently re-resolving; Playwright boots the dev server with bun run dev; CONTRIBUTING now describes the Bun toolchain it actually uses. Verified locally: bun 1.4.4 frozen install reports no changes across 278 packages, bun run build exits 0, chalkline docs check reports 9 present 0 missing 0 drifted, and the generated dist bundles were reverted so the commit carries the migration only.",
+        "verified_at_epoch_ms": 1793296037115,
+        "verifier": "cline"
+      },
+      "task_id": "0e7e06ab-9c42-4c50-a4b3-47ec63d53708"
+    },
+    {
+      "acceptance_criteria": null,
+      "description": "DONE on benchwork main. web/bun.lock replaces package-lock.json (generated by bun install migrating the npm lock, so resolution is identical rather than recomputed); package.json pins packageManager bun@1.4.4; CI installs Bun via oven-sh/setup-bun and runs bun install --frozen-lockfile then bun run build so a stale lock fails instead of silently re-resolving; Playwright boots the dev server with bun run dev; CONTRIBUTING describes the Bun toolchain. BENCHMARK, measured sequentially with identical lockfile content and node_modules removed (macOS Apple silicon; Node 24.21.0, npm 12.0.2, Bun 1.4.4): install with a cold package cache 27.89s npm versus 13.21s Bun (2.1x faster); install with a warm package cache 15.22s versus 1.13s (13.5x faster); build via tsc -b plus vite build 27.58s versus 29.32s, so about 6 percent slower because tsc and vite remain Node programs Bun does not accelerate. The win is resolution and linking, which is what CI pays on every run. The numbers live in benchwork CONTRIBUTING rather than only in a commit message.",
+      "event": "task_updated",
+      "priority": null,
+      "scope": null,
+      "task_id": "0e7e06ab-9c42-4c50-a4b3-47ec63d53708",
+      "timestamp_ms": 1793296432811,
+      "title": null
+    },
+    {
+      "event": "task_archived",
+      "status": "verified",
+      "task_id": "0e7e06ab-9c42-4c50-a4b3-47ec63d53708",
+      "timestamp_ms": 1794037991983
+    }
+  ],
+  "ticket": {
+    "acceptance_criteria": [
+      "Modern Bun (>=1.2.x) configured in developer environment and CI,bun install generates and locks bun.lock cleanly without npm package-lock.json,bun run build succeeds with zero TypeScript or Vite bundle errors,Playwright E2E test runner launches via bun run test:e2e,CI workflow updated in benchwork/.github/workflows/ci.yml"
+    ],
+    "active_claim": null,
+    "archived_at_epoch_ms": 1794037991983,
+    "created_at_epoch_ms": 1793040935248,
+    "decisions": [],
+    "description": "DONE on benchwork main. web/bun.lock replaces package-lock.json (generated by bun install migrating the npm lock, so resolution is identical rather than recomputed); package.json pins packageManager bun@1.4.4; CI installs Bun via oven-sh/setup-bun and runs bun install --frozen-lockfile then bun run build so a stale lock fails instead of silently re-resolving; Playwright boots the dev server with bun run dev; CONTRIBUTING describes the Bun toolchain. BENCHMARK, measured sequentially with identical lockfile content and node_modules removed (macOS Apple silicon; Node 24.21.0, npm 12.0.2, Bun 1.4.4): install with a cold package cache 27.89s npm versus 13.21s Bun (2.1x faster); install with a warm package cache 15.22s versus 1.13s (13.5x faster); build via tsc -b plus vite build 27.58s versus 29.32s, so about 6 percent slower because tsc and vite remain Node programs Bun does not accelerate. The win is resolution and linking, which is what CI pays on every run. The numbers live in benchwork CONTRIBUTING rather than only in a commit message.",
+    "edges": [],
+    "id": "0e7e06ab-9c42-4c50-a4b3-47ec63d53708",
+    "kind": "refactor",
+    "latest_handoff": {
+      "completed_items": [],
+      "dirty_files": [],
+      "git_ref": null,
+      "last_error_or_blocker": "Requires upgrading local Bun runtime to >=1.2.x",
+      "recorded_by_agent": "agent-antigravity",
+      "remaining_items": [],
+      "timestamp_ms": 1793041331349
+    },
+    "plan": null,
+    "priority": 2,
+    "scope": {
+      "crate_name": "benchwork-web",
+      "labels": [
+        "benchwork,web,toolchain,bun,npm,ci"
+      ],
+      "module_path": null,
+      "repo": "benchwork",
+      "target_files": [
+        "benchwork/web/package.json,benchwork/web/bun.lock,benchwork/.github/workflows/ci.yml,benchwork/web/playwright.config.ts"
+      ],
+      "target_symbols": []
+    },
+    "slug": "migrate-benchwork-web-package-management-and-ci-workflows-from-npm-to-bun-0e7e06",
+    "status": "verified",
+    "ticket_key": "BW-20",
+    "title": "Migrate benchwork/web package management and CI workflows from npm to Bun",
+    "updated_at_epoch_ms": 1794037991983,
+    "verification_receipt": {
+      "base_commit_sha": "a19161653d0126c0395356173be57082182f149f",
+      "chain_key": null,
+      "command": "n/a",
+      "commit_shas": [
+        "9c41c4f3e13edcfaa6474ce97e6eac159ffad1dd"
+      ],
+      "diagnostic_count": null,
+      "exit_code": 0,
+      "git_branch": "main",
+      "head_commit_sha": "9c41c4f3e13edcfaa6474ce97e6eac159ffad1dd",
+      "repo": null,
+      "summary": "Closed on benchwork main at 9c41c4f, developed on feat/bun-migration after unarchiving the ticket (it was one of the tasks archived by the bulk pass) and claiming it first. web/bun.lock replaces package-lock.json, produced by bun install migrating the npm lock so resolution is identical rather than recomputed; package.json pins packageManager bun@1.4.4; CI installs Bun via oven-sh/setup-bun and runs bun install --frozen-lockfile then bun run build so a stale lock fails instead of silently re-resolving; Playwright boots the dev server with bun run dev; CONTRIBUTING now describes the Bun toolchain it actually uses. Verified locally: bun 1.4.4 frozen install reports no changes across 278 packages, bun run build exits 0, chalkline docs check reports 9 present 0 missing 0 drifted, and the generated dist bundles were reverted so the commit carries the migration only.",
+      "verified_at_epoch_ms": 1793296037115,
+      "verifier": "cline"
+    }
+  }
+}

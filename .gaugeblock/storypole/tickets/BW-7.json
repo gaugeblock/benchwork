@@ -1,0 +1,134 @@
+{
+  "events": [
+    {
+      "event": "task_created",
+      "task": {
+        "acceptance_criteria": [],
+        "active_claim": null,
+        "created_at_epoch_ms": 1792898149612,
+        "decisions": [],
+        "description": "",
+        "edges": [],
+        "id": "0fea2137-448c-40fd-9450-03a2e94fd827",
+        "kind": "bug",
+        "latest_handoff": null,
+        "plan": null,
+        "priority": 1,
+        "scope": {
+          "crate_name": "benchwork-core",
+          "labels": [
+            "benchwork,docs,miter,layout"
+          ],
+          "module_path": null,
+          "repo": null,
+          "target_files": [],
+          "target_symbols": []
+        },
+        "slug": "fix-doc-audit-multi-repo-layout-inspection-and-expand-panel-1-document-viewer-tabs-0fea21",
+        "status": "ready",
+        "ticket_key": "BW-7",
+        "title": "Fix doc audit multi-repo layout inspection and expand Panel 1 document viewer tabs",
+        "updated_at_epoch_ms": 1792898149612,
+        "verification_receipt": null
+      }
+    },
+    {
+      "claim": {
+        "agent_id": "antigravity",
+        "base_commit_sha": "bd4064d228a70be64b645a8e56cba526ce4b7dd2",
+        "claimed_at_epoch_ms": 1792898339417,
+        "git_branch": "fix/gb-42-doc-audit-and-viewer",
+        "lease_expires_at_epoch_ms": 1792901939417
+      },
+      "event": "task_claimed",
+      "task_id": "0fea2137-448c-40fd-9450-03a2e94fd827"
+    },
+    {
+      "event": "status_changed",
+      "from": "ready",
+      "reason": "Claimed by antigravity",
+      "task_id": "0fea2137-448c-40fd-9450-03a2e94fd827",
+      "timestamp_ms": 1792898339417,
+      "to": "in_progress"
+    },
+    {
+      "event": "task_verified",
+      "receipt": {
+        "base_commit_sha": "bd4064d228a70be64b645a8e56cba526ce4b7dd2",
+        "chain_key": null,
+        "command": "n/a",
+        "commit_shas": [
+          "bd4064d228a70be64b645a8e56cba526ce4b7dd2"
+        ],
+        "diagnostic_count": null,
+        "exit_code": 0,
+        "git_branch": "fix/gb-42-doc-audit-and-viewer",
+        "head_commit_sha": "bd4064d228a70be64b645a8e56cba526ce4b7dd2",
+        "repo": null,
+        "summary": "Manual verification confirmed",
+        "verified_at_epoch_ms": 1792898810338,
+        "verifier": "manual"
+      },
+      "task_id": "0fea2137-448c-40fd-9450-03a2e94fd827"
+    },
+    {
+      "event": "status_changed",
+      "from": "verified",
+      "reason": "Archived out of active backlog",
+      "task_id": "0fea2137-448c-40fd-9450-03a2e94fd827",
+      "timestamp_ms": 1793289270827,
+      "to": "archived"
+    },
+    {
+      "event": "task_archived",
+      "status": "verified",
+      "task_id": "0fea2137-448c-40fd-9450-03a2e94fd827",
+      "timestamp_ms": 1794037958802
+    }
+  ],
+  "ticket": {
+    "acceptance_criteria": [],
+    "active_claim": null,
+    "archived_at_epoch_ms": 1794037958802,
+    "created_at_epoch_ms": 1792898149612,
+    "decisions": [],
+    "description": "",
+    "edges": [],
+    "id": "0fea2137-448c-40fd-9450-03a2e94fd827",
+    "kind": "bug",
+    "latest_handoff": null,
+    "plan": null,
+    "priority": 1,
+    "scope": {
+      "crate_name": "benchwork-core",
+      "labels": [
+        "benchwork,docs,miter,layout"
+      ],
+      "module_path": null,
+      "repo": null,
+      "target_files": [],
+      "target_symbols": []
+    },
+    "slug": "fix-doc-audit-multi-repo-layout-inspection-and-expand-panel-1-document-viewer-tabs-0fea21",
+    "status": "verified",
+    "ticket_key": "BW-7",
+    "title": "Fix doc audit multi-repo layout inspection and expand Panel 1 document viewer tabs",
+    "updated_at_epoch_ms": 1794037958802,
+    "verification_receipt": {
+      "base_commit_sha": "bd4064d228a70be64b645a8e56cba526ce4b7dd2",
+      "chain_key": null,
+      "command": "n/a",
+      "commit_shas": [
+        "bd4064d228a70be64b645a8e56cba526ce4b7dd2"
+      ],
+      "diagnostic_count": null,
+      "exit_code": 0,
+      "git_branch": "fix/gb-42-doc-audit-and-viewer",
+      "head_commit_sha": "bd4064d228a70be64b645a8e56cba526ce4b7dd2",
+      "repo": null,
+      "summary": "Manual verification confirmed",
+      "verified_at_epoch_ms": 1792898810338,
+      "verifier": "manual"
+    }
+  }
+}

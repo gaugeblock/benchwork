@@ -1,0 +1,142 @@
+{
+  "events": [
+    {
+      "event": "task_created",
+      "task": {
+        "acceptance_criteria": [],
+        "active_claim": null,
+        "created_at_epoch_ms": 1792864793530,
+        "decisions": [],
+        "description": "",
+        "edges": [],
+        "id": "e01d7d6c-c92e-4c37-a3b2-00dfeb2f03a3",
+        "kind": "bug",
+        "latest_handoff": null,
+        "plan": null,
+        "priority": 2,
+        "scope": {
+          "crate_name": "benchwork-cli",
+          "labels": [],
+          "module_path": null,
+          "repo": "benchwork",
+          "target_files": [],
+          "target_symbols": []
+        },
+        "slug": "add-deferred-task-column-filter-and-metrics-to-benchwork-and-parse-tech-debt-hyphenated-kind-in-storypole-e01d7d",
+        "status": "ready",
+        "ticket_key": "BW-2",
+        "title": "Add Deferred task column, filter, and metrics to Benchwork and parse tech-debt hyphenated kind in Storypole",
+        "updated_at_epoch_ms": 1792864793530,
+        "verification_receipt": null
+      }
+    },
+    {
+      "claim": {
+        "agent_id": "antigravity",
+        "base_commit_sha": "8e95b80f30434c291fed109869626ee9948a4903",
+        "claimed_at_epoch_ms": 1792864801180,
+        "git_branch": "feat/gb-35-deferred-visibility",
+        "lease_expires_at_epoch_ms": 1792868401180
+      },
+      "event": "task_claimed",
+      "task_id": "e01d7d6c-c92e-4c37-a3b2-00dfeb2f03a3"
+    },
+    {
+      "event": "status_changed",
+      "from": "ready",
+      "reason": "Claimed by antigravity",
+      "task_id": "e01d7d6c-c92e-4c37-a3b2-00dfeb2f03a3",
+      "timestamp_ms": 1792864801180,
+      "to": "in_progress"
+    },
+    {
+      "event": "task_verified",
+      "receipt": {
+        "base_commit_sha": "8e95b80f30434c291fed109869626ee9948a4903",
+        "chain_key": null,
+        "command": "cargo test",
+        "commit_shas": [
+          "8e95b80f30434c291fed109869626ee9948a4903"
+        ],
+        "diagnostic_count": null,
+        "exit_code": 0,
+        "git_branch": "feat/gb-35-deferred-visibility",
+        "head_commit_sha": "8e95b80f30434c291fed109869626ee9948a4903",
+        "repo": null,
+        "summary": "\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+        "verified_at_epoch_ms": 1792864945328,
+        "verifier": "storypole-verify"
+      },
+      "task_id": "e01d7d6c-c92e-4c37-a3b2-00dfeb2f03a3"
+    },
+    {
+      "event": "task_verified",
+      "receipt": {
+        "base_commit_sha": "af176899c7624f6b7dada44fa909eb5f417285c3",
+        "chain_key": null,
+        "command": "n/a",
+        "commit_shas": [
+          "af176899c7624f6b7dada44fa909eb5f417285c3"
+        ],
+        "diagnostic_count": null,
+        "exit_code": 0,
+        "git_branch": "main",
+        "head_commit_sha": "af176899c7624f6b7dada44fa909eb5f417285c3",
+        "repo": null,
+        "summary": "Resolved by a different mechanism: the Deferred kanban lane exists (KanbanBoardView.tsx:60) and kind parsing is now a strict closed list that includes tech_debt (task_args.rs:98, cf0ec92). Rejecting an unknown kind, including the hyphenated spelling, is the chosen behaviour rather than silent reinterpretation.",
+        "verified_at_epoch_ms": 1793942114997,
+        "verifier": "manual"
+      },
+      "task_id": "e01d7d6c-c92e-4c37-a3b2-00dfeb2f03a3"
+    },
+    {
+      "event": "task_archived",
+      "status": "verified",
+      "task_id": "e01d7d6c-c92e-4c37-a3b2-00dfeb2f03a3",
+      "timestamp_ms": 1794037989494
+    }
+  ],
+  "ticket": {
+    "acceptance_criteria": [],
+    "active_claim": null,
+    "archived_at_epoch_ms": 1794037989494,
+    "created_at_epoch_ms": 1792864793530,
+    "decisions": [],
+    "description": "",
+    "edges": [],
+    "id": "e01d7d6c-c92e-4c37-a3b2-00dfeb2f03a3",
+    "kind": "bug",
+    "latest_handoff": null,
+    "plan": null,
+    "priority": 2,
+    "scope": {
+      "crate_name": "benchwork-cli",
+      "labels": [],
+      "module_path": null,
+      "repo": "benchwork",
+      "target_files": [],
+      "target_symbols": []
+    },
+    "slug": "add-deferred-task-column-filter-and-metrics-to-benchwork-and-parse-tech-debt-hyphenated-kind-in-storypole-e01d7d",
+    "status": "verified",
+    "ticket_key": "BW-2",
+    "title": "Add Deferred task column, filter, and metrics to Benchwork and parse tech-debt hyphenated kind in Storypole",
+    "updated_at_epoch_ms": 1794037989494,
+    "verification_receipt": {
+      "base_commit_sha": "af176899c7624f6b7dada44fa909eb5f417285c3",
+      "chain_key": null,
+      "command": "n/a",
+      "commit_shas": [
+        "af176899c7624f6b7dada44fa909eb5f417285c3"
+      ],
+      "diagnostic_count": null,
+      "exit_code": 0,
+      "git_branch": "main",
+      "head_commit_sha": "af176899c7624f6b7dada44fa909eb5f417285c3",
+      "repo": null,
+      "summary": "Resolved by a different mechanism: the Deferred kanban lane exists (KanbanBoardView.tsx:60) and kind parsing is now a strict closed list that includes tech_debt (task_args.rs:98, cf0ec92). Rejecting an unknown kind, including the hyphenated spelling, is the chosen behaviour rather than silent reinterpretation.",
+      "verified_at_epoch_ms": 1793942114997,
+      "verifier": "manual"
+    }
+  }
+}

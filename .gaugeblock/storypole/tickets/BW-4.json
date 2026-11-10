@@ -1,0 +1,134 @@
+{
+  "events": [
+    {
+      "event": "task_created",
+      "task": {
+        "acceptance_criteria": [],
+        "active_claim": null,
+        "created_at_epoch_ms": 1792871973059,
+        "decisions": [],
+        "description": "",
+        "edges": [],
+        "id": "39d59225-12c0-460c-acf1-32f198d35833",
+        "kind": "feature",
+        "latest_handoff": null,
+        "plan": null,
+        "priority": 2,
+        "scope": {
+          "crate_name": "benchwork-core",
+          "labels": [
+            "deps,harmonization"
+          ],
+          "module_path": null,
+          "repo": null,
+          "target_files": [],
+          "target_symbols": []
+        },
+        "slug": "harmonize-toml-dependency-version-in-benchwork-core-with-workspace-1-1-39d592",
+        "status": "ready",
+        "ticket_key": "BW-4",
+        "title": "Harmonize toml dependency version in benchwork-core with workspace (1.1)",
+        "updated_at_epoch_ms": 1792871973059,
+        "verification_receipt": null
+      }
+    },
+    {
+      "claim": {
+        "agent_id": "antigravity",
+        "base_commit_sha": "166d71b136b1c8926b2b6eed422622b20da26440",
+        "claimed_at_epoch_ms": 1792871977975,
+        "git_branch": "fix/gb-38-toml-harmonization",
+        "lease_expires_at_epoch_ms": 1792875577975
+      },
+      "event": "task_claimed",
+      "task_id": "39d59225-12c0-460c-acf1-32f198d35833"
+    },
+    {
+      "event": "status_changed",
+      "from": "ready",
+      "reason": "Claimed by antigravity",
+      "task_id": "39d59225-12c0-460c-acf1-32f198d35833",
+      "timestamp_ms": 1792871977975,
+      "to": "in_progress"
+    },
+    {
+      "event": "task_verified",
+      "receipt": {
+        "base_commit_sha": "166d71b136b1c8926b2b6eed422622b20da26440",
+        "chain_key": null,
+        "command": "n/a",
+        "commit_shas": [
+          "166d71b136b1c8926b2b6eed422622b20da26440"
+        ],
+        "diagnostic_count": null,
+        "exit_code": 0,
+        "git_branch": "fix/gb-38-toml-harmonization",
+        "head_commit_sha": "166d71b136b1c8926b2b6eed422622b20da26440",
+        "repo": null,
+        "summary": "Manual verification confirmed",
+        "verified_at_epoch_ms": 1792872023133,
+        "verifier": "manual"
+      },
+      "task_id": "39d59225-12c0-460c-acf1-32f198d35833"
+    },
+    {
+      "event": "status_changed",
+      "from": "verified",
+      "reason": "Archived out of active backlog",
+      "task_id": "39d59225-12c0-460c-acf1-32f198d35833",
+      "timestamp_ms": 1793289280904,
+      "to": "archived"
+    },
+    {
+      "event": "task_archived",
+      "status": "verified",
+      "task_id": "39d59225-12c0-460c-acf1-32f198d35833",
+      "timestamp_ms": 1794037990191
+    }
+  ],
+  "ticket": {
+    "acceptance_criteria": [],
+    "active_claim": null,
+    "archived_at_epoch_ms": 1794037990191,
+    "created_at_epoch_ms": 1792871973059,
+    "decisions": [],
+    "description": "",
+    "edges": [],
+    "id": "39d59225-12c0-460c-acf1-32f198d35833",
+    "kind": "feature",
+    "latest_handoff": null,
+    "plan": null,
+    "priority": 2,
+    "scope": {
+      "crate_name": "benchwork-core",
+      "labels": [
+        "deps,harmonization"
+      ],
+      "module_path": null,
+      "repo": null,
+      "target_files": [],
+      "target_symbols": []
+    },
+    "slug": "harmonize-toml-dependency-version-in-benchwork-core-with-workspace-1-1-39d592",
+    "status": "verified",
+    "ticket_key": "BW-4",
+    "title": "Harmonize toml dependency version in benchwork-core with workspace (1.1)",
+    "updated_at_epoch_ms": 1794037990191,
+    "verification_receipt": {
+      "base_commit_sha": "166d71b136b1c8926b2b6eed422622b20da26440",
+      "chain_key": null,
+      "command": "n/a",
+      "commit_shas": [
+        "166d71b136b1c8926b2b6eed422622b20da26440"
+      ],
+      "diagnostic_count": null,
+      "exit_code": 0,
+      "git_branch": "fix/gb-38-toml-harmonization",
+      "head_commit_sha": "166d71b136b1c8926b2b6eed422622b20da26440",
+      "repo": null,
+      "summary": "Manual verification confirmed",
+      "verified_at_epoch_ms": 1792872023133,
+      "verifier": "manual"
+    }
+  }
+}

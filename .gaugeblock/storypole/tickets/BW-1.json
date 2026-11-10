@@ -1,0 +1,146 @@
+{
+  "events": [
+    {
+      "event": "task_created",
+      "task": {
+        "acceptance_criteria": [],
+        "active_claim": null,
+        "created_at_epoch_ms": 1792862479794,
+        "decisions": [],
+        "description": "",
+        "edges": [],
+        "id": "a7ee50b9-4d06-49f4-8dad-b02bf5af61a6",
+        "kind": "feature",
+        "latest_handoff": null,
+        "plan": null,
+        "priority": 2,
+        "scope": {
+          "crate_name": "benchwork-cli",
+          "labels": [
+            "benchwork,storypole,archive,backlog"
+          ],
+          "module_path": null,
+          "repo": "benchwork",
+          "target_files": [],
+          "target_symbols": []
+        },
+        "slug": "add-task-archiving-and-closed-issue-filtering-to-storypole-and-benchwork-a7ee50",
+        "status": "ready",
+        "ticket_key": "BW-1",
+        "title": "Add task archiving and closed issue filtering to Storypole and Benchwork",
+        "updated_at_epoch_ms": 1792862479794,
+        "verification_receipt": null
+      }
+    },
+    {
+      "claim": {
+        "agent_id": "antigravity",
+        "base_commit_sha": "1fc90f1247bde507f2e2930cbe1326b26922d224",
+        "claimed_at_epoch_ms": 1792863403763,
+        "git_branch": "feat/gb-34-task-archiving",
+        "lease_expires_at_epoch_ms": 1792867003763
+      },
+      "event": "task_claimed",
+      "task_id": "a7ee50b9-4d06-49f4-8dad-b02bf5af61a6"
+    },
+    {
+      "event": "status_changed",
+      "from": "ready",
+      "reason": "Claimed by antigravity",
+      "task_id": "a7ee50b9-4d06-49f4-8dad-b02bf5af61a6",
+      "timestamp_ms": 1792863403763,
+      "to": "in_progress"
+    },
+    {
+      "event": "task_verified",
+      "receipt": {
+        "base_commit_sha": "1fc90f1247bde507f2e2930cbe1326b26922d224",
+        "chain_key": null,
+        "command": "cargo test",
+        "commit_shas": [
+          "1fc90f1247bde507f2e2930cbe1326b26922d224"
+        ],
+        "diagnostic_count": null,
+        "exit_code": 0,
+        "git_branch": "feat/gb-34-task-archiving",
+        "head_commit_sha": "1fc90f1247bde507f2e2930cbe1326b26922d224",
+        "repo": null,
+        "summary": "\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+        "verified_at_epoch_ms": 1792864449205,
+        "verifier": "storypole-verify"
+      },
+      "task_id": "a7ee50b9-4d06-49f4-8dad-b02bf5af61a6"
+    },
+    {
+      "event": "task_verified",
+      "receipt": {
+        "base_commit_sha": "af176899c7624f6b7dada44fa909eb5f417285c3",
+        "chain_key": null,
+        "command": "n/a",
+        "commit_shas": [
+          "af176899c7624f6b7dada44fa909eb5f417285c3"
+        ],
+        "diagnostic_count": null,
+        "exit_code": 0,
+        "git_branch": "main",
+        "head_commit_sha": "af176899c7624f6b7dada44fa909eb5f417285c3",
+        "repo": null,
+        "summary": "Delivered: storypole archive/unarchive plus the benchwork include_archived filter, bulk archive action bar and archived stat (BW-18), and DagBoard archive/unarchive from the briefing drawer.",
+        "verified_at_epoch_ms": 1793942114845,
+        "verifier": "manual"
+      },
+      "task_id": "a7ee50b9-4d06-49f4-8dad-b02bf5af61a6"
+    },
+    {
+      "event": "task_archived",
+      "status": "verified",
+      "task_id": "a7ee50b9-4d06-49f4-8dad-b02bf5af61a6",
+      "timestamp_ms": 1794037989288
+    }
+  ],
+  "ticket": {
+    "acceptance_criteria": [],
+    "active_claim": null,
+    "archived_at_epoch_ms": 1794037989288,
+    "created_at_epoch_ms": 1792862479794,
+    "decisions": [],
+    "description": "",
+    "edges": [],
+    "id": "a7ee50b9-4d06-49f4-8dad-b02bf5af61a6",
+    "kind": "feature",
+    "latest_handoff": null,
+    "plan": null,
+    "priority": 2,
+    "scope": {
+      "crate_name": "benchwork-cli",
+      "labels": [
+        "benchwork,storypole,archive,backlog"
+      ],
+      "module_path": null,
+      "repo": "benchwork",
+      "target_files": [],
+      "target_symbols": []
+    },
+    "slug": "add-task-archiving-and-closed-issue-filtering-to-storypole-and-benchwork-a7ee50",
+    "status": "verified",
+    "ticket_key": "BW-1",
+    "title": "Add task archiving and closed issue filtering to Storypole and Benchwork",
+    "updated_at_epoch_ms": 1794037989288,
+    "verification_receipt": {
+      "base_commit_sha": "af176899c7624f6b7dada44fa909eb5f417285c3",
+      "chain_key": null,
+      "command": "n/a",
+      "commit_shas": [
+        "af176899c7624f6b7dada44fa909eb5f417285c3"
+      ],
+      "diagnostic_count": null,
+      "exit_code": 0,
+      "git_branch": "main",
+      "head_commit_sha": "af176899c7624f6b7dada44fa909eb5f417285c3",
+      "repo": null,
+      "summary": "Delivered: storypole archive/unarchive plus the benchwork include_archived filter, bulk archive action bar and archived stat (BW-18), and DagBoard archive/unarchive from the briefing drawer.",
+      "verified_at_epoch_ms": 1793942114845,
+      "verifier": "manual"
+    }
+  }
+}

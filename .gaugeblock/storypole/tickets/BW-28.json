@@ -1,0 +1,73 @@
+{
+  "events": [
+    {
+      "captured_by_agent": "user",
+      "discovered_from_task_id": "fee97a96-45a7-4c0f-ad98-a098e5a00e6d",
+      "event": "deferred_item_captured",
+      "task": {
+        "acceptance_criteria": [],
+        "active_claim": null,
+        "created_at_epoch_ms": 1793304856201,
+        "decisions": [],
+        "description": "benchwork now builds against the shared SpoolEntry, but it has no equivalent of 'storypole spool migrate' for an outbox it wrote before GB-182.",
+        "edges": [
+          {
+            "kind": "discovered_from",
+            "target_id": "fee97a96-45a7-4c0f-ad98-a098e5a00e6d"
+          }
+        ],
+        "id": "e076bda1-7ab0-4493-844e-8f50e2f4bf43",
+        "kind": "feature",
+        "latest_handoff": null,
+        "plan": null,
+        "priority": 3,
+        "scope": {
+          "crate_name": "benchwork-core",
+          "labels": [],
+          "module_path": null,
+          "repo": "benchwork",
+          "target_files": [],
+          "target_symbols": []
+        },
+        "slug": "benchwork-no-outbox-migration-verb-for-pre-gb-182-spools-e076bd",
+        "status": "deferred",
+        "ticket_key": "BW-28",
+        "title": "benchwork: no outbox migration verb for pre-GB-182 spools",
+        "updated_at_epoch_ms": 1793304856201,
+        "verification_receipt": null
+      }
+    }
+  ],
+  "ticket": {
+    "acceptance_criteria": [],
+    "active_claim": null,
+    "created_at_epoch_ms": 1793304856201,
+    "decisions": [],
+    "description": "benchwork now builds against the shared SpoolEntry, but it has no equivalent of 'storypole spool migrate' for an outbox it wrote before GB-182.",
+    "edges": [
+      {
+        "kind": "discovered_from",
+        "target_id": "fee97a96-45a7-4c0f-ad98-a098e5a00e6d"
+      }
+    ],
+    "id": "e076bda1-7ab0-4493-844e-8f50e2f4bf43",
+    "kind": "feature",
+    "latest_handoff": null,
+    "plan": null,
+    "priority": 3,
+    "scope": {
+      "crate_name": "benchwork-core",
+      "labels": [],
+      "module_path": null,
+      "repo": "benchwork",
+      "target_files": [],
+      "target_symbols": []
+    },
+    "slug": "benchwork-no-outbox-migration-verb-for-pre-gb-182-spools-e076bd",
+    "status": "deferred",
+    "ticket_key": "BW-28",
+    "title": "benchwork: no outbox migration verb for pre-GB-182 spools",
+    "updated_at_epoch_ms": 1793304856201,
+    "verification_receipt": null
+  }
+}
