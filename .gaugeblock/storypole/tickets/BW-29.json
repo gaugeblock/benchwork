@@ -9,7 +9,7 @@
         "active_claim": null,
         "created_at_epoch_ms": 1793334866299,
         "decisions": [],
-        "description": "Three read sites in benchwork point at .rabbet/spool/outbox.jsonl, which no writer has produced since the spool moved to .gaugeblock/spool/outbox.jsonl: hub_service.rs line 69 (pending traces panel), line 100 (delete a trace by id, which would therefore never find its target), and capabilities.rs line 139 (scan_telemetry count). The directory does not exist, so all three return zero while the real outbox holds 15 records. The only correct path builder in benchwork is chat_harness::telemetry_spool::spool_outbox_path, which the chat orchestrator uses for spool_silver_sft and spool_gold_dpo. Fix by routing all four sites through that one function, and ideally through GaugeblockPaths once GB-189 lands so the rule exists once for the suite.",
+        "description": "Three read sites in benchwork point at .rabbet/spool/outbox.jsonl, which no writer has produced since the spool moved to .gaugeblock/spool/outbox.jsonl: hub_service.rs line 69 (pending traces panel), line 100 (delete a trace by id, which would therefore never find its target), and capabilities.rs line 139 (scan_telemetry count). The directory does not exist, so all three return zero while the real outbox holds 15 records. The only correct path builder in benchwork is chat_harness::telemetry_spool::spool_outbox_path, which the chat orchestrator uses for spool_silver_sft and spool_gold_dpo. Fix by routing all four sites through that one function, and ideally through GaugeblockPaths once CO-7 lands so the rule exists once for the suite.",
         "edges": [
           {
             "kind": "discovered_from",
@@ -44,7 +44,7 @@
       "edge": {
         "kind": "blocked_by",
         "target_id": "0ca27004-0ae7-46be-b4c6-65a32efa3779",
-        "target_ticket_key": "GB-189"
+        "target_ticket_key": "CO-7"
       },
       "event": "edge_added",
       "task_id": "6103aa7e-777b-4f44-94ce-4443c479b0c0",
@@ -53,7 +53,7 @@
     {
       "event": "status_changed",
       "from": "triage",
-      "reason": "Blocked by unverified task GB-189",
+      "reason": "Blocked by unverified task CO-7",
       "task_id": "6103aa7e-777b-4f44-94ce-4443c479b0c0",
       "timestamp_ms": 1793334876555,
       "to": "blocked"
@@ -62,7 +62,7 @@
       "edge": {
         "kind": "related_to",
         "target_id": "fee97a96-45a7-4c0f-ad98-a098e5a00e6d",
-        "target_ticket_key": "GB-182"
+        "target_ticket_key": "CO-6"
       },
       "event": "edge_added",
       "task_id": "6103aa7e-777b-4f44-94ce-4443c479b0c0",
@@ -109,7 +109,7 @@
     "archived_at_epoch_ms": 1794038017833,
     "created_at_epoch_ms": 1793334866299,
     "decisions": [],
-    "description": "Three read sites in benchwork point at .rabbet/spool/outbox.jsonl, which no writer has produced since the spool moved to .gaugeblock/spool/outbox.jsonl: hub_service.rs line 69 (pending traces panel), line 100 (delete a trace by id, which would therefore never find its target), and capabilities.rs line 139 (scan_telemetry count). The directory does not exist, so all three return zero while the real outbox holds 15 records. The only correct path builder in benchwork is chat_harness::telemetry_spool::spool_outbox_path, which the chat orchestrator uses for spool_silver_sft and spool_gold_dpo. Fix by routing all four sites through that one function, and ideally through GaugeblockPaths once GB-189 lands so the rule exists once for the suite.",
+    "description": "Three read sites in benchwork point at .rabbet/spool/outbox.jsonl, which no writer has produced since the spool moved to .gaugeblock/spool/outbox.jsonl: hub_service.rs line 69 (pending traces panel), line 100 (delete a trace by id, which would therefore never find its target), and capabilities.rs line 139 (scan_telemetry count). The directory does not exist, so all three return zero while the real outbox holds 15 records. The only correct path builder in benchwork is chat_harness::telemetry_spool::spool_outbox_path, which the chat orchestrator uses for spool_silver_sft and spool_gold_dpo. Fix by routing all four sites through that one function, and ideally through GaugeblockPaths once CO-7 lands so the rule exists once for the suite.",
     "edges": [
       {
         "kind": "discovered_from",
@@ -118,12 +118,12 @@
       {
         "kind": "blocked_by",
         "target_id": "0ca27004-0ae7-46be-b4c6-65a32efa3779",
-        "target_ticket_key": "GB-189"
+        "target_ticket_key": "CO-7"
       },
       {
         "kind": "related_to",
         "target_id": "fee97a96-45a7-4c0f-ad98-a098e5a00e6d",
-        "target_ticket_key": "GB-182"
+        "target_ticket_key": "CO-6"
       }
     ],
     "id": "6103aa7e-777b-4f44-94ce-4443c479b0c0",

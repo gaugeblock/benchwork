@@ -9,7 +9,7 @@
         "active_claim": null,
         "created_at_epoch_ms": 1793359009750,
         "decisions": [],
-        "description": "benchwork capabilities reports blocked 4, deferred 16, ready 26, triage 11, verified 180 with no archived key, while storypole ledger-reconcile reports archived 59, verified 123, ready 26, deferred 16, triage 9, blocked 4 and says index and ledger agree. Totals match at 237, and the deltas are exactly the archived population: 180 - 123 = 57 and 11 - 9 = 2, which sums to 59. So archived was made a state orthogonal to status in GB-179 and benchwork is still presenting the pre-archive status, which overstates verified work by 57 tasks. The capability and status views should surface archived separately, or at least exclude both the status count and the archived count from each other.",
+        "description": "benchwork capabilities reports blocked 4, deferred 16, ready 26, triage 11, verified 180 with no archived key, while storypole ledger-reconcile reports archived 59, verified 123, ready 26, deferred 16, triage 9, blocked 4 and says index and ledger agree. Totals match at 237, and the deltas are exactly the archived population: 180 - 123 = 57 and 11 - 9 = 2, which sums to 59. So archived was made a state orthogonal to status in CO-5 and benchwork is still presenting the pre-archive status, which overstates verified work by 57 tasks. The capability and status views should surface archived separately, or at least exclude both the status count and the archived count from each other.",
         "edges": [
           {
             "kind": "discovered_from",
@@ -80,7 +80,7 @@
     "archived_at_epoch_ms": 1794038018038,
     "created_at_epoch_ms": 1793359009750,
     "decisions": [],
-    "description": "benchwork capabilities reports blocked 4, deferred 16, ready 26, triage 11, verified 180 with no archived key, while storypole ledger-reconcile reports archived 59, verified 123, ready 26, deferred 16, triage 9, blocked 4 and says index and ledger agree. Totals match at 237, and the deltas are exactly the archived population: 180 - 123 = 57 and 11 - 9 = 2, which sums to 59. So archived was made a state orthogonal to status in GB-179 and benchwork is still presenting the pre-archive status, which overstates verified work by 57 tasks. The capability and status views should surface archived separately, or at least exclude both the status count and the archived count from each other.",
+    "description": "benchwork capabilities reports blocked 4, deferred 16, ready 26, triage 11, verified 180 with no archived key, while storypole ledger-reconcile reports archived 59, verified 123, ready 26, deferred 16, triage 9, blocked 4 and says index and ledger agree. Totals match at 237, and the deltas are exactly the archived population: 180 - 123 = 57 and 11 - 9 = 2, which sums to 59. So archived was made a state orthogonal to status in CO-5 and benchwork is still presenting the pre-archive status, which overstates verified work by 57 tasks. The capability and status views should surface archived separately, or at least exclude both the status count and the archived count from each other.",
     "edges": [
       {
         "kind": "discovered_from",

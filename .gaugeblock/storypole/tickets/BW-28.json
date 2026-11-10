@@ -9,7 +9,7 @@
         "active_claim": null,
         "created_at_epoch_ms": 1793304856201,
         "decisions": [],
-        "description": "benchwork now builds against the shared SpoolEntry, but it has no equivalent of 'storypole spool migrate' for an outbox it wrote before GB-182.",
+        "description": "benchwork now builds against the shared SpoolEntry, but it has no equivalent of 'storypole spool migrate' for an outbox it wrote before CO-6.",
         "edges": [
           {
             "kind": "discovered_from",
@@ -43,7 +43,7 @@
     "active_claim": null,
     "created_at_epoch_ms": 1793304856201,
     "decisions": [],
-    "description": "benchwork now builds against the shared SpoolEntry, but it has no equivalent of 'storypole spool migrate' for an outbox it wrote before GB-182.",
+    "description": "benchwork now builds against the shared SpoolEntry, but it has no equivalent of 'storypole spool migrate' for an outbox it wrote before CO-6.",
     "edges": [
       {
         "kind": "discovered_from",
