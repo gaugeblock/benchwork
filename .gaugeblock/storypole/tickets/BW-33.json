@@ -1,75 +1,130 @@
 {
+  "ticket": {
+    "id": "4cc79e98-88f0-4a2b-9f14-baad4a5d9e29",
+    "ticket_key": "BW-33",
+    "slug": "test-runs-write-into-the-production-telemetry-log-4cc79e",
+    "title": "Test runs write into the production telemetry log",
+    "description": "The only two spans in sawhorse's telemetry log are unit-test artifacts: a provider at 127.0.0.1:59999 and DEFINITELY_NON_EXISTENT_KEY_VAR_12345. Emission fails open, so a test that exercises a failing completion appends to the real log of whatever repository it ran in. Harmless as observability noise, poison as training data: synthetic failures teach a model that a clean run is an error, and stripping them later is guesswork once the test names are gone. Suppress emission under test with an environment guard, or tag the span so downstream filters can drop it.",
+    "kind": "bug",
+    "status": "ready",
+    "priority": 3,
+    "scope": {
+      "repo": "benchwork",
+      "crate_name": "sawhorse-core",
+      "module_path": null,
+      "target_files": [],
+      "target_symbols": [],
+      "labels": []
+    },
+    "edges": [],
+    "decisions": [],
+    "acceptance_criteria": [
+      "running the suite tests adds no line to any telemetry log; a real run still records"
+    ],
+    "plan": null,
+    "active_claim": null,
+    "latest_handoff": null,
+    "verification_receipt": null,
+    "created_at_epoch_ms": 1794167027245,
+    "updated_at_epoch_ms": 1794167027245
+  },
   "events": [
     {
       "event": "task_created",
       "task": {
+        "id": "4cc79e98-88f0-4a2b-9f14-baad4a5d9e29",
+        "ticket_key": "BW-33",
+        "slug": "test-runs-write-into-the-production-telemetry-log-4cc79e",
+        "title": "Test runs write into the production telemetry log",
+        "description": "The only two spans in sawhorse's telemetry log are unit-test artifacts: a provider at 127.0.0.1:59999 and DEFINITELY_NON_EXISTENT_KEY_VAR_12345. Emission fails open, so a test that exercises a failing completion appends to the real log of whatever repository it ran in. Harmless as observability noise, poison as training data: synthetic failures teach a model that a clean run is an error, and stripping them later is guesswork once the test names are gone. Suppress emission under test with an environment guard, or tag the span so downstream filters can drop it.",
+        "kind": "bug",
+        "status": "ready",
+        "priority": 3,
+        "scope": {
+          "repo": "benchwork",
+          "crate_name": "sawhorse-core",
+          "module_path": null,
+          "target_files": [],
+          "target_symbols": [],
+          "labels": []
+        },
+        "edges": [],
+        "decisions": [],
         "acceptance_criteria": [
           "running the suite tests adds no line to any telemetry log; a real run still records"
         ],
-        "active_claim": null,
-        "created_at_epoch_ms": 1794167027245,
-        "decisions": [],
-        "description": "The only two spans in sawhorse's telemetry log are unit-test artifacts: a provider at 127.0.0.1:59999 and DEFINITELY_NON_EXISTENT_KEY_VAR_12345. Emission fails open, so a test that exercises a failing completion appends to the real log of whatever repository it ran in. Harmless as observability noise, poison as training data: synthetic failures teach a model that a clean run is an error, and stripping them later is guesswork once the test names are gone. Suppress emission under test with an environment guard, or tag the span so downstream filters can drop it.",
-        "edges": [],
-        "id": "4cc79e98-88f0-4a2b-9f14-baad4a5d9e29",
-        "kind": "bug",
-        "latest_handoff": null,
         "plan": null,
-        "priority": 3,
-        "scope": {
-          "crate_name": "sawhorse-core",
-          "labels": [],
-          "module_path": null,
-          "repo": "benchwork",
-          "target_files": [],
-          "target_symbols": []
-        },
-        "slug": "test-runs-write-into-the-production-telemetry-log-4cc79e",
-        "status": "ready",
-        "ticket_key": "BW-33",
-        "title": "Test runs write into the production telemetry log",
-        "updated_at_epoch_ms": 1794167027245,
-        "verification_receipt": null
+        "active_claim": null,
+        "latest_handoff": null,
+        "verification_receipt": null,
+        "created_at_epoch_ms": 1794167027245,
+        "updated_at_epoch_ms": 1794167027245
       }
     },
     {
-      "acceptance_criteria": null,
-      "description": "The only two spans in sawhorse's telemetry log are unit-test artifacts: a provider at 127.0.0.1:59999 and DEFINITELY_NON_EXISTENT_KEY_VAR_12345. Emission fails open, so a test that exercises a failing completion appends to the real log of whatever repository it ran in. Harmless as observability noise, poison as training data: synthetic failures teach a model that a clean run is an error, and stripping them later is guesswork once the test names are gone. Suppress emission under test with an environment guard, or tag the span so downstream filters can drop it.\n\nFIXED AND PROVEN 2026-11-08 (commit 20213d6, common).\n\nLIVE PROOF: sawhorse/.gaugeblock/telemetry/events.jsonl held 2 lines - both unit-test artifacts. Running the full\nsawhorse-core test suite (23 tests, one of which exercises a failing provider completion) left it at 2 lines. Before\nthis change that run would have appended.\n\nTwo ways to stay quiet: GAUGEBLOCK_NO_TELEMETRY set to any value, or the process is a cargo test binary recognised as\ntarget/*/deps/<name>-<hash>. The second is structural rather than name-based, so a crate called miter-tests installed\nas a real binary is unaffected - and it exists because the alternative does not: this workspace denies unsafe_code and\nset_var is unsafe in edition 2024, so a test cannot switch emission off for itself.\n\nThe policy sits on append_span, not append_span_forced, because a SpanGuard is built by a caller that already decided\nto record. Splitting them made the existing guard tests fail for the right reason, which is how I knew which side of\nthe line each belonged on.\n\nStill owed in the telemetry set: CO-11 (root the writer, delete the federating reader), GB-339 (one span per CLI\ninvocation across nine more tools), GB-341 (retention with tracked aggregates).",
       "event": "task_updated",
+      "task_id": "4cc79e98-88f0-4a2b-9f14-baad4a5d9e29",
+      "title": null,
+      "description": "The only two spans in sawhorse's telemetry log are unit-test artifacts: a provider at 127.0.0.1:59999 and DEFINITELY_NON_EXISTENT_KEY_VAR_12345. Emission fails open, so a test that exercises a failing completion appends to the real log of whatever repository it ran in. Harmless as observability noise, poison as training data: synthetic failures teach a model that a clean run is an error, and stripping them later is guesswork once the test names are gone. Suppress emission under test with an environment guard, or tag the span so downstream filters can drop it.\n\nFIXED AND PROVEN 2026-11-08 (commit 20213d6, common).\n\nLIVE PROOF: sawhorse/.gaugeblock/telemetry/events.jsonl held 2 lines - both unit-test artifacts. Running the full\nsawhorse-core test suite (23 tests, one of which exercises a failing provider completion) left it at 2 lines. Before\nthis change that run would have appended.\n\nTwo ways to stay quiet: GAUGEBLOCK_NO_TELEMETRY set to any value, or the process is a cargo test binary recognised as\ntarget/*/deps/<name>-<hash>. The second is structural rather than name-based, so a crate called miter-tests installed\nas a real binary is unaffected - and it exists because the alternative does not: this workspace denies unsafe_code and\nset_var is unsafe in edition 2024, so a test cannot switch emission off for itself.\n\nThe policy sits on append_span, not append_span_forced, because a SpanGuard is built by a caller that already decided\nto record. Splitting them made the existing guard tests fail for the right reason, which is how I knew which side of\nthe line each belonged on.\n\nStill owed in the telemetry set: CO-11 (root the writer, delete the federating reader), GB-339 (one span per CLI\ninvocation across nine more tools), GB-341 (retention with tracked aggregates).",
       "priority": null,
       "scope": null,
-      "task_id": "4cc79e98-88f0-4a2b-9f14-baad4a5d9e29",
-      "timestamp_ms": 1794250997765,
-      "title": null
-    }
-  ],
-  "ticket": {
-    "acceptance_criteria": [
-      "running the suite tests adds no line to any telemetry log; a real run still records"
-    ],
-    "active_claim": null,
-    "created_at_epoch_ms": 1794167027245,
-    "decisions": [],
-    "description": "The only two spans in sawhorse's telemetry log are unit-test artifacts: a provider at 127.0.0.1:59999 and DEFINITELY_NON_EXISTENT_KEY_VAR_12345. Emission fails open, so a test that exercises a failing completion appends to the real log of whatever repository it ran in. Harmless as observability noise, poison as training data: synthetic failures teach a model that a clean run is an error, and stripping them later is guesswork once the test names are gone. Suppress emission under test with an environment guard, or tag the span so downstream filters can drop it.",
-    "edges": [],
-    "id": "4cc79e98-88f0-4a2b-9f14-baad4a5d9e29",
-    "kind": "bug",
-    "latest_handoff": null,
-    "plan": null,
-    "priority": 3,
-    "scope": {
-      "crate_name": "sawhorse-core",
-      "labels": [],
-      "module_path": null,
-      "repo": "benchwork",
-      "target_files": [],
-      "target_symbols": []
+      "acceptance_criteria": null,
+      "timestamp_ms": 1794250997765
     },
-    "slug": "test-runs-write-into-the-production-telemetry-log-4cc79e",
-    "status": "ready",
-    "ticket_key": "BW-33",
-    "title": "Test runs write into the production telemetry log",
-    "updated_at_epoch_ms": 1794167027245,
-    "verification_receipt": null
-  }
+    {
+      "event": "task_claimed",
+      "task_id": "4cc79e98-88f0-4a2b-9f14-baad4a5d9e29",
+      "claim": {
+        "agent_id": "cline",
+        "claimed_at_epoch_ms": 1794431192922,
+        "lease_expires_at_epoch_ms": 1794434792922,
+        "git_branch": null,
+        "base_commit_sha": null
+      }
+    },
+    {
+      "event": "status_changed",
+      "task_id": "4cc79e98-88f0-4a2b-9f14-baad4a5d9e29",
+      "from": "ready",
+      "to": "in_progress",
+      "reason": "Claimed by cline",
+      "timestamp_ms": 1794431192922
+    },
+    {
+      "event": "task_verified",
+      "task_id": "4cc79e98-88f0-4a2b-9f14-baad4a5d9e29",
+      "receipt": {
+        "verifier": "storypole-verify",
+        "command": "cargo fmt --all -- --check && cargo clippy --workspace --all-targets -- -D warnings && cargo nextest run --workspace && miter audit --path . --threshold 250 --paths && chalkline docs check -d benchwork",
+        "exit_code": 0,
+        "diagnostic_count": null,
+        "summary": "[window: no base commit could be named, so this receipt covers HEAD only]\nAUDIT PASSED: No files exceed 250 lines in .\nAUDIT PASSED: every crate naming .gaugeblock depends on gaugeblock-workspace\nAUDIT PASSED: every crate resolving the suite has a multi-repository test\n\n=== Gaugeblock 9-Document Architecture Audit ===\nRepository: /Users/wolff/dev2026/neurosymbolic-suite/benchwork\n\n[OK]      Readme           (README.md)\n[OK]      Contributing     (CONTRIBUTING.md)\n[OK]      Product          (docs/PRODUCT.md)\n[OK]      Architecture     (docs/ARCHITECTURE.md)\n[OK]      Spec             (docs/SPEC.md)\n[OK]      Design           (docs/DESIGN.md)\n[OK]      Roadmap          (docs/ROADMAP.md)\n[OK]      Changelog        (CHANGELOG.md)\n[OK]      Agents           (AGENTS.md)\n\nSummary: 9 present, 0 missing, 0 drifted\n\n",
+        "verified_at_epoch_ms": 1794431193436,
+        "git_branch": "main",
+        "base_commit_sha": null,
+        "head_commit_sha": "1f44100725bd33a933fd930946bf6a76259a74fe",
+        "commit_shas": [
+          "1f44100725bd33a933fd930946bf6a76259a74fe"
+        ],
+        "repo": "benchwork",
+        "chain_key": "benchwork"
+      }
+    },
+    {
+      "event": "task_updated",
+      "task_id": "4cc79e98-88f0-4a2b-9f14-baad4a5d9e29",
+      "title": null,
+      "description": "The only two spans in sawhorse's telemetry log are unit-test artifacts: a provider at 127.0.0.1:59999 and DEFINITELY_NON_EXISTENT_KEY_VAR_12345. Emission fails open, so a test that exercises a failing completion appends to the real log of whatever repository it ran in. Harmless as observability noise, poison as training data: synthetic failures teach a model that a clean run is an error, and stripping them later is guesswork once the test names are gone. Suppress emission under test with an environment guard, or tag the span so downstream filters can drop it.\n\nFIXED AND PROVEN 2026-11-08 (commit 20213d6, common).\n\nLIVE PROOF: sawhorse/.gaugeblock/telemetry/events.jsonl held 2 lines - both unit-test artifacts. Running the full\nsawhorse-core test suite (23 tests, one of which exercises a failing provider completion) left it at 2 lines. Before\nthis change that run would have appended.\n\nTwo ways to stay quiet: GAUGEBLOCK_NO_TELEMETRY set to any value, or the process is a cargo test binary recognised as\ntarget/*/deps/<name>-<hash>. The second is structural rather than name-based, so a crate called miter-tests installed\nas a real binary is unaffected - and it exists because the alternative does not: this workspace denies unsafe_code and\nset_var is unsafe in edition 2024, so a test cannot switch emission off for itself.\n\nThe policy sits on append_span, not append_span_forced, because a SpanGuard is built by a caller that already decided\nto record. Splitting them made the existing guard tests fail for the right reason, which is how I knew which side of\nthe line each belonged on.\n\nStill owed in the telemetry set: CO-11 (root the writer, delete the federating reader), GB-339 (one span per CLI\ninvocation across nine more tools), GB-341 (retention with tracked aggregates).\n\nVERIFIED 2026-11-10 against the benchwork chain (verifier storypole-verify, exit code 0, one commit). Worth stating plainly what that receipt does and does not attest: the fix itself landed in common (20213d6, the emission guard and its two silences), and BW-33 lives in benchwork store because that is where it was filed, so the chain that ran proves benchwork builds, lints and tests - not that the guard still holds. The guard behavioural evidence is the one already recorded above: sawhorse telemetry log at 2 lines before the full sawhorse-core suite and 2 lines after. Reading the receipt as proof of the guard would be reading it for something it does not say, which is the mistake GB-313 records from the other direction.",
+      "priority": null,
+      "scope": null,
+      "acceptance_criteria": null,
+      "timestamp_ms": 1794431365086
+    },
+    {
+      "event": "task_archived",
+      "task_id": "4cc79e98-88f0-4a2b-9f14-baad4a5d9e29",
+      "status": "verified",
+      "timestamp_ms": 1794431365178
+    }
+  ]
 }
