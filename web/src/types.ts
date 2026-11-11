@@ -172,11 +172,23 @@ export interface DagStats {
   blocked: number;
   deferred?: number;
   archived?: number;
+  /** Edges in this view whose target is not in this checkout (`SP-38`). */
+  unresolved_edges?: number;
+}
+
+/** An edge whose target this checkout cannot resolve, named by its locator (`SP-38`). */
+export interface UnresolvedEdge {
+  source: string;
+  kind: string;
+  target_id: string;
+  target_key?: string;
+  target_repo?: string;
 }
 
 export interface DagView {
   nodes: TaskNode[];
   topological_order: string[];
+  unresolved_edges?: UnresolvedEdge[];
   stats: DagStats;
 }
 

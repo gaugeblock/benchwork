@@ -5,7 +5,7 @@ pub mod hub;
 pub mod spec;
 pub mod synthesis;
 
-pub use dag::{DagQuery, DagStats, DagView};
+pub use dag::{DagQuery, DagStats, DagView, UnresolvedEdge};
 pub use hub::{
     InferencePingRequest, InferencePingResponse, ModelHubStatus, UiSnapshot, WorkspaceCapabilities,
 };

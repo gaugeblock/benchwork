@@ -150,6 +150,25 @@ export const DagBoardPanel: React.FC<DagBoardPanelProps> = ({ onDiscussInChat })
             {dag?.stats.archived !== undefined && dag.stats.archived > 0 && (
               <span className="text-zinc-500">Archived: <b>{dag.stats.archived}</b></span>
             )}
+            {/* An edge to another repository used to be dropped from the canvas without a word
+                (`SP-38`). The count says the graph is short; the title says of what. */}
+            {(dag?.stats.unresolved_edges ?? 0) > 0 && (
+              <span
+                className="text-cad-red"
+                title={(dag?.unresolved_edges ?? [])
+                  .map(
+                    (edge) =>
+                      `${edge.source} → ${
+                        edge.target_repo && edge.target_key
+                          ? `${edge.target_key} (${edge.target_repo})`
+                          : (edge.target_key ?? edge.target_id.slice(0, 8))
+                      }`
+                  )
+                  .join('\n')}
+              >
+                Outside this checkout: <b>{dag?.stats.unresolved_edges}</b>
+              </span>
+            )}
           </div>
 
           <div className="flex bg-cad-bg border border-cad-border rounded p-0.5">

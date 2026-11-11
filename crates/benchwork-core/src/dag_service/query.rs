@@ -12,7 +12,7 @@ use storypole_core::{StorypoleStore, StorypoleWorkspaceStore};
 use uuid::Uuid;
 
 use crate::error::{BenchworkError, Result};
-use crate::model::{DagQuery, DagStats, DagView};
+use crate::model::{DagQuery, DagStats, DagView, UnresolvedEdge};
 
 /// Queries tasks according to `DagQuery` and computes topological order and summary stats.
 pub fn get_dag_view(root_path: &Path, query: &DagQuery) -> Result<DagView> {
@@ -104,9 +104,30 @@ fn build_dag_view_from_tasks(all_tasks: BTreeMap<Uuid, TaskNode>, query: &DagQue
         keys
     };
 
+    // An edge whose target is not in this checkout is still a fact worth showing (`SP-38`). The layout used
+    // to drop those arrows silently, so a graph missing twelve of them looked complete. The locator on the
+    // edge is what makes them nameable; an edge without one falls back to its uuid prefix.
+    let unresolved_edges: Vec<UnresolvedEdge> = filtered_nodes
+        .iter()
+        .flat_map(|task| {
+            task.edges
+                .iter()
+                .filter(|edge| !all_tasks.contains_key(&edge.target_id))
+                .map(|edge| UnresolvedEdge {
+                    source: task.ticket_key.clone(),
+                    kind: edge.kind,
+                    target_id: edge.target_id.to_string(),
+                    target_key: edge.target_ticket_key.clone(),
+                    target_repo: edge.target_repo.clone(),
+                })
+        })
+        .collect();
+    stats.unresolved_edges = unresolved_edges.len();
+
     DagView {
         nodes: filtered_nodes,
         topological_order,
+        unresolved_edges,
         stats,
     }
 }
