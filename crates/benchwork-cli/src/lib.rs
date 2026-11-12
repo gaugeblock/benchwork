@@ -5,4 +5,5 @@
 
 pub mod args;
 pub mod daemon;
+pub mod fleet;
 pub mod handlers;

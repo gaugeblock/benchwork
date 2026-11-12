@@ -17,7 +17,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 use benchwork_cli::daemon::routes_telemetry::events_path_in;
-use benchwork_cli::handlers::fleet_root;
+use benchwork_cli::fleet::fleet_root;
 
 /// Both sides canonicalised: the resolvers canonicalise before walking ancestors, the target files do not
 /// exist, and on macOS a tempdir is reached through the `/var` symlink.
