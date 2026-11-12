@@ -59,6 +59,11 @@ fn test_task_archive_and_filtering() -> std::result::Result<(), Box<dyn std::err
             commit_shas: vec![],
             repo: None,
             chain_key: None,
+            // The contract's optional change fields (`SP-41`): a fixture that predates them says so
+            // explicitly, because the literal is what the compiler checks at every constructor.
+            diff_hash: None,
+            diff: None,
+            window_intact: None,
         }),
         created_at_epoch_ms: 0,
         updated_at_epoch_ms: 0,
