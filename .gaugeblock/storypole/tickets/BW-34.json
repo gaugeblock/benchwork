@@ -4,9 +4,9 @@
     "ticket_key": "BW-34",
     "slug": "benchwork-chat-context-injection-reads-the-ledger-directly-and-goes-blank-in-records-mode-26e736",
     "title": "benchwork chat context injection reads the ledger directly and goes blank in records mode",
-    "description": "Found while sweeping for consumers of storypole state after ADR 0009 moved tickets into one file each. context_injector.rs:61 reads .gaugeblock/storypole/ledger.jsonl and replays it to inject task context into the chat harness. In records mode that file still exists - init creates it - but holds no events, so the injection yields nothing and the failure is silent: the chat simply has no task context, which looks like a quiet model rather than a broken reader. It needs to read whichever layout the store uses, the same way storypole workspace rollup now does (SP-36): tickets/*.json when the tickets directory exists, ledger.jsonl otherwise. Worth noting what did NOT break: capabilities.rs:100 checks ledger.is_file() OR config.toml, so storypole_active stays true, and outfeed reaches storypole through add_task/verify_task rather than the file, so it needs no change.",
+    "description": "Found while sweeping for consumers of storypole state after ADR 0009 moved tickets into one file each. context_injector.rs:61 reads .gaugeblock/storypole/ledger.jsonl and replays it to inject task context into the chat harness. In records mode that file still exists - init creates it - but holds no events, so the injection yields nothing and the failure is silent: the chat simply has no task context, which looks like a quiet model rather than a broken reader. It needs to read whichever layout the store uses, the same way storypole workspace rollup now does (SP-36): tickets/*.json when the tickets directory exists, ledger.jsonl otherwise. Worth noting what did NOT break: capabilities.rs:100 checks ledger.is_file() OR config.toml, so storypole_active stays true, and outfeed reaches storypole through add_task/verify_task rather than the file, so it needs no change.\n\nFIXED 2026-11-08 (commit 9da4787, benchmark main).\n\nThe chat harness now reads state through storypole_core::state::load, so it sees whichever layout the store uses.\n\nWorse than the ticket said: the old code grepped ledger.jsonl for status-change lines, so even in ledger mode it\ncounted EVENTS rather than current states - a ticket that moved to in_progress and back still counted as in progress.\nIn records mode it found no ledger and reported zero of everything, which reads as a quiet project rather than a\nbroken reader.\n\nThis is the first caller of the loader added in GB-348, which is the point of that ticket: a consumer asks for state\nand never chooses a file.\n\nTier 2: 50 benchwork-core tests green, clippy clean, audits pass.",
     "kind": "bug",
-    "status": "triage",
+    "status": "verified",
     "priority": 2,
     "scope": {
       "repo": "benchwork",
@@ -24,9 +24,25 @@
     "plan": null,
     "active_claim": null,
     "latest_handoff": null,
-    "verification_receipt": null,
+    "verification_receipt": {
+      "verifier": "storypole-verify",
+      "command": "cargo fmt --all -- --check && cargo clippy --workspace --all-targets -- -D warnings && cargo nextest run --workspace && miter audit --path . --threshold 250 --paths && chalkline docs check -d benchwork",
+      "exit_code": 0,
+      "diagnostic_count": null,
+      "summary": "[window: no base commit could be named, so this receipt covers HEAD only]\nAUDIT PASSED: No files exceed 250 lines in .\nAUDIT PASSED: every crate naming .gaugeblock depends on gaugeblock-workspace\nAUDIT PASSED: every crate resolving the suite has a multi-repository test\n\n=== Gaugeblock 9-Document Architecture Audit ===\nRepository: /Users/wolff/dev2026/neurosymbolic-suite/benchwork\n\n[OK]      Readme           (README.md)\n[OK]      Contributing     (CONTRIBUTING.md)\n[OK]      Product          (docs/PRODUCT.md)\n[OK]      Architecture     (docs/ARCHITECTURE.md)\n[OK]      Spec             (docs/SPEC.md)\n[OK]      Design           (docs/DESIGN.md)\n[OK]      Roadmap          (docs/ROADMAP.md)\n[OK]      Changelog        (CHANGELOG.md)\n[OK]      Agents           (AGENTS.md)\n\nSummary: 9 present, 0 missing, 0 drifted\n\n",
+      "verified_at_epoch_ms": 1794244687429,
+      "git_branch": "main",
+      "base_commit_sha": null,
+      "head_commit_sha": "0af06c58ee7f0c05b3055e747adf488e77cb3dc3",
+      "commit_shas": [
+        "0af06c58ee7f0c05b3055e747adf488e77cb3dc3"
+      ],
+      "repo": "benchwork",
+      "chain_key": "benchwork"
+    },
     "created_at_epoch_ms": 1794206052076,
-    "updated_at_epoch_ms": 1794206059249
+    "updated_at_epoch_ms": 1794343386339,
+    "archived_at_epoch_ms": 1794343386339
   },
   "events": [
     {
