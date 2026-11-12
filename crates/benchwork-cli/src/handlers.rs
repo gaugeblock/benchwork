@@ -1,6 +1,6 @@
 //! CLI command dispatch handlers.
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use benchwork_core::{BenchworkState, discover_migration, execute_migration, scan_capabilities};
 use benchwork_mcp::run_stdio_server;
@@ -172,6 +172,23 @@ pub fn handle_archive_all(
 
 /// Reconciles duplicate per-tool configs against the unified `.gaugeblock/config.toml` (`GB-267`).
 ///
+/// The suite root a fleet command should walk, resolved from wherever it was launched (`GB-293`, `GB-305`).
+///
+/// `tidy --workspace` used to discover members of the directory it was run in. At a suite root that is the
+/// suite; inside a member it is the member, whose only child directories are target/ and worktrees - so the
+/// command walked nothing, found nothing, and reported success. A fleet operation that runs over zero
+/// repositories and exits zero is indistinguishable from one that ran over twelve and found them clean.
+///
+/// Falls back to `start` when no declared suite contains it, because a lone repository is its own fleet of one
+/// and must still be tidied.
+#[must_use]
+pub fn fleet_root(start: &Path) -> PathBuf {
+    let canonical = std::fs::canonicalize(start).unwrap_or_else(|_| start.to_path_buf());
+    gaugeblock_workspace::Membership::containing(&canonical)
+        .map(|membership| membership.suite_root)
+        .unwrap_or(canonical)
+}
+
 /// Separate from `migrate` on purpose: this is a tidy operation over an already-unified workspace, so it
 /// has to run when there is nothing to migrate. Attached to migration it was unreachable twice over -
 /// driven by plan items, then living inside an engine the CLI never called.
@@ -184,7 +201,7 @@ pub fn handle_tidy(
     // finding is recorded and the run continues - because a fleet command that stops at the first problem
     // leaves the operator guessing how far it got.
     if args.workspace {
-        let topology = gaugeblock_workspace::WorkspaceTopology::discover(&root_path);
+        let topology = gaugeblock_workspace::WorkspaceTopology::discover(&fleet_root(&root_path));
         let mut conflicts = 0usize;
         let mut with_findings = 0usize;
 

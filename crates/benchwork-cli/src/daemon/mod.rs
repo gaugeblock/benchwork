@@ -27,7 +27,7 @@ use crate::args::UpArgs;
 use assets::{ServerConfig, handle_static};
 use routes_state::DaemonContext;
 
-mod routes_telemetry;
+pub mod routes_telemetry;
 
 /// Spawns the Axum daemon server on the specified host and port.
 pub async fn start_daemon(

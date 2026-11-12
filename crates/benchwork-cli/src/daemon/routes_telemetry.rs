@@ -16,7 +16,7 @@ use axum::response::sse::{Event, KeepAlive, Sse};
 use benchwork_core::telemetry_tail::TelemetryTail;
 use futures::Stream;
 use gaugeblock_contracts::TelemetrySpan;
-use gaugeblock_workspace::GaugeblockPaths;
+use std::path::Path;
 
 const POLL_INTERVAL: Duration = Duration::from_millis(400);
 
@@ -48,13 +48,23 @@ pub async fn telemetry_stream() -> Sse<impl Stream<Item = Result<Event, Infallib
     Sse::new(stream).keep_alive(KeepAlive::default())
 }
 
-/// Resolves the log through the canonical path helper, so a worktree streams the same file the main
-/// checkout writes (`GB-189`). Returns an empty path when the directory is not a repository, which the
-/// tailer reports as "nothing yet" rather than an error.
+/// Resolves the log through the suite-aware sink, so a member tails the suite's telemetry (`GB-189`, `GB-293`).
+///
+/// It used to resolve through `GaugeblockPaths::discover`, which reports the checkout the daemon happens to be
+/// running in. Telemetry centralises at the suite root (`GB-338`), so a daemon started inside a member tailed a
+/// file nothing writes: the panel showed "nothing yet" while the suite log filled up. Same mistake as rabbet's
+/// ingest (`GB-304`), found by the same test shape - from a member, the repo-local answer and the suite answer
+/// differ, and only the suite one is right.
+///
+/// Returns an empty path when the directory is not a repository, which the tailer reports as "nothing yet"
+/// rather than an error.
 fn events_path() -> std::path::PathBuf {
     std::env::current_dir()
-        .ok()
-        .and_then(|cwd| GaugeblockPaths::discover(&cwd).ok())
-        .map(|paths| paths.telemetry_events())
+        .map(|cwd| events_path_in(&cwd))
         .unwrap_or_default()
+}
+
+/// [`events_path`] for a known directory, so the resolution can be tested without moving the process.
+pub fn events_path_in(cwd: &Path) -> std::path::PathBuf {
+    gaugeblock_workspace::sink_path(cwd).unwrap_or_default()
 }
