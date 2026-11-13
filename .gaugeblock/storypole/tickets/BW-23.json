@@ -1,67 +1,125 @@
 {
-  "events": [
-    {
-      "captured_by_agent": "user",
-      "discovered_from_task_id": null,
-      "event": "deferred_item_captured",
-      "task": {
-        "acceptance_criteria": [],
-        "active_claim": null,
-        "created_at_epoch_ms": 1793126158828,
-        "decisions": [],
-        "description": "Polyglot contract drift detected by miter contracts across Rust models and TypeScript interfaces for AnonymizedSynthesisTrace, DadoPattern, TypedHole, TaskEdge, ChatMessage, and RoleOverrideConfig.",
-        "edges": [],
-        "id": "2e7cc48c-fa51-4574-a340-824e15311f59",
-        "kind": "bug",
-        "latest_handoff": null,
-        "plan": null,
-        "priority": 3,
-        "scope": {
-          "crate_name": "benchwork-cli",
-          "labels": [],
-          "module_path": null,
-          "repo": "benchwork",
-          "target_files": [
-            "benchwork/web/src/types.ts,benchwork/web/src/types/hub.ts,benchwork/web/src/chat/types.ts"
-          ],
-          "target_symbols": []
-        },
-        "slug": "harmonize-typescript-wire-contracts-with-rust-domain-models-in-benchwork-2e7cc4",
-        "status": "triage",
-        "ticket_key": "BW-23",
-        "title": "Harmonize TypeScript wire contracts with Rust domain models in benchwork",
-        "updated_at_epoch_ms": 1793126158828,
-        "verification_receipt": null
-      }
-    }
-  ],
   "ticket": {
-    "acceptance_criteria": [],
-    "active_claim": null,
-    "created_at_epoch_ms": 1793126158828,
-    "decisions": [],
-    "description": "Polyglot contract drift detected by miter contracts across Rust models and TypeScript interfaces for AnonymizedSynthesisTrace, DadoPattern, TypedHole, TaskEdge, ChatMessage, and RoleOverrideConfig.",
-    "edges": [],
     "id": "2e7cc48c-fa51-4574-a340-824e15311f59",
+    "ticket_key": "BW-23",
+    "slug": "harmonize-typescript-wire-contracts-with-rust-domain-models-in-benchwork-2e7cc4",
+    "title": "Harmonize TypeScript wire contracts with Rust domain models in benchwork",
+    "description": "Polyglot contract drift detected by miter contracts across Rust models and TypeScript interfaces for AnonymizedSynthesisTrace, DadoPattern, TypedHole, TaskEdge, ChatMessage, and RoleOverrideConfig.\n\nRE-CHECKED 2026-11-12: miter contracts reports Entities with Contract Drift: 0, one declared non-mirror, ALL CONTRACTS CONSISTENT across the Rust models and TypeScript interfaces this ticket named. Closing on that measurement.",
     "kind": "bug",
-    "latest_handoff": null,
-    "plan": null,
+    "status": "verified",
     "priority": 3,
     "scope": {
-      "crate_name": "benchwork-cli",
-      "labels": [],
-      "module_path": null,
       "repo": "benchwork",
+      "crate_name": "benchwork-cli",
+      "module_path": null,
       "target_files": [
         "benchwork/web/src/types.ts,benchwork/web/src/types/hub.ts,benchwork/web/src/chat/types.ts"
       ],
-      "target_symbols": []
+      "target_symbols": [],
+      "labels": []
     },
-    "slug": "harmonize-typescript-wire-contracts-with-rust-domain-models-in-benchwork-2e7cc4",
-    "status": "triage",
-    "ticket_key": "BW-23",
-    "title": "Harmonize TypeScript wire contracts with Rust domain models in benchwork",
-    "updated_at_epoch_ms": 1793126158828,
-    "verification_receipt": null
-  }
+    "edges": [],
+    "decisions": [],
+    "acceptance_criteria": [],
+    "plan": null,
+    "active_claim": null,
+    "latest_handoff": null,
+    "verification_receipt": {
+      "verifier": "storypole-verify",
+      "command": "cargo fmt --all -- --check && cargo clippy --workspace --all-targets -- -D warnings && cargo nextest run --workspace && miter audit --path . --threshold 250 --paths && chalkline docs check -d benchwork",
+      "exit_code": 0,
+      "diagnostic_count": null,
+      "summary": "[window: no base commit could be named, so this receipt covers HEAD only]\nAUDIT PASSED: No files exceed 250 lines in .\nAUDIT PASSED: every crate naming .gaugeblock depends on gaugeblock-workspace\nAUDIT PASSED: every crate resolving the suite has a multi-repository test\nSIZE RATCHET UNRECORDED: 18 file(s) in the 200-line band and no baseline; run `miter audit --paths --write-size-ratchet` to record them\n\n=== Gaugeblock 9-Document Architecture Audit ===\nRepository: /Users/wolff/dev2026/neurosymbolic-suite/benchwork\n\n[OK]      Readme           (README.md)\n[OK]      Contributing     (CONTRIBUTING.md)\n[OK]      Product          (docs/PRODUCT.md)\n[OK]      Architecture     (docs/ARCHITECTURE.md)\n[OK]      Spec             (docs/SPEC.md)\n[OK]      Design           (docs/DESIGN.md)\n[OK]      Roadmap          (docs/ROADMAP.md)\n[OK]      Changelog        (CHANGELOG.md)\n[OK]      Agents           (AGENTS.md)\n\nSummary: 9 present, 0 missing, 0 drifted\n\n",
+      "verified_at_epoch_ms": 1794608749114,
+      "git_branch": "main",
+      "base_commit_sha": null,
+      "head_commit_sha": "54ffca25389d3aaf9cdbf931ec19c75735add21e",
+      "commit_shas": [
+        "54ffca25389d3aaf9cdbf931ec19c75735add21e"
+      ],
+      "repo": "benchwork",
+      "chain_key": "benchwork",
+      "diff_hash": "c9a03cbe2a4ceb41e53e3d88d944fb34423c765d",
+      "diff": "diff --git a/crates/benchwork-cli/src/fleet.rs b/crates/benchwork-cli/src/fleet.rs\nnew file mode 100644\nindex 0000000..1f78592\n--- /dev/null\n+++ b/crates/benchwork-cli/src/fleet.rs\n@@ -0,0 +1,102 @@\n+//! Fleet operations over a suite of repositories (`GB-263`, `GB-293`).\n+//!\n+//! Split from `handlers` when the resolution fix pushed that file past the 250-line limit - by a\n+//! reformat, not an edit, which is the boundary hazard `GB-305` recorded. Both functions share one\n+//! question: which repositories does this command walk?\n+\n+use std::path::{Path, PathBuf};\n+\n+use crate::args::TidyArgs;\n+\n+/// The suite root a fleet command should walk, resolved from wherever it was launched (`GB-293`, `GB-305`).\n+///\n+/// `tidy --workspace` used to discover members of the directory it was run in. At a suite root that is the\n+/// suite; inside a member it is the member, whose only child directories are target/ and worktrees - so the\n+/// command walked nothing, found nothing, and reported success. A fleet operation that runs over zero\n+/// repositories and exits zero is indistinguishable from one that ran over twelve and found them clean.\n+///\n+/// Falls back to `start` when no declared suite contains it, because a lone repository is its own fleet of one\n+/// and must still be tidied.\n+#[must_use]\n+pub fn fleet_root(start: &Path) -> PathBuf {\n+    let canonical = std::fs::canonicalize(start).unwrap_or_else(|_| start.to_path_buf());\n+    gaugeblock_workspace::Membership::containing(&canonical)\n+        .map(|membership| membership.suite_root)\n+        .unwrap_or(canonical)\n+}\n+\n+/// Separate from `migrate` on purpose: this is a tidy operation over an already-unified workspace, so it\n+/// has to run when there is nothing to migrate. Attached to migration it was unreachable twice over -\n+/// driven by plan items, then living inside an engine the CLI never called.\n+pub fn handle_tidy(\n+    root_path: PathBuf,\n+    args: TidyArgs,\n+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {\n+    // Fleet mode (`GB-263`): membership comes from WorkspaceTopology, never a glob, so target/, worktrees/\n+    // and nested non-member repositories are excluded by construction. Each repository is isolated - a\n+    // finding is recorded and the run continues - because a fleet command that stops at the first problem\n+    // leaves the operator guessing how far it got.\n+    if args.workspace {\n+        let topology = gaugeblock_workspace::WorkspaceTopology::discover(&fleet_root(&root_path));\n+        let mut conflicts = 0usize;\n+        let mut with_findings = 0usize;\n+\n+        for member in topology.members() {\n+            let gb_root = member.path.join(\".gaugeblock\");\n+            let findings =\n+                benchwork_core::migration::engine::reconcile_tool_configs(&gb_root, args.dry_run);\n+            if findings.is_empty() {\n+                continue;\n+            }\n+            with_findings += 1;\n+            if findings.iter().any(|finding| finding.contains(\"CONFLICT\")) {\n+                conflicts += 1;\n+            }\n+            println!(\"  {}:\", member.name);\n+            for finding in &findings {\n+                println!(\"    - {finding}\");\n+            }\n+        }\n+\n+        let total = topology.members().len();\n+        if !args.json {\n+            println!(\n+                \"--- Tidy {} (workspace) ---\\n  {total} repositories, {} already tidy, {with_findings} with findings\",\n+                if args.dry_run { \"Dry Run\" } else { \"Receipt\" },\n+                total - with_findings\n+            );\n+        }\n+        if conflicts > 0 {\n+            return Err(\n+                format!(\"{conflicts} repository(ies) reported conflicts; see above\").into(),\n+            );\n+        }\n+        return Ok(());\n+    }\n+\n+    let gb_root = root_path.join(\".gaugeblock\");\n+    let findings =\n+        benchwork_core::migration::engine::reconcile_tool_configs(&gb_root, args.dry_run);\n+\n+    if args.json {\n+        println!(\n+            \"{}\",\n+            serde_json::to_string_pretty(&serde_json::json!({\n+                \"dry_run\": args.dry_run,\n+                \"findings\": findings,\n+            }))?\n+        );\n+    } else if findings.is_empty() {\n+        println!(\"Nothing to reconcile: no duplicate per-tool configs found.\");\n+    } else {\n+        println!(\n+            \"--- Tidy {} ---\",\n+            if args.dry_run { \"Dry Run\" } else { \"Receipt\" }\n+        );\n+        for finding in &findings {\n+            println!(\"  - {finding}\");\n+        }\n+    }\n+\n+    Ok(())\n+}\ndiff --git a/crates/benchwork-cli/src/handlers.rs b/crates/benchwork-cli/src/handlers.rs\nindex 7f042cb..d263811 100644\n--- a/crates/benchwork-cli/src/handlers.rs\n+++ b/crates/benchwork-cli/src/handlers.rs\n@@ -1,11 +1,13 @@\n //! CLI command dispatch handlers.\n \n-use std::path::{Path, PathBuf};\n+use std::path::PathBuf;\n+\n+pub use crate::fleet::handle_tidy;\n \n use benchwork_core::{BenchworkState, discover_migration, execute_migration, scan_capabilities};\n use benchwork_mcp::run_stdio_server;\n \n-use crate::args::{FormatArgs, MigrateArgs, TidyArgs, UpArgs};\n+use crate::args::{FormatArgs, MigrateArgs, UpArgs};\n use crate::daemon::start_daemon;\n \n /// Executes the `benchwork capabilities` command.\n@@ -169,98 +171,3 @@ pub fn handle_archive_all(\n     }\n     Ok(())\n }\n-\n-/// Reconciles duplicate per-tool configs against the unified `.gaugeblock/config.toml` (`GB-267`).\n-///\n-/// The suite root a fleet command should walk, resolved from wherever it was launched (`GB-293`, `GB-305`).\n-///\n-/// `tidy --workspace` used to discover members of the directory it was run in. At a suite root that is the\n-/// suite; inside a member it is the member, whose only child directories are target/ and worktrees - so the\n-/// command walked nothing, found nothing, and reported success. A fleet operation that runs over zero\n-/// repositories and exits zero is indistinguishable from one that ran over twelve and found them clean.\n-///\n-/// Falls back to `start` when no declared suite contains it, because a lone repository is its own fleet of one\n-/// and must still be tidied.\n-#[must_use]\n-pub fn fleet_root(start: &Path) -> PathBuf {\n-    let canonical = std::fs::canonicalize(start).unwrap_or_else(|_| start.to_path_buf());\n-    gaugeblock_workspace::Membership::containing(&canonical)\n-        .map(|membership| membership.suite_root)\n-        .unwrap_or(canonical)\n-}\n-\n-/// Separate from `migrate` on purpose: this is a tidy operation over an already-unified workspace, so it\n-/// has to run when there is nothing to migrate. Attached to migration it was unreachable twice over -\n-/// driven by plan items, then living inside an engine the CLI never called.\n-pub fn handle_tidy(\n-    root_path: PathBuf,\n-    args: TidyArgs,\n-) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {\n-    // Fleet mode (`GB-263`): membership comes from WorkspaceTopology, never a glob, so target/, worktrees/\n-    // and nested non-member repositories are excluded by construction. Each repository is isolated - a\n-    // finding is recorded and the run continues - because a fleet command that stops at the first problem\n-    // leaves the operator guessing how far it got.\n-    if args.workspace {\n-        let topology = gaugeblock_workspace::WorkspaceTopology::discover(&fleet_root(&root_path));\n-        let mut conflicts = 0usize;\n-        let mut with_findings = 0usize;\n-\n-        for member in topology.members() {\n-            let gb_root = member.path.join(\".gaugeblock\");\n-            let findings =\n-                benchwork_core::migration::engine::reconcile_tool_configs(&gb_root, args.dry_run);\n-            if findings.is_empty() {\n-                continue;\n-            }\n-            with_findings += 1;\n-            if findings.iter().any(|finding| finding.contains(\"CONFLICT\")) {\n-                conflicts += 1;\n-            }\n-            println!(\"  {}:\", member.name);\n-            for finding in &findings {\n-                println!(\"    - {finding}\");\n-            }\n-        }\n-\n-        let total = topology.members().len();\n-        if !args.json {\n-            println!(\n-                \"--- Tidy {} (workspace) ---\\n  {total} repositories, {} already tidy, {with_findings} with findings\",\n-                if args.dry_run { \"Dry Run\" } else { \"Receipt\" },\n-                total - with_findings\n-            );\n-        }\n-        if conflicts > 0 {\n-            return Err(\n-                format!(\"{conflicts} repository(ies) reported conflicts; see above\").into(),\n-            );\n-        }\n-        return Ok(());\n-    }\n-\n-    let gb_root = root_path.join(\".gaugeblock\");\n-    let findings =\n-        benchwork_core::migration::engine::reconcile_tool_configs(&gb_root, args.dry_run);\n-\n-    if args.json {\n-        println!(\n-            \"{}\",\n-            serde_json::to_string_pretty(&serde_json::json!({\n-                \"dry_run\": args.dry_run,\n-                \"findings\": findings,\n-            }))?\n-        );\n-    } else if findings.is_empty() {\n-        println!(\"Nothing to reconcile: no duplicate per-tool configs found.\");\n-    } else {\n-        println!(\n-            \"--- Tidy {} ---\",\n-            if args.dry_run { \"Dry Run\" } else { \"Receipt\" }\n-        );\n-        for finding in &findings {\n-            println!(\"  - {finding}\");\n-        }\n-    }\n-\n-    Ok(())\n-}\ndiff --git a/crates/benchwork-cli/src/lib.rs b/crates/benchwork-cli/src/lib.rs\nindex d8bbeab..1601ddc 100644\n--- a/crates/benchwork-cli/src/lib.rs\n+++ b/crates/benchwork-cli/src/lib.rs\n@@ -5,4 +5,5 @@\n \n pub mod args;\n pub mod daemon;\n+pub mod fleet;\n pub mod handlers;\ndiff --git a/crates/benchwork-cli/tests/two_repo_resolution.rs b/crates/benchwork-cli/tests/two_repo_resolution.rs\nindex 1a4461a..1637679 100644\n--- a/crates/benchwork-cli/tests/two_repo_resolution.rs\n+++ b/crates/benchwork-cli/tests/two_repo_resolution.rs\n@@ -17,7 +17,7 @@ use std::fs;\n use std::path::{Path, PathBuf};\n \n use benchwork_cli::daemon::routes_telemetry::events_path_in;\n-use benchwork_cli::handlers::fleet_root;\n+use benchwork_cli::fleet::fleet_root;\n \n /// Both sides canonicalised: the resolvers canonicalise before walking ancestors, the target files do not\n /// exist, and on macOS a tempdir is reached through the `/var` symlink.\n",
+      "window_intact": true
+    },
+    "created_at_epoch_ms": 1793126158828,
+    "updated_at_epoch_ms": 1794609140760,
+    "archived_at_epoch_ms": 1794609140760
+  },
+  "events": [
+    {
+      "event": "deferred_item_captured",
+      "task": {
+        "id": "2e7cc48c-fa51-4574-a340-824e15311f59",
+        "ticket_key": "BW-23",
+        "slug": "harmonize-typescript-wire-contracts-with-rust-domain-models-in-benchwork-2e7cc4",
+        "title": "Harmonize TypeScript wire contracts with Rust domain models in benchwork",
+        "description": "Polyglot contract drift detected by miter contracts across Rust models and TypeScript interfaces for AnonymizedSynthesisTrace, DadoPattern, TypedHole, TaskEdge, ChatMessage, and RoleOverrideConfig.",
+        "kind": "bug",
+        "status": "triage",
+        "priority": 3,
+        "scope": {
+          "repo": "benchwork",
+          "crate_name": "benchwork-cli",
+          "module_path": null,
+          "target_files": [
+            "benchwork/web/src/types.ts,benchwork/web/src/types/hub.ts,benchwork/web/src/chat/types.ts"
+          ],
+          "target_symbols": [],
+          "labels": []
+        },
+        "edges": [],
+        "decisions": [],
+        "acceptance_criteria": [],
+        "plan": null,
+        "active_claim": null,
+        "latest_handoff": null,
+        "verification_receipt": null,
+        "created_at_epoch_ms": 1793126158828,
+        "updated_at_epoch_ms": 1793126158828
+      },
+      "captured_by_agent": "user",
+      "discovered_from_task_id": null
+    },
+    {
+      "event": "task_updated",
+      "task_id": "2e7cc48c-fa51-4574-a340-824e15311f59",
+      "title": null,
+      "description": "Polyglot contract drift detected by miter contracts across Rust models and TypeScript interfaces for AnonymizedSynthesisTrace, DadoPattern, TypedHole, TaskEdge, ChatMessage, and RoleOverrideConfig.\n\nRE-CHECKED 2026-11-12: miter contracts reports Entities with Contract Drift: 0, one declared non-mirror, ALL CONTRACTS CONSISTENT across the Rust models and TypeScript interfaces this ticket named. Closing on that measurement.",
+      "priority": null,
+      "scope": null,
+      "acceptance_criteria": null,
+      "timestamp_ms": 1794608735047
+    },
+    {
+      "event": "task_verified",
+      "task_id": "2e7cc48c-fa51-4574-a340-824e15311f59",
+      "receipt": {
+        "verifier": "storypole-verify",
+        "command": "cargo fmt --all -- --check && cargo clippy --workspace --all-targets -- -D warnings && cargo nextest run --workspace && miter audit --path . --threshold 250 --paths && chalkline docs check -d benchwork",
+        "exit_code": 0,
+        "diagnostic_count": null,
+        "summary": "[window: no base commit could be named, so this receipt covers HEAD only]\nAUDIT PASSED: No files exceed 250 lines in .\nAUDIT PASSED: every crate naming .gaugeblock depends on gaugeblock-workspace\nAUDIT PASSED: every crate resolving the suite has a multi-repository test\nSIZE RATCHET UNRECORDED: 18 file(s) in the 200-line band and no baseline; run `miter audit --paths --write-size-ratchet` to record them\n\n=== Gaugeblock 9-Document Architecture Audit ===\nRepository: /Users/wolff/dev2026/neurosymbolic-suite/benchwork\n\n[OK]      Readme           (README.md)\n[OK]      Contributing     (CONTRIBUTING.md)\n[OK]      Product          (docs/PRODUCT.md)\n[OK]      Architecture     (docs/ARCHITECTURE.md)\n[OK]      Spec             (docs/SPEC.md)\n[OK]      Design           (docs/DESIGN.md)\n[OK]      Roadmap          (docs/ROADMAP.md)\n[OK]      Changelog        (CHANGELOG.md)\n[OK]      Agents           (AGENTS.md)\n\nSummary: 9 present, 0 missing, 0 drifted\n\n",
+        "verified_at_epoch_ms": 1794608749114,
+        "git_branch": "main",
+        "base_commit_sha": null,
+        "head_commit_sha": "54ffca25389d3aaf9cdbf931ec19c75735add21e",
+        "commit_shas": [
+          "54ffca25389d3aaf9cdbf931ec19c75735add21e"
+        ],
+        "repo": "benchwork",
+        "chain_key": "benchwork",
+        "diff_hash": "c9a03cbe2a4ceb41e53e3d88d944fb34423c765d",
+        "diff": "diff --git a/crates/benchwork-cli/src/fleet.rs b/crates/benchwork-cli/src/fleet.rs\nnew file mode 100644\nindex 0000000..1f78592\n--- /dev/null\n+++ b/crates/benchwork-cli/src/fleet.rs\n@@ -0,0 +1,102 @@\n+//! Fleet operations over a suite of repositories (`GB-263`, `GB-293`).\n+//!\n+//! Split from `handlers` when the resolution fix pushed that file past the 250-line limit - by a\n+//! reformat, not an edit, which is the boundary hazard `GB-305` recorded. Both functions share one\n+//! question: which repositories does this command walk?\n+\n+use std::path::{Path, PathBuf};\n+\n+use crate::args::TidyArgs;\n+\n+/// The suite root a fleet command should walk, resolved from wherever it was launched (`GB-293`, `GB-305`).\n+///\n+/// `tidy --workspace` used to discover members of the directory it was run in. At a suite root that is the\n+/// suite; inside a member it is the member, whose only child directories are target/ and worktrees - so the\n+/// command walked nothing, found nothing, and reported success. A fleet operation that runs over zero\n+/// repositories and exits zero is indistinguishable from one that ran over twelve and found them clean.\n+///\n+/// Falls back to `start` when no declared suite contains it, because a lone repository is its own fleet of one\n+/// and must still be tidied.\n+#[must_use]\n+pub fn fleet_root(start: &Path) -> PathBuf {\n+    let canonical = std::fs::canonicalize(start).unwrap_or_else(|_| start.to_path_buf());\n+    gaugeblock_workspace::Membership::containing(&canonical)\n+        .map(|membership| membership.suite_root)\n+        .unwrap_or(canonical)\n+}\n+\n+/// Separate from `migrate` on purpose: this is a tidy operation over an already-unified workspace, so it\n+/// has to run when there is nothing to migrate. Attached to migration it was unreachable twice over -\n+/// driven by plan items, then living inside an engine the CLI never called.\n+pub fn handle_tidy(\n+    root_path: PathBuf,\n+    args: TidyArgs,\n+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {\n+    // Fleet mode (`GB-263`): membership comes from WorkspaceTopology, never a glob, so target/, worktrees/\n+    // and nested non-member repositories are excluded by construction. Each repository is isolated - a\n+    // finding is recorded and the run continues - because a fleet command that stops at the first problem\n+    // leaves the operator guessing how far it got.\n+    if args.workspace {\n+        let topology = gaugeblock_workspace::WorkspaceTopology::discover(&fleet_root(&root_path));\n+        let mut conflicts = 0usize;\n+        let mut with_findings = 0usize;\n+\n+        for member in topology.members() {\n+            let gb_root = member.path.join(\".gaugeblock\");\n+            let findings =\n+                benchwork_core::migration::engine::reconcile_tool_configs(&gb_root, args.dry_run);\n+            if findings.is_empty() {\n+                continue;\n+            }\n+            with_findings += 1;\n+            if findings.iter().any(|finding| finding.contains(\"CONFLICT\")) {\n+                conflicts += 1;\n+            }\n+            println!(\"  {}:\", member.name);\n+            for finding in &findings {\n+                println!(\"    - {finding}\");\n+            }\n+        }\n+\n+        let total = topology.members().len();\n+        if !args.json {\n+            println!(\n+                \"--- Tidy {} (workspace) ---\\n  {total} repositories, {} already tidy, {with_findings} with findings\",\n+                if args.dry_run { \"Dry Run\" } else { \"Receipt\" },\n+                total - with_findings\n+            );\n+        }\n+        if conflicts > 0 {\n+            return Err(\n+                format!(\"{conflicts} repository(ies) reported conflicts; see above\").into(),\n+            );\n+        }\n+        return Ok(());\n+    }\n+\n+    let gb_root = root_path.join(\".gaugeblock\");\n+    let findings =\n+        benchwork_core::migration::engine::reconcile_tool_configs(&gb_root, args.dry_run);\n+\n+    if args.json {\n+        println!(\n+            \"{}\",\n+            serde_json::to_string_pretty(&serde_json::json!({\n+                \"dry_run\": args.dry_run,\n+                \"findings\": findings,\n+            }))?\n+        );\n+    } else if findings.is_empty() {\n+        println!(\"Nothing to reconcile: no duplicate per-tool configs found.\");\n+    } else {\n+        println!(\n+            \"--- Tidy {} ---\",\n+            if args.dry_run { \"Dry Run\" } else { \"Receipt\" }\n+        );\n+        for finding in &findings {\n+            println!(\"  - {finding}\");\n+        }\n+    }\n+\n+    Ok(())\n+}\ndiff --git a/crates/benchwork-cli/src/handlers.rs b/crates/benchwork-cli/src/handlers.rs\nindex 7f042cb..d263811 100644\n--- a/crates/benchwork-cli/src/handlers.rs\n+++ b/crates/benchwork-cli/src/handlers.rs\n@@ -1,11 +1,13 @@\n //! CLI command dispatch handlers.\n \n-use std::path::{Path, PathBuf};\n+use std::path::PathBuf;\n+\n+pub use crate::fleet::handle_tidy;\n \n use benchwork_core::{BenchworkState, discover_migration, execute_migration, scan_capabilities};\n use benchwork_mcp::run_stdio_server;\n \n-use crate::args::{FormatArgs, MigrateArgs, TidyArgs, UpArgs};\n+use crate::args::{FormatArgs, MigrateArgs, UpArgs};\n use crate::daemon::start_daemon;\n \n /// Executes the `benchwork capabilities` command.\n@@ -169,98 +171,3 @@ pub fn handle_archive_all(\n     }\n     Ok(())\n }\n-\n-/// Reconciles duplicate per-tool configs against the unified `.gaugeblock/config.toml` (`GB-267`).\n-///\n-/// The suite root a fleet command should walk, resolved from wherever it was launched (`GB-293`, `GB-305`).\n-///\n-/// `tidy --workspace` used to discover members of the directory it was run in. At a suite root that is the\n-/// suite; inside a member it is the member, whose only child directories are target/ and worktrees - so the\n-/// command walked nothing, found nothing, and reported success. A fleet operation that runs over zero\n-/// repositories and exits zero is indistinguishable from one that ran over twelve and found them clean.\n-///\n-/// Falls back to `start` when no declared suite contains it, because a lone repository is its own fleet of one\n-/// and must still be tidied.\n-#[must_use]\n-pub fn fleet_root(start: &Path) -> PathBuf {\n-    let canonical = std::fs::canonicalize(start).unwrap_or_else(|_| start.to_path_buf());\n-    gaugeblock_workspace::Membership::containing(&canonical)\n-        .map(|membership| membership.suite_root)\n-        .unwrap_or(canonical)\n-}\n-\n-/// Separate from `migrate` on purpose: this is a tidy operation over an already-unified workspace, so it\n-/// has to run when there is nothing to migrate. Attached to migration it was unreachable twice over -\n-/// driven by plan items, then living inside an engine the CLI never called.\n-pub fn handle_tidy(\n-    root_path: PathBuf,\n-    args: TidyArgs,\n-) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {\n-    // Fleet mode (`GB-263`): membership comes from WorkspaceTopology, never a glob, so target/, worktrees/\n-    // and nested non-member repositories are excluded by construction. Each repository is isolated - a\n-    // finding is recorded and the run continues - because a fleet command that stops at the first problem\n-    // leaves the operator guessing how far it got.\n-    if args.workspace {\n-        let topology = gaugeblock_workspace::WorkspaceTopology::discover(&fleet_root(&root_path));\n-        let mut conflicts = 0usize;\n-        let mut with_findings = 0usize;\n-\n-        for member in topology.members() {\n-            let gb_root = member.path.join(\".gaugeblock\");\n-            let findings =\n-                benchwork_core::migration::engine::reconcile_tool_configs(&gb_root, args.dry_run);\n-            if findings.is_empty() {\n-                continue;\n-            }\n-            with_findings += 1;\n-            if findings.iter().any(|finding| finding.contains(\"CONFLICT\")) {\n-                conflicts += 1;\n-            }\n-            println!(\"  {}:\", member.name);\n-            for finding in &findings {\n-                println!(\"    - {finding}\");\n-            }\n-        }\n-\n-        let total = topology.members().len();\n-        if !args.json {\n-            println!(\n-                \"--- Tidy {} (workspace) ---\\n  {total} repositories, {} already tidy, {with_findings} with findings\",\n-                if args.dry_run { \"Dry Run\" } else { \"Receipt\" },\n-                total - with_findings\n-            );\n-        }\n-        if conflicts > 0 {\n-            return Err(\n-                format!(\"{conflicts} repository(ies) reported conflicts; see above\").into(),\n-            );\n-        }\n-        return Ok(());\n-    }\n-\n-    let gb_root = root_path.join(\".gaugeblock\");\n-    let findings =\n-        benchwork_core::migration::engine::reconcile_tool_configs(&gb_root, args.dry_run);\n-\n-    if args.json {\n-        println!(\n-            \"{}\",\n-            serde_json::to_string_pretty(&serde_json::json!({\n-                \"dry_run\": args.dry_run,\n-                \"findings\": findings,\n-            }))?\n-        );\n-    } else if findings.is_empty() {\n-        println!(\"Nothing to reconcile: no duplicate per-tool configs found.\");\n-    } else {\n-        println!(\n-            \"--- Tidy {} ---\",\n-            if args.dry_run { \"Dry Run\" } else { \"Receipt\" }\n-        );\n-        for finding in &findings {\n-            println!(\"  - {finding}\");\n-        }\n-    }\n-\n-    Ok(())\n-}\ndiff --git a/crates/benchwork-cli/src/lib.rs b/crates/benchwork-cli/src/lib.rs\nindex d8bbeab..1601ddc 100644\n--- a/crates/benchwork-cli/src/lib.rs\n+++ b/crates/benchwork-cli/src/lib.rs\n@@ -5,4 +5,5 @@\n \n pub mod args;\n pub mod daemon;\n+pub mod fleet;\n pub mod handlers;\ndiff --git a/crates/benchwork-cli/tests/two_repo_resolution.rs b/crates/benchwork-cli/tests/two_repo_resolution.rs\nindex 1a4461a..1637679 100644\n--- a/crates/benchwork-cli/tests/two_repo_resolution.rs\n+++ b/crates/benchwork-cli/tests/two_repo_resolution.rs\n@@ -17,7 +17,7 @@ use std::fs;\n use std::path::{Path, PathBuf};\n \n use benchwork_cli::daemon::routes_telemetry::events_path_in;\n-use benchwork_cli::handlers::fleet_root;\n+use benchwork_cli::fleet::fleet_root;\n \n /// Both sides canonicalised: the resolvers canonicalise before walking ancestors, the target files do not\n /// exist, and on macOS a tempdir is reached through the `/var` symlink.\n",
+        "window_intact": true
+      }
+    },
+    {
+      "event": "task_archived",
+      "task_id": "2e7cc48c-fa51-4574-a340-824e15311f59",
+      "status": "verified",
+      "timestamp_ms": 1794609140760
+    }
+  ]
 }
